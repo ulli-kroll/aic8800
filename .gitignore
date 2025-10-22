@@ -1,0 +1,10 @@
+*.o
+*.o.d
+*.cmd
+*.ko
+*.cm
+Module.symvers
+modules.order
+*.mod
+*.mod.c
+.tmp_versions
