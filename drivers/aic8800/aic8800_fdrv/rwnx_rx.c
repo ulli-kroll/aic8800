@@ -1719,7 +1719,11 @@ void reord_timeout_handler (struct timer_list *t)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
 	struct reord_ctrl *preorder_ctrl = (struct reord_ctrl *)data;
 #else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
+	struct reord_ctrl *preorder_ctrl = timer_container_of(preorder_ctrl, t, reord_timer);
+#else
 	struct reord_ctrl *preorder_ctrl = from_timer(preorder_ctrl, t, reord_timer);
+#endif
 #endif
 
 	AICWFDBG(LOGTRACE, "%s Enter \r\n", __func__);
@@ -2048,7 +2052,11 @@ void defrag_timeout_cb(struct timer_list *t)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	defrag_ctrl = (struct defrag_ctrl_info *)data;
 #else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
+	defrag_ctrl = timer_container_of(defrag_ctrl, t, defrag_timer);
+#else
 	defrag_ctrl = from_timer(defrag_ctrl, t, defrag_timer);
+#endif
 #endif
 
 	printk("%s:%p\r\n", __func__, defrag_ctrl);
