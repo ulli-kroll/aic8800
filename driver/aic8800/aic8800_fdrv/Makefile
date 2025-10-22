@@ -396,6 +396,11 @@ KVER ?= $(shell uname -r)
 MODDESTDIR ?= /lib/modules/$(KVER)/kernel/drivers/net/wireless/
 ARCH ?= x86_64
 CROSS_COMPILE ?=
+
+ifeq ($(CONFIG_AW_BSP), y)
+ccflags-y += -DCONFIG_PLATFORM_ALLWINNER
+endif
+
 endif
 ###########################################
 
