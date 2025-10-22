@@ -1390,7 +1390,11 @@ int aicwf_sdio_busrx_thread(void *data)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 static void aicwf_sdio_bus_pwrctl(struct timer_list *t)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
+	struct aic_sdio_dev *sdiodev = timer_container_of(sdiodev, t, timer);
+#else
 	struct aic_sdio_dev *sdiodev = from_timer(sdiodev, t, timer);
+#endif
 #else
 static void aicwf_sdio_bus_pwrctl(ulong data)
 {
