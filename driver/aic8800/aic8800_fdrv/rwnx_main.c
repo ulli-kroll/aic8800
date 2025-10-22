@@ -3577,6 +3577,9 @@ static int rwnx_cfg80211_set_tx_power(struct wiphy *wiphy, struct wireless_dev *
 static int rwnx_cfg80211_get_tx_power(struct wiphy *wiphy,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
  struct wireless_dev *wdev,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION (6, 14, 0)
+ unsigned int link_id,
+#endif
 #endif
 	int *mbm)
 {
