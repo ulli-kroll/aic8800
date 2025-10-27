@@ -93,8 +93,6 @@ CONFIG_USE_FW_REQUEST ?= n
 CONFIG_USE_P2P0=n
 CONFIG_TX_NETIF_FLOWCTRL = n
 CONFIG_ONE_TXQ = n
-CONFIG_BR_SUPPORT =n
-BR_NAME = br0
 CONFIG_FDRV_NO_REG_SDIO=n
 CONFIG_SCHED_SCAN = n
 CONFIG_OOB ?= n
@@ -258,11 +256,6 @@ ifeq ($(CONFIG_USB_SUPPORT), y)
 ccflags-y += -DAICWF_USB_SUPPORT
 endif
 
-ifeq ($(CONFIG_BR_SUPPORT), y)
-ccflags-y += -DCONFIG_BR_SUPPORT
-ccflags-y += '-DCONFIG_BR_SUPPORT_BRNAME="'$(BR_NAME)'"'
-endif
-
 ifeq ($(CONFIG_RWNX_MUMIMO_TX), y)
 ccflags-y += -DCONFIG_USER_MAX=2
 else
@@ -317,8 +310,6 @@ aic8800_fdrv-y += \
 	aicsemi/aic8800/aic8800_fdrv/aic_priv_cmd.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_rx_prealloc.o
 
-aic8800_fdrv-$(CONFIG_BR_SUPPORT) += \
-	aicsemi/aic8800/aic8800_fdrv/aic_br_ext.o
 aic8800_fdrv-$(CONFIG_RWNX_RADAR) += \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_radar.o
 aic8800_fdrv-$(CONFIG_DEBUG_FS) += \

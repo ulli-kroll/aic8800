@@ -354,32 +354,6 @@ static void rwnx_rx_data_skb_forward(struct rwnx_hw *rwnx_hw, struct rwnx_vif *r
 	rx_skb->dev = rwnx_vif->ndev;
 	skb_reset_mac_header(rx_skb);
 
-	#ifdef CONFIG_BR_SUPPORT
-		 void *br_port = NULL;
-
-		 if (1) {//(check_fwstate(pmlmepriv, WIFI_STATION_STATE | WIFI_ADHOC_STATE) == _TRUE) {
-			 /* Insert NAT2.5 RX here! */
-		#if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
-			 br_port = rwnx_vif->ndev->br_port;
-		#else
-			 rcu_read_lock();
-			 br_port = rcu_dereference(rwnx_vif->ndev->rx_handler_data);
-			 rcu_read_unlock();
-		#endif
-
-			 if (br_port) {
-				 int nat25_handle_frame(struct rwnx_vif *vif, struct sk_buff *skb);
-
-				 if (nat25_handle_frame(rwnx_vif, rx_skb) == -1) {
-					 /* priv->ext_stats.rx_data_drops++; */
-					 /* DEBUG_ERR("RX DROP: nat25_handle_frame fail!\n"); */
-					 /* return FAIL; */
-
-				 }
-			 }
-		 }
-	#endif /* CONFIG_BR_SUPPORT */
-
 	/* Update statistics */
 	rwnx_vif->net_stats.rx_packets++;
 	rwnx_vif->net_stats.rx_bytes += rx_skb->len;
@@ -530,31 +504,6 @@ static bool rwnx_rx_data_skb(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
 
 		/* forward pkt to upper layer */
 		if (forward) {
-			#ifdef CONFIG_BR_SUPPORT
-						 void *br_port = NULL;
-
-						 if (1) {//(check_fwstate(pmlmepriv, WIFI_STATION_STATE | WIFI_ADHOC_STATE) == _TRUE) {
-							 /* Insert NAT2.5 RX here! */
-			#if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
-							 br_port = rwnx_vif->ndev->br_port;
-			#else
-							 rcu_read_lock();
-							 br_port = rcu_dereference(rwnx_vif->ndev->rx_handler_data);
-							 rcu_read_unlock();
-			#endif
-
-							 if (br_port) {
-								 int nat25_handle_frame(struct rwnx_vif *vif, struct sk_buff *skb);
-
-								 if (nat25_handle_frame(rwnx_vif, rx_skb) == -1) {
-									 /* priv->ext_stats.rx_data_drops++; */
-									 /* DEBUG_ERR("RX DROP: nat25_handle_frame fail!\n"); */
-									 /* return FAIL; */
-								 }
-							 }
-						 }
-			#endif /* CONFIG_BR_SUPPORT */
-
 			/* Update statistics */
 			rwnx_vif->net_stats.rx_packets++;
 			rwnx_vif->net_stats.rx_bytes += rx_skb->len;
@@ -1481,37 +1430,12 @@ int reord_single_frame_ind(struct aicwf_rx_priv *rx_priv, struct recv_msdu *prfr
 
 	rxframes_freequeue = &rx_priv->rxframes_freequeue;
 	skb = prframe->pkt;
-	
-	#ifdef CONFIG_BR_SUPPORT
-		 void *br_port = NULL;
-
-		 if (1) {//(check_fwstate(pmlmepriv, WIFI_STATION_STATE | WIFI_ADHOC_STATE) == _TRUE) {
-			 /* Insert NAT2.5 RX here! */
-	#if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
-			 br_port = rwnx_vif->ndev->br_port;
-	#else
-			 rcu_read_lock();
-			 br_port = rcu_dereference(rwnx_vif->ndev->rx_handler_data);
-			 rcu_read_unlock();
-	#endif
-
-			 if (br_port) {
-				 int nat25_handle_frame(struct rwnx_vif *vif, struct sk_buff *skb);
-
-				 if (nat25_handle_frame(rwnx_vif, skb) == -1) {
-					 /* priv->ext_stats.rx_data_drops++; */
-					 /* DEBUG_ERR("RX DROP: nat25_handle_frame fail!\n"); */
-					 /* return FAIL; */
-				 }
-			 }
-		 }
-	#endif /* CONFIG_BR_SUPPORT */
 
 	if (skb == NULL) {
 		txrx_err("skb is NULL\n");
 		return -1;
 	}
-	
+
 	if(!prframe->forward) {
 		//printk("single: %d not forward: drop\n", prframe->seq_num);
 		dev_kfree_skb(skb);

@@ -92,8 +92,6 @@ CONFIG_USE_FW_REQUEST ?= n
 CONFIG_USE_P2P0=n
 CONFIG_TX_NETIF_FLOWCTRL = n
 CONFIG_ONE_TXQ = n
-CONFIG_BR_SUPPORT =n
-BR_NAME = br0
 CONFIG_FDRV_NO_REG_SDIO=n
 CONFIG_SCHED_SCAN = n
 CONFIG_OOB ?= n
@@ -188,7 +186,6 @@ $(MODULE_NAME)-y := \
 	aic_priv_cmd.o		\
 	aicwf_rx_prealloc.o
 
-$(MODULE_NAME)-$(CONFIG_BR_SUPPORT)       += aic_br_ext.o
 $(MODULE_NAME)-$(CONFIG_RWNX_RADAR)       += rwnx_radar.o
 $(MODULE_NAME)-$(CONFIG_DEBUG_FS)         += rwnx_debugfs.o
 $(MODULE_NAME)-$(CONFIG_DEBUG_FS)         += rwnx_fw_trace.o
@@ -306,11 +303,6 @@ endif
 
 ifeq ($(CONFIG_USB_SUPPORT), y)
 ccflags-y += -DAICWF_USB_SUPPORT
-endif
-
-ifeq ($(CONFIG_BR_SUPPORT), y)
-ccflags-y += -DCONFIG_BR_SUPPORT
-ccflags-y += '-DCONFIG_BR_SUPPORT_BRNAME="'$(BR_NAME)'"'
 endif
 
 ifeq ($(CONFIG_RWNX_MUMIMO_TX), y)
