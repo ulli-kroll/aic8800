@@ -29,9 +29,6 @@
 #include "rwnx_mu_group.h"
 #include "rwnx_platform.h"
 #include "rwnx_cmds.h"
-#ifdef CONFIG_GKI
-#include "rwnx_gki.h"
-#endif
 #include "rwnx_compat.h"
 #ifdef CONFIG_FILTER_TCP_ACK
 #include "aicwf_tcp_ack.h"

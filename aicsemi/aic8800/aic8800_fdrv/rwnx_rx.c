@@ -662,48 +662,25 @@ static void rwnx_rx_mgmt(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
 		if ((RWNX_VIF_TYPE(rwnx_vif) == NL80211_IFTYPE_MESH_POINT) &&
 			hw_rxhdr->flags_new_peer) {
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0))
-#ifdef CONFIG_GKI
-            rwnx_cfg80211_notify_new_peer_candidate(rwnx_vif->ndev, mgmt->sa,
-                                               mgmt->u.beacon.variable,
-                                               skb->len - offsetof(struct ieee80211_mgmt,
-                                                                   u.beacon.variable),
-                                               GFP_ATOMIC);
-#else
 			cfg80211_notify_new_peer_candidate(rwnx_vif->ndev, mgmt->sa,
 											   mgmt->u.beacon.variable,
 											   skb->len - offsetof(struct ieee80211_mgmt,
 																   u.beacon.variable),
 											   GFP_ATOMIC);
-#endif
 #else
 
-#ifdef CONFIG_GKI
-			/* TODO: the value of parameter sig_dbm need to be confirmed */
-			rwnx_cfg80211_notify_new_peer_candidate(rwnx_vif->ndev, mgmt->sa,
-											   mgmt->u.beacon.variable,
-											   skb->len - offsetof(struct ieee80211_mgmt,
-																   u.beacon.variable),
-											   rxvect->rssi1, GFP_ATOMIC);
-#else
             /* TODO: the value of parameter sig_dbm need to be confirmed */
             cfg80211_notify_new_peer_candidate(rwnx_vif->ndev, mgmt->sa,
                                                mgmt->u.beacon.variable,
                                                skb->len - offsetof(struct ieee80211_mgmt,
                                                                    u.beacon.variable),
                                                rxvect->rssi1, GFP_ATOMIC);
-#endif
 
 #endif
 		} else {
-#ifdef CONFIG_GKI
-			rwnx_cfg80211_report_obss_beacon(rwnx_hw->wiphy, skb->data, skb->len,
-										hw_rxhdr->phy_info.phy_prim20_freq,
-										rxvect->rssi1);
-#else
             cfg80211_report_obss_beacon(rwnx_hw->wiphy, skb->data, skb->len,
                                         hw_rxhdr->phy_info.phy_prim20_freq,
                                         rxvect->rssi1);
-#endif
 		}
 	} else if ((ieee80211_is_deauth(mgmt->frame_control) ||
 				ieee80211_is_disassoc(mgmt->frame_control)) &&
@@ -2066,14 +2043,10 @@ check_len_update:
 		hdr = (struct ieee80211_hdr *)(skb->data + msdu_offset);
 		rwnx_vif = rwnx_rx_get_vif(rwnx_hw, hw_rxhdr->flags_vif_idx);
 		if (rwnx_vif) {
-#ifdef CONFIG_GKI
-			rwnx_cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, GFP_ATOMIC);
-#else
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
             cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, GFP_ATOMIC);
 #else
             cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, -1, GFP_ATOMIC);
-#endif
 #endif
 		}
 		goto end;
@@ -2364,16 +2337,11 @@ check_len_update:
 				}
 
 				if (hw_rxhdr->flags_is_4addr && !rwnx_vif->use_4addr) {
-#ifdef CONFIG_GKI
-					rwnx_cfg80211_rx_unexpected_4addr_frame(rwnx_vif->ndev,
-													   sta->mac_addr, GFP_ATOMIC);
-#else
                     cfg80211_rx_unexpected_4addr_frame(rwnx_vif->ndev,
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
                                                        sta->mac_addr, GFP_ATOMIC);
 #else
                                                        sta->mac_addr, -1, GFP_ATOMIC);
-#endif
 #endif
 				}
 			}

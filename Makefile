@@ -103,7 +103,6 @@ CONFIG_FORCE_DPD_CALIB = y
 CONFIG_LOFT_CALIB = n
 CONFIG_FILTER_TCP_ACK =y
 CONFIG_RESV_MEM_SUPPORT ?= y
-CONFIG_GKI = n
 CONFIG_TEMP_COMP = n
 CONFIG_TEMP_CONTROL = n
 CONFIG_EXT_FEM_8800DCDW = n
@@ -236,7 +235,6 @@ ccflags-$(CONFIG_LOFT_CALIB) += -DCONFIG_LOFT_CALIB
 ccflags-$(CONFIG_FILTER_TCP_ACK) += -DCONFIG_FILTER_TCP_ACK
 ccflags-$(CONFIG_SDIO_BT) += -DCONFIG_SDIO_BT
 ccflags-$(CONFIG_RESV_MEM_SUPPORT) += -DCONFIG_RESV_MEM_SUPPORT
-ccflags-$(CONFIG_GKI) += -DCONFIG_GKI
 ccflags-$(CONFIG_TEMP_COMP) += -DCONFIG_TEMP_COMP
 ccflags-$(CONFIG_TEMP_CONTROL) += -DCONFIG_TEMP_CONTROL
 ccflags-$(CONFIG_POWER_LIMIT) += -DCONFIG_POWER_LIMIT
@@ -338,8 +336,6 @@ aic8800_fdrv-$(CONFIG_USB_SUPPORT) += \
 	aicsemi/aic8800/aic8800_fdrv/usb_host.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_txrxif.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_usb.o
-aic8800_fdrv-$(CONFIG_GKI)     += \
-	aicsemi/aic8800/aic8800_fdrv/rwnx_gki.o
 
 aic8800_btlpm-y += \
 	aicsemi/aic8800/aic8800_btlpm/aic_bluetooth_main.o \
