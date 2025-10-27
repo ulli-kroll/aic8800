@@ -65,7 +65,6 @@ int rwnx_send_rf_config_req(struct rwnx_hw *rwnx_hw, u8_l ofst, u8_l sel, u8_l *
 int rwnx_send_rf_calib_req(struct rwnx_hw *rwnx_hw, struct mm_set_rf_calib_cfm *cfm);
 int rwnx_send_get_macaddr_req(struct rwnx_hw *rwnx_hw, struct mm_get_mac_addr_cfm *cfm);
 
-#ifdef CONFIG_RWNX_FULLMAC
 int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw);
 int rwnx_send_me_chan_config_req(struct rwnx_hw *rwnx_hw, char *ccode);
 int rwnx_send_me_set_control_port_req(struct rwnx_hw *rwnx_hw, bool opened,
@@ -124,13 +123,10 @@ void rwnx_send_mesh_path_create_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vi
 int rwnx_send_mesh_path_update_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif, const u8 *tgt_addr,
 								   const u8 *p_nhop_addr, struct mesh_path_update_cfm *cfm);
 void rwnx_send_mesh_proxy_add_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif, u8 *ext_addr);
-#endif /* CONFIG_RWNX_FULLMAC */
 
 #ifdef CONFIG_RWNX_BFMER
-#ifdef CONFIG_RWNX_FULLMAC
 void rwnx_send_bfmer_enable(struct rwnx_hw *rwnx_hw, struct rwnx_sta *rwnx_sta,
 				const struct ieee80211_vht_cap *vht_cap);
-#endif /* CONFIG_RWNX_FULLMAC */
 #ifdef CONFIG_RWNX_MUMIMO_TX
 int rwnx_send_mu_group_update_req(struct rwnx_hw *rwnx_hw, struct rwnx_sta *rwnx_sta);
 #endif /* CONFIG_RWNX_MUMIMO_TX */

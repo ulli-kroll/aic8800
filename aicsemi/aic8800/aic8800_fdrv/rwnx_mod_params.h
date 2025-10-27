@@ -53,9 +53,7 @@ struct rwnx_mod_params {
 	bool auto_reply;
 	char *ftl;
 	bool dpsm;
-#ifdef CONFIG_RWNX_FULLMAC
 	bool ant_div;
-#endif /* CONFIG_RWNX_FULLMAC */
 };
 
 extern struct rwnx_mod_params rwnx_mod_params;

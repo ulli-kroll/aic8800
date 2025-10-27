@@ -16,11 +16,9 @@
 #ifdef CONFIG_RWNX_BFMER
 #include "rwnx_bfmer.h"
 #endif //(CONFIG_RWNX_BFMER)
-#ifdef CONFIG_RWNX_FULLMAC
 #include "rwnx_debugfs.h"
 #include "rwnx_msg_tx.h"
 #include "rwnx_tdls.h"
-#endif /* CONFIG_RWNX_FULLMAC */
 #include "rwnx_events.h"
 #include "rwnx_compat.h"
 #include "aicwf_txrxif.h"
@@ -36,9 +34,7 @@ static int rwnx_freq_to_idx(struct rwnx_hw *rwnx_hw, int freq)
 	int band, ch, idx = 0;
 
 	for (band = NL80211_BAND_2GHZ; band < NUM_NL80211_BANDS; band++) {
-#ifdef CONFIG_RWNX_FULLMAC
 		sband = rwnx_hw->wiphy->bands[band];
-#endif /* CONFIG_RWNX_FULLMAC */
 		if (!sband) {
 			continue;
 		}
@@ -69,13 +65,11 @@ static inline int rwnx_rx_chan_pre_switch_ind(struct rwnx_hw *rwnx_hw,
 
 	REG_SW_SET_PROFILING_CHAN(rwnx_hw, SW_PROF_CHAN_CTXT_PSWTCH_BIT);
 
-#ifdef CONFIG_RWNX_FULLMAC
 	list_for_each_entry(rwnx_vif, &rwnx_hw->vifs, list) {
 		if (rwnx_vif->up && rwnx_vif->ch_index == chan_idx) {
 			rwnx_txq_vif_stop(rwnx_vif, RWNX_TXQ_STOP_CHAN, rwnx_hw);
 		}
 	}
-#endif /* CONFIG_RWNX_FULLMAC */
 
 	REG_SW_CLEAR_PROFILING_CHAN(rwnx_hw, SW_PROF_CHAN_CTXT_PSWTCH_BIT);
 
@@ -93,7 +87,6 @@ static inline int rwnx_rx_chan_switch_ind(struct rwnx_hw *rwnx_hw,
 
 	REG_SW_SET_PROFILING_CHAN(rwnx_hw, SW_PROF_CHAN_CTXT_SWTCH_BIT);
 
-#ifdef CONFIG_RWNX_FULLMAC
 	if (roc_tdls) {
 		u8 vif_index = ((struct mm_channel_switch_ind *)msg->param)->vif_index;
 		list_for_each_entry(rwnx_vif, &rwnx_hw->vifs, list) {
@@ -139,8 +132,6 @@ static inline int rwnx_rx_chan_switch_ind(struct rwnx_hw *rwnx_hw,
 	rwnx_hw->cur_chanctx = chan_idx;
 	rwnx_radar_detection_enable_on_cur_channel(rwnx_hw);
 
-#endif /* CONFIG_RWNX_FULLMAC */
-
 	REG_SW_CLEAR_PROFILING_CHAN(rwnx_hw, SW_PROF_CHAN_CTXT_SWTCH_BIT);
 
 	return 0;
@@ -157,12 +148,10 @@ static inline int rwnx_rx_tdls_chan_switch_ind(struct rwnx_hw *rwnx_hw,
 											   struct rwnx_cmd *cmd,
 											   struct ipc_e2a_msg *msg)
 {
-#ifdef CONFIG_RWNX_FULLMAC
 	// Enable traffic on OFF channel queue
 	rwnx_txq_offchan_start(rwnx_hw);
 
 	return 0;
-#endif
 }
 
 static inline int rwnx_rx_tdls_chan_switch_base_ind(struct rwnx_hw *rwnx_hw,
@@ -174,7 +163,6 @@ static inline int rwnx_rx_tdls_chan_switch_base_ind(struct rwnx_hw *rwnx_hw,
 
 	RWNX_DBG(RWNX_FN_ENTRY_STR);
 
-#ifdef CONFIG_RWNX_FULLMAC
 	list_for_each_entry(rwnx_vif, &rwnx_hw->vifs, list) {
 		if (rwnx_vif->vif_index == vif_index) {
 			rwnx_vif->roc_tdls = false;
@@ -182,7 +170,6 @@ static inline int rwnx_rx_tdls_chan_switch_base_ind(struct rwnx_hw *rwnx_hw,
 		}
 	}
 	return 0;
-#endif
 }
 
 static inline int rwnx_rx_tdls_peer_ps_ind(struct rwnx_hw *rwnx_hw,
@@ -193,7 +180,6 @@ static inline int rwnx_rx_tdls_peer_ps_ind(struct rwnx_hw *rwnx_hw,
 	u8 vif_index = ((struct tdls_peer_ps_ind *)msg->param)->vif_index;
 	bool ps_on = ((struct tdls_peer_ps_ind *)msg->param)->ps_on;
 
-#ifdef CONFIG_RWNX_FULLMAC
 list_for_each_entry(rwnx_vif, &rwnx_hw->vifs, list) {
 	if (rwnx_vif->vif_index == vif_index) {
 		rwnx_vif->sta.tdls_sta->tdls.ps_on = ps_on;
@@ -203,14 +189,12 @@ list_for_each_entry(rwnx_vif, &rwnx_hw->vifs, list) {
 	}
 
 	return 0;
-#endif
 }
 
 static inline int rwnx_rx_remain_on_channel_exp_ind(struct rwnx_hw *rwnx_hw,
 													struct rwnx_cmd *cmd,
 													struct ipc_e2a_msg *msg)
 {
-#ifdef CONFIG_RWNX_FULLMAC
 	/* Retrieve the allocated RoC element */
 	struct rwnx_roc_elem *roc_elem = rwnx_hw->roc_elem;
 	/* Get VIF on which RoC has been started */
@@ -248,7 +232,6 @@ static inline int rwnx_rx_remain_on_channel_exp_ind(struct rwnx_hw *rwnx_hw,
 	kfree(roc_elem);
 	rwnx_hw->roc_elem = NULL;
 
-#endif /* CONFIG_RWNX_FULLMAC */
 	return 0;
 }
 
@@ -262,19 +245,16 @@ static inline int rwnx_rx_p2p_vif_ps_change_ind(struct rwnx_hw *rwnx_hw,
 
 	RWNX_DBG(RWNX_FN_ENTRY_STR);
 
-#ifdef CONFIG_RWNX_FULLMAC
 	vif_entry = rwnx_hw->vif_table[vif_idx];
 
 	if (vif_entry) {
 		goto found_vif;
 	}
-#endif /* CONFIG_RWNX_FULLMAC */
 
 	goto exit;
 
 found_vif:
 
-#ifdef CONFIG_RWNX_FULLMAC
 	if (ps_state == MM_PS_MODE_OFF) {
 		// Start TX queues for provided VIF
 		rwnx_txq_vif_start(vif_entry, RWNX_TXQ_STOP_VIF_PS, rwnx_hw);
@@ -283,7 +263,6 @@ found_vif:
 		// Stop TX queues for provided VIF
 		rwnx_txq_vif_stop(vif_entry, RWNX_TXQ_STOP_VIF_PS, rwnx_hw);
 	}
-#endif /* CONFIG_RWNX_FULLMAC */
 
 exit:
 	return 0;
@@ -337,7 +316,6 @@ static inline int rwnx_rx_rssi_status_ind(struct rwnx_hw *rwnx_hw,
 
 	RWNX_DBG(RWNX_FN_ENTRY_STR);
 
-#ifdef CONFIG_RWNX_FULLMAC
 vif_entry = rwnx_hw->vif_table[vif_idx];
 	if (vif_entry) {
 		cfg80211_cqm_rssi_notify(vif_entry->ndev,
@@ -345,7 +323,6 @@ vif_entry = rwnx_hw->vif_table[vif_idx];
 			NL80211_CQM_RSSI_THRESHOLD_EVENT_HIGH,
 			ind->rssi, GFP_ATOMIC);
 	}
-#endif /* CONFIG_RWNX_FULLMAC */
 
 	return 0;
 }
@@ -354,7 +331,6 @@ static inline int rwnx_rx_pktloss_notify_ind(struct rwnx_hw *rwnx_hw,
 											 struct rwnx_cmd *cmd,
 											 struct ipc_e2a_msg *msg)
 {
-#ifdef CONFIG_RWNX_FULLMAC
 	struct mm_pktloss_ind *ind = (struct mm_pktloss_ind *)msg->param;
 	struct rwnx_vif *vif_entry;
 	int vif_idx  = ind->vif_index;
@@ -366,7 +342,6 @@ static inline int rwnx_rx_pktloss_notify_ind(struct rwnx_hw *rwnx_hw,
 		cfg80211_cqm_pktloss_notify(vif_entry->ndev, (const u8 *)ind->mac_addr.array,
 									ind->num_packets, GFP_ATOMIC);
 	}
-#endif /* CONFIG_RWNX_FULLMAC */
 
 	return 0;
 }
@@ -452,19 +427,16 @@ static inline int rwnx_rx_csa_counter_ind(struct rwnx_hw *rwnx_hw,
 	}
 
 	if (found) {
-#ifdef CONFIG_RWNX_FULLMAC
 	if (vif->ap.csa)
 		vif->ap.csa->count = ind->csa_count;
 	else
 		netdev_err(vif->ndev, "CSA counter update but no active CSA");
 
-#endif
 	}
 
 	return 0;
 }
 
-#ifdef CONFIG_RWNX_FULLMAC
 static inline int rwnx_rx_csa_finish_ind(struct rwnx_hw *rwnx_hw,
 										 struct rwnx_cmd *cmd,
 										 struct ipc_e2a_msg *msg)
@@ -584,7 +556,6 @@ static inline int rwnx_rx_traffic_req_ind(struct rwnx_hw *rwnx_hw,
 
 	return 0;
 }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 /***************************************************************************
  * Messages from SCAN task
@@ -616,7 +587,7 @@ static inline int rwnx_rx_scan_done_ind(struct rwnx_hw *rwnx_hw,
 /***************************************************************************
  * Messages from SCANU task
  **************************************************************************/
-#ifdef CONFIG_RWNX_FULLMAC
+
 extern uint8_t scanning;
 static inline int rwnx_rx_scanu_start_cfm(struct rwnx_hw *rwnx_hw,
 										  struct rwnx_cmd *cmd,
@@ -712,12 +683,10 @@ static inline int rwnx_rx_scanu_result_ind(struct rwnx_hw *rwnx_hw,
 
 	return 0;
 }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 /***************************************************************************
  * Messages from ME task
  **************************************************************************/
-#ifdef CONFIG_RWNX_FULLMAC
 static inline int rwnx_rx_me_tkip_mic_failure_ind(struct rwnx_hw *rwnx_hw,
 												  struct rwnx_cmd *cmd,
 												  struct ipc_e2a_msg *msg)
@@ -747,12 +716,10 @@ static inline int rwnx_rx_me_tx_credits_update_ind(struct rwnx_hw *rwnx_hw,
 
 	return 0;
 }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 /***************************************************************************
  * Messages from SM task
  **************************************************************************/
-#ifdef CONFIG_RWNX_FULLMAC
 static inline int rwnx_rx_sm_connect_ind(struct rwnx_hw *rwnx_hw,
 										 struct rwnx_cmd *cmd,
 										 struct ipc_e2a_msg *msg)
@@ -1381,7 +1348,6 @@ static inline int rwnx_rx_mesh_proxy_update_ind(struct rwnx_hw *rwnx_hw,
 
 	return 0;
 }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 /***************************************************************************
  * Messages from APM task
@@ -1419,8 +1385,6 @@ static inline int rwnx_rx_dbg_custmsg_ind(struct rwnx_hw *rwnx_hw,
     return 0;
 }
 #endif
-
-#ifdef CONFIG_RWNX_FULLMAC
 
 static msg_cb_fct mm_hdlrs[MSG_I(MM_MAX)] = {
 	[MSG_I(MM_CHANNEL_SWITCH_IND)]     = rwnx_rx_chan_switch_ind,
@@ -1466,8 +1430,6 @@ static msg_cb_fct mesh_hdlrs[MSG_I(MESH_MAX)] = {
 	[MSG_I(MESH_PROXY_UPDATE_IND)] = rwnx_rx_mesh_proxy_update_ind,
 };
 
-#endif /* CONFIG_RWNX_FULLMAC */
-
 static msg_cb_fct dbg_hdlrs[MSG_I(DBG_MAX)] = {
 	[MSG_I(DBG_ERROR_IND)]                = rwnx_rx_dbg_error_ind,
 #ifdef CONFIG_MCU_MESSAGE
@@ -1488,14 +1450,12 @@ static msg_cb_fct tdls_hdlrs[MSG_I(TDLS_MAX)] = {
 static msg_cb_fct *msg_hdlrs[] = {
 	[TASK_MM]    = mm_hdlrs,
 	[TASK_DBG]   = dbg_hdlrs,
-#ifdef CONFIG_RWNX_FULLMAC
 	[TASK_TDLS]  = tdls_hdlrs,
 	[TASK_SCANU] = scan_hdlrs,
 	[TASK_ME]    = me_hdlrs,
 	[TASK_SM]    = sm_hdlrs,
 	[TASK_APM]   = apm_hdlrs,
 	[TASK_MESH]  = mesh_hdlrs,
-#endif /* CONFIG_RWNX_FULLMAC */
 };
 
 /**

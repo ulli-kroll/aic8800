@@ -63,9 +63,7 @@
 /*
  * Number of Host buffers available for Emb->App MSGs sending (through DMA)
  */
-#ifdef CONFIG_RWNX_FULLMAC
 #define IPC_MSGE2A_BUF_CNT       64
-#endif
 /*
  * Number of Host buffers available for Debug Messages sending (through DMA)
  */
@@ -75,9 +73,7 @@
  * Length used in MSGs structures
  */
 #define IPC_A2E_MSG_BUF_SIZE    127 // size in 4-byte words
-#ifdef CONFIG_RWNX_FULLMAC
 #define IPC_E2A_MSG_SIZE_BASE   256 // size in 4-byte words
-#endif
 
 #ifdef CONFIG_RWNX_TL4
 #define IPC_E2A_MSG_PARAM_SIZE  (IPC_E2A_MSG_SIZE_BASE + (IPC_E2A_MSG_SIZE_BASE / 2))
@@ -140,7 +136,6 @@ struct hostdesc {
 	u16_l flags_ext;
 
     u32_l hostid;
-#ifdef CONFIG_RWNX_FULLMAC
 	/// Address of the status descriptor in host memory (used for confirmation upload)
 	//u32_l status_desc_addr;
 	/// Destination Address
@@ -149,14 +144,6 @@ struct hostdesc {
 	struct mac_addr eth_src_addr;
 	/// Ethernet Type
 	u16_l ethertype;
-#else /* ! CONFIG_RWNX_FULLMAC */
-#ifdef CONFIG_RWNX_AGG_TX
-	///Sequence Number for AMPDU MPDUs - for quick check if it's allowed within window
-	u16_l sn;
-#endif /* CONFIG_RWNX_AGG_TX */
-	/// Padding between the buffer control structure and the MPDU in host memory
-	u8_l padding;
-#endif /* CONFIG_RWNX_FULLMAC */
 	u8_l ac;
 	/// Packet TID (0xFF if not a QoS frame)
 	u8_l tid;
@@ -170,10 +157,8 @@ struct hostdesc {
 	/// to 63 if MU-MIMO shall not be used
 	u8_l mumimo_info;
 #endif /* CONFIG_RWNX_MUMIMO_TX */
-#ifdef CONFIG_RWNX_FULLMAC
 	/// TX flags
 	u16_l flags;
-#endif /* CONFIG_RWNX_FULLMAC */
 };
 
 /// Descriptor filled by the UMAC
@@ -600,15 +585,10 @@ struct ipc_shared_env_tag {
 	#if NX_TXQ_CNT == 5
 	volatile struct txdesc_host txdesc4[1][NX_TXDESC_CNT4];
 	#endif
-	#ifdef CONFIG_RWNX_FULLMAC
 	// RX Descriptors Array
 	volatile struct ipc_shared_rx_desc host_rxdesc[IPC_RXDESC_CNT];
 	// RX Buffers Array
 	volatile struct ipc_shared_rx_buf  host_rxbuf[IPC_RXBUF_CNT];
-	#else
-	// buffers @ for Data Rx
-	volatile u32_l host_rxbuf[IPC_RXBUF_CNT];
-	#endif /* CONFIG_RWNX_FULLMAC */
 
 	u32_l buffered[NX_REMOTE_STA_MAX][TID_MAX];
 

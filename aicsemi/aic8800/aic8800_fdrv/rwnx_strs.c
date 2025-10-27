@@ -168,8 +168,6 @@ static const char *const rwnx_tdlsid2str[MSG_I(TDLS_MAX)] = {
     [MSG_I(TDLS_PEER_TRAFFIC_IND_CFM)]   = "TDLS_PEER_TRAFFIC_IND_CFM",
 };
 
-#ifdef CONFIG_RWNX_FULLMAC
-
 static const char *const rwnx_scanuid2str[MSG_I(SCANU_MAX)] = {
     [MSG_I(SCANU_START_REQ)]  = "SCANU_START_REQ",
     [MSG_I(SCANU_START_CFM)]  = "SCANU_START_CFM",
@@ -249,18 +247,14 @@ static const char *const rwnx_meshid2str[MSG_I(MESH_MAX)] = {
     [MSG_I(MESH_PROXY_UPDATE_IND)] = "MESH_PROXY_UPDATE_IND",
 };
 
-#endif /* CONFIG_RWNX_FULLMAC */
-
 const char *const *rwnx_id2str[TASK_LAST_EMB + 1] = {
 	[TASK_MM]    = rwnx_mmid2str,
 	[TASK_DBG]   = rwnx_dbgid2str,
 	[TASK_SCAN]  = rwnx_scanid2str,
 	[TASK_TDLS]  = rwnx_tdlsid2str,
-#ifdef CONFIG_RWNX_FULLMAC
 	[TASK_SCANU] = rwnx_scanuid2str,
 	[TASK_ME]    = rwnx_meid2str,
 	[TASK_SM]    = rwnx_smid2str,
 	[TASK_APM]   = rwnx_apmid2str,
 	[TASK_MESH]  = rwnx_meshid2str,
-#endif
 };

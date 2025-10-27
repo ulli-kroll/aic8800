@@ -76,14 +76,12 @@ struct ipc_host_env_tag {
 	/// Pointer to the shared environment
 	struct ipc_shared_env_tag *shared;
 
-	#ifdef CONFIG_RWNX_FULLMAC
 	// Array used to store the descriptor addresses
 	struct ipc_hostbuf ipc_host_rxdesc_array[IPC_RXDESC_CNT];
 	// Index of the host RX descriptor array (ipc_shared environment)
 	uint8_t ipc_host_rxdesc_idx;
 	/// Store the number of RX Descriptors
 	uint8_t rxdesc_nb;
-	#endif //(CONFIG_RWNX_FULLMAC)
 
 	/// Fields for Data Rx handling
 	// Index used for ipc_host_rxbuf_array to point to current buffer

@@ -35,7 +35,6 @@ endif
 #
 # WAITING FOR KCONFIG {
 #
-CONFIG_RWNX_FULLMAC ?= y
 
 #
 # DEBUG OPTIONS
@@ -236,7 +235,6 @@ ccflags-$(CONFIG_MCU_INTEGRATED) += -DCONFIG_MCU_INTEGRATED
 ccflags-$(CONFIG_MCU_MESSAGE) += -DCONFIG_MCU_MESSAGE
 ccflags-$(CONFIG_COEX) += -DCONFIG_COEX
 
-ccflags-y += -DCONFIG_RWNX_FULLMAC
 ccflags-y += -I$(srctree)
 ccflags-y += -I$(srctree)/$(src)
 ccflags-y += -I$(srctree)/$(src)/../aic8800_bsp

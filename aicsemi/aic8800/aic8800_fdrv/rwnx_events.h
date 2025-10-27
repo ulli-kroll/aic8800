@@ -22,7 +22,6 @@
 /*****************************************************************************
  * TRACE function for MGMT TX (FULLMAC)
  ****************************************************************************/
-#ifdef CONFIG_RWNX_FULLMAC
 #include "linux/ieee80211.h"
 #if defined(CONFIG_TRACEPOINTS) && defined(CREATE_TRACE_POINTS)
 #include <linux/trace_seq.h>
@@ -304,7 +303,6 @@ TRACE_EVENT(
 	TP_printk("vif=%d sta=%d ack=%d",
 			__entry->vif_idx, __entry->sta_idx, __entry->acked)
 );
-#endif /* CONFIG_RWNX_FULLMAC */
 
 /*****************************************************************************
  * TRACE function for TXQ
@@ -329,7 +327,6 @@ ftrace_print_txq(struct trace_seq *p, int txq_idx)
 		trace_seq_printf(p, "[STA %d/%d]",
 						 txq_idx / NX_NB_TXQ_PER_STA,
 						 txq_idx % NX_NB_TXQ_PER_STA);
-#ifdef CONFIG_RWNX_FULLMAC
 	} else if (txq_idx < NX_FIRST_UNK_TXQ_IDX) {
 		trace_seq_printf(p, "[BC/MC %d]",
 						 txq_idx - NX_FIRST_BCMC_TXQ_IDX);
@@ -338,13 +335,6 @@ ftrace_print_txq(struct trace_seq *p, int txq_idx)
 						 txq_idx - NX_FIRST_UNK_TXQ_IDX);
 	} else if (txq_idx == NX_OFF_CHAN_TXQ_IDX) {
 		trace_seq_printf(p, "[OFFCHAN]");
-#else
-	} else if (txq_idx < NX_NB_TXQ) {
-		txq_idx -= NX_FIRST_VIF_TXQ_IDX;
-		trace_seq_printf(p, "[VIF %d/%d]",
-						 txq_idx / NX_NB_TXQ_PER_VIF,
-						 txq_idx % NX_NB_TXQ_PER_VIF);
-#endif
 	} else {
 		trace_seq_printf(p, "[ERROR %d]", txq_idx);
 	}
@@ -379,11 +369,7 @@ ftrace_print_hwq(struct trace_seq *p, int hwq_idx)
 		{RWNX_HWQ_BE, "BE"},
 		{RWNX_HWQ_VI, "VI"},
 		{RWNX_HWQ_VO, "VO"},
-#ifdef CONFIG_RWNX_FULLMAC
 		{RWNX_HWQ_BCMC, "BCMC"},
-#else
-		{RWNX_HWQ_BCN, "BCN"},
-#endif
 		{ -1, NULL } };
 	return trace_print_symbols_seq(p, hwq_idx, symbols);
 }
@@ -475,8 +461,6 @@ ftrace_print_amsdu(struct trace_seq *p, u16 nb_pkt)
 #undef __print_amsdu
 #define __print_amsdu(nb_pkt) ftrace_print_amsdu(p, nb_pkt)
 
-#ifdef CONFIG_RWNX_FULLMAC
-
 TRACE_EVENT(
 	txq_select,
 	TP_PROTO(int txq_idx, u16 pkt_ready_up, struct sk_buff *skb),
@@ -494,8 +478,6 @@ TRACE_EVENT(
 	TP_printk("%s pkt_ready_up=%d skb=%p", __print_txq(__entry->txq_idx),
 			  __entry->pkt_ready, __entry->skb)
 );
-
-#endif /* CONFIG_RWNX_FULLMAC */
 
 DECLARE_EVENT_CLASS(
 	hwq_template,
@@ -540,8 +522,6 @@ DEFINE_EVENT(txq_template, txq_del_from_hw,
 			 TP_PROTO(struct rwnx_txq *txq),
 			 TP_ARGS(txq));
 
-#ifdef CONFIG_RWNX_FULLMAC
-
 DEFINE_EVENT(txq_template, txq_flowctrl_stop,
 			 TP_PROTO(struct rwnx_txq *txq),
 			 TP_ARGS(txq));
@@ -549,8 +529,6 @@ DEFINE_EVENT(txq_template, txq_flowctrl_stop,
 DEFINE_EVENT(txq_template, txq_flowctrl_restart,
 			 TP_PROTO(struct rwnx_txq *txq),
 			 TP_ARGS(txq));
-
-#endif  /* CONFIG_RWNX_FULLMAC */
 
 TRACE_EVENT(
 	process_txq,
@@ -561,9 +539,7 @@ TRACE_EVENT(
 		__field(u16, len)
 		__field(u16, len_retry)
 		__field(s8, credit)
-		#ifdef CONFIG_RWNX_FULLMAC
 		__field(u16, limit)
-		#endif /* CONFIG_RWNX_FULLMAC*/
 					 ),
 	TP_fast_assign(
 		__entry->txq_idx = txq->idx;
@@ -573,20 +549,12 @@ TRACE_EVENT(
 		#endif
 		__entry->len_retry = txq->nb_retry;
 		__entry->credit = txq->credits;
-		#ifdef CONFIG_RWNX_FULLMAC
 		__entry->limit = txq->push_limit;
-		#endif /* CONFIG_RWNX_FULLMAC*/
 				   ),
 
-	#ifdef CONFIG_RWNX_FULLMAC
 	TP_printk("%s txq_credits=%d, len=%d, retry_len=%d, push_limit=%d",
 			  __print_txq(__entry->txq_idx), __entry->credit,
 			  __entry->len, __entry->len_retry, __entry->limit)
-	#else
-	TP_printk("%s txq_credits=%d, len=%d, retry_len=%d",
-			  __print_txq(__entry->txq_idx), __entry->credit,
-			  __entry->len, __entry->len_retry)
-	#endif /* CONFIG_RWNX_FULLMAC*/
 );
 
 DECLARE_EVENT_CLASS(
@@ -659,7 +627,6 @@ TRACE_EVENT(
 #ifdef CONFIG_RWNX_SPLIT_TX_BUF
 		__entry->pkt_cnt =  sw_txhdr->desc.host.packet_cnt;
 #endif
-#ifdef CONFIG_RWNX_FULLMAC
 		__entry->flag = sw_txhdr->desc.host.flags;
 #ifdef CONFIG_RWNX_SPLIT_TX_BUF
 #ifdef CONFIG_RWNX_AMSDUS_TX
@@ -672,11 +639,6 @@ TRACE_EVENT(
 		__entry->len = sw_txhdr->desc.host.packet_len;
 #endif /* CONFIG_RWNX_SPLIT_TX_BUF */
 
-#else /* !CONFIG_RWNX_FULLMAC */
-		__entry->flag = sw_txhdr->desc.umac.flags;
-		__entry->len = sw_txhdr->frame_len;
-		__entry->sn = sw_txhdr->sn;
-#endif /* CONFIG_RWNX_FULLMAC */
 #ifdef CONFIG_RWNX_MUMIMO_TX
 		__entry->mu_info = sw_txhdr->desc.host.mumimo_info;
 #else
@@ -684,7 +646,6 @@ TRACE_EVENT(
 #endif
 				   ),
 
-#ifdef CONFIG_RWNX_FULLMAC
 	TP_printk("%s skb=%p (len=%d) hw_queue=%s cred_txq=%d cred_hwq=%d %s flag=%s %s%s%s",
 			  __print_txq(__entry->tx_queue), __entry->skb, __entry->len,
 			  __print_hwq(__entry->hw_queue),
@@ -705,17 +666,6 @@ TRACE_EVENT(
 			  (!(__entry->flag & TXU_CNTRL_RETRY) &&
 			   (__entry->push_flag & RWNX_PUSH_RETRY)) ? "(SW_RETRY)" : "",
 			  __print_amsdu(__entry->pkt_cnt))
-#else
-	TP_printk("%s skb=%p (len=%d) hw_queue=%s cred_txq=%d cred_hwq=%d %s flag=%x (%s) sn=%d %s",
-			  __print_txq(__entry->tx_queue), __entry->skb, __entry->len,
-			  __print_hwq(__entry->hw_queue), __entry->txq_cred, __entry->hwq_cred,
-			  __print_mu_info(__entry->mu_info),
-			  __entry->flag,
-			  __print_flags(__entry->push_flag, "|",
-							{RWNX_PUSH_RETRY, "RETRY"},
-							{RWNX_PUSH_IMMEDIATE, "IMMEDIATE"}),
-			  __entry->sn, __print_amsdu(__entry->pkt_cnt))
-#endif /* CONFIG_RWNX_FULLMAC */
 );
 
 
@@ -840,22 +790,15 @@ DEFINE_EVENT(sta_idx_template, txq_sta_stop,
 			 TP_PROTO(u16 idx),
 			 TP_ARGS(idx));
 
-#ifdef CONFIG_RWNX_FULLMAC
-
 DEFINE_EVENT(sta_idx_template, ps_disable,
 			 TP_PROTO(u16 idx),
 			 TP_ARGS(idx));
 
-#endif  /* CONFIG_RWNX_FULLMAC */
 
 TRACE_EVENT(
 	skb_confirm,
 	TP_PROTO(struct sk_buff *skb, struct rwnx_txq *txq, struct rwnx_hwq *hwq,
-#ifdef CONFIG_RWNX_FULLMAC
 			 struct tx_cfm_tag *cfm
-#else
-			 u8 cfm
-#endif
 			 ),
 
 	TP_ARGS(skb, txq, hwq, cfm),
@@ -867,13 +810,11 @@ TRACE_EVENT(
 		__array(u8, hw_credit, CONFIG_USER_MAX)
 		__field(s8, sw_credit)
 		__field(s8, sw_credit_up)
-#ifdef CONFIG_RWNX_FULLMAC
 		__field(u8, ampdu_size)
 #ifdef CONFIG_RWNX_SPLIT_TX_BUF
 		__field(u16, amsdu)
 #endif /* CONFIG_RWNX_SPLIT_TX_BUF */
 		__field(u16, sn)
-#endif /* CONFIG_RWNX_FULLMAC*/
 					 ),
 
 	TP_fast_assign(
@@ -881,34 +822,26 @@ TRACE_EVENT(
 		__entry->txq_idx = txq->idx;
 		__entry->hw_queue = hwq->id;
 		__entry->sw_credit = txq->credits;
-#if defined CONFIG_RWNX_FULLMAC
 		__entry->sw_credit_up = cfm->credits;
 		__entry->ampdu_size = cfm->ampdu_size;
 #ifdef CONFIG_RWNX_SPLIT_TX_BUF
 		__entry->amsdu = cfm->amsdu_size;
 		__entry->sn = cfm->sn;
 #endif
-#else
-		__entry->sw_credit_up = cfm
-#endif /* CONFIG_RWNX_FULLMAC */
 				   ),
 
 	TP_printk("%s skb=%p hw_queue=%s, hw_credits=%s, txq_credits=%d (+%d)"
-#ifdef CONFIG_RWNX_FULLMAC
 			  " sn=%u ampdu=%d"
 #ifdef CONFIG_RWNX_SPLIT_TX_BUF
 			  " amsdu=%u"
-#endif
 #endif
 			  , __print_txq(__entry->txq_idx), __entry->skb,
 			  __print_hwq(__entry->hw_queue),
 			  __print_hwq_cred(__entry->hw_credit),
 			   __entry->sw_credit, __entry->sw_credit_up
-#ifdef CONFIG_RWNX_FULLMAC
 			  , __entry->sn, __entry->ampdu_size
 #ifdef CONFIG_RWNX_SPLIT_TX_BUF
 			  , __entry->amsdu
-#endif
 #endif
 			  )
 );
@@ -935,8 +868,6 @@ TRACE_EVENT(
 	TP_printk("%s txq_credits=%d (%+d)", __print_txq(__entry->txq_idx),
 			  __entry->sw_credit, __entry->sw_credit_up)
 )
-
-#ifdef CONFIG_RWNX_FULLMAC
 
 DECLARE_EVENT_CLASS(
 	ps_template,
@@ -1048,8 +979,6 @@ TRACE_EVENT(
 );
 #endif
 
-#endif /* CONFIG_RWNX_FULLMAC */
-
 #ifdef CONFIG_RWNX_MUMIMO_TX
 TRACE_EVENT(
 	mu_group_update,
@@ -1135,7 +1064,6 @@ TRACE_EVENT(
 /*****************************************************************************
  * TRACE functions for MESH
  ****************************************************************************/
-#ifdef CONFIG_RWNX_FULLMAC
 DECLARE_EVENT_CLASS(
 	mesh_path_template,
 	TP_PROTO(struct rwnx_mesh_path *mesh_path),
@@ -1171,7 +1099,6 @@ DEFINE_EVENT(mesh_path_template, mesh_update_path,
 			 TP_PROTO(struct rwnx_mesh_path *mesh_path),
 			 TP_ARGS(mesh_path));
 
-#endif /* CONFIG_RWNX_FULLMAC */
 
 /*****************************************************************************
  * TRACE functions for RADAR

@@ -210,7 +210,6 @@ struct tx_policy_tbl {
 	struct rwnx_power_ctrl_info powerctrlinfos[NX_TX_MAX_RATES];
 };
 
-#ifdef CONFIG_RWNX_FULLMAC
 
 /**
  * struct rwnx_hw_txstatus - Bitfield of confirmation status
@@ -273,7 +272,6 @@ struct rwnx_hw_txhdr {
 	struct tx_cfm_tag cfm;
 };
 
-#endif /* CONFIG_RWNX_FULLMAC */
 
 /* Modem */
 

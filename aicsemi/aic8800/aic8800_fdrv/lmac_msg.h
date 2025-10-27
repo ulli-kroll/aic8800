@@ -58,12 +58,8 @@ enum {
 	TASK_RM,
     /// TWT task
     TASK_TWT,
-#if defined CONFIG_RWNX_FULLMAC
 	// This is used to define the last task that is running on the EMB processor
 	TASK_LAST_EMB = TASK_TWT,
-#else
-#error "Need to define SOFTMAC or FULLMAC"
-#endif
 	// nX API task
 	TASK_API,
 	TASK_MAX,
