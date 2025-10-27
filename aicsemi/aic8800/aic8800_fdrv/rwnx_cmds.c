@@ -77,7 +77,6 @@ int cmd_mgr_queue_force_defer(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd
 		return -EPIPE;
 	}
 
-	#ifndef CONFIG_RWNX_FHOST
 	if (!list_empty(&cmd_mgr->cmds)) {
 		if (cmd_mgr->queue_sz == cmd_mgr->max_queue_sz) {
 			printk(KERN_CRIT"Too many cmds (%d) already queued\n",
@@ -87,7 +86,6 @@ int cmd_mgr_queue_force_defer(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd
 			return -ENOMEM;
 		}
 	}
-	#endif
 
 	cmd->flags |= RWNX_CMD_FLAG_WAIT_PUSH;
 	defer_push = true;
@@ -167,7 +165,6 @@ static int cmd_mgr_queue(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd)
 		return -EPIPE;
 	}
 
-	#ifndef CONFIG_RWNX_FHOST
 	if (!list_empty(&cmd_mgr->cmds)) {
 		struct rwnx_cmd *last;
 
@@ -192,7 +189,6 @@ static int cmd_mgr_queue(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd)
 			defer_push = true;
 		}
 	}
-	#endif
 
 #if 0
 	cmd->flags |= RWNX_CMD_FLAG_WAIT_ACK;
@@ -238,15 +234,6 @@ static int cmd_mgr_queue(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd)
 	}
 
 	if (!(cmd->flags & RWNX_CMD_FLAG_NONBLOCK)) {
-		#ifdef CONFIG_RWNX_FHOST
-		if (wait_for_completion_killable(&cmd->complete)) {
-			cmd->result = -EINTR;
-			spin_lock_bh(&cmd_mgr->lock);
-			cmd_complete(cmd_mgr, cmd);
-			spin_unlock_bh(&cmd_mgr->lock);
-			/* TODO: kill the cmd at fw level */
-		}
-		#else
 		unsigned long tout = msecs_to_jiffies(RWNX_80211_CMD_TIMEOUT_MS * cmd_mgr->queue_sz);
 		if (!wait_for_completion_timeout(&cmd->complete, tout)) {
 			printk(KERN_CRIT"cmd timed-out\n");
@@ -255,7 +242,6 @@ static int cmd_mgr_queue(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd)
 			if (ret < 0) {
 				sdio_err("reg:%d write failed!\n", sdiodev->sdio_reg.wakeup_reg);
 			}
-		#endif
 
 			aic8800_start_system_reset_flow(sdiodev);
 

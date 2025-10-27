@@ -152,9 +152,7 @@ struct rwnx_debugfs {
 	spinlock_t umh_lock;
 	bool unregistering;
 
-#ifndef CONFIG_RWNX_FHOST
 	struct rwnx_fw_log fw_log;
-#endif /* CONFIG_RWNX_FHOST */
 
 #ifdef CONFIG_RWNX_FULLMAC
 	struct work_struct rc_stat_work;

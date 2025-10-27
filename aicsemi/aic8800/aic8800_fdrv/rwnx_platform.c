@@ -18,9 +18,7 @@
 #include "hal_desc.h"
 #include "rwnx_main.h"
 #include "rwnx_pci.h"
-#ifndef CONFIG_RWNX_FHOST
 #include "ipc_host.h"
-#endif /* !CONFIG_RWNX_FHOST */
 #include "rwnx_msg_tx.h"
 
 #ifdef AICWF_SDIO_SUPPORT
@@ -2410,7 +2408,6 @@ static void rwnx_term_restore_config(struct rwnx_plat *rwnx_plat,
 }
 #endif
 
-#ifndef CONFIG_RWNX_FHOST
 #if 0
 static int rwnx_check_fw_compatibility(struct rwnx_hw *rwnx_hw)
 {
@@ -2526,7 +2523,6 @@ static int rwnx_check_fw_compatibility(struct rwnx_hw *rwnx_hw)
 	return res;
 }
 #endif
-#endif /* !CONFIG_RWNX_FHOST */
 
 
 void get_userconfig_txpwr_lvl_in_fdrv(txpwr_lvl_conf_t *txpwr_lvl)
@@ -3352,8 +3348,6 @@ int rwnx_platform_init(struct rwnx_plat *rwnx_plat, void **platform_data)
 
 #if defined CONFIG_RWNX_FULLMAC
 	return rwnx_cfg80211_init(rwnx_plat, platform_data);
-#elif defined CONFIG_RWNX_FHOST
-	return rwnx_fhost_init(rwnx_plat, platform_data);
 #endif
 }
 
@@ -3370,8 +3364,6 @@ void rwnx_platform_deinit(struct rwnx_hw *rwnx_hw)
 
 #if defined CONFIG_RWNX_FULLMAC
 	rwnx_cfg80211_deinit(rwnx_hw);
-#elif defined CONFIG_RWNX_FHOST
-	rwnx_fhost_deinit(rwnx_hw);
 #endif
 }
 

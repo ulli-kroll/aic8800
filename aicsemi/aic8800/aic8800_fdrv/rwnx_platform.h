@@ -21,8 +21,6 @@
 #define RWNX_LDPC_RAM_NAME              "ldpcram.bin"
 #ifdef CONFIG_RWNX_FULLMAC
 #define RWNX_MAC_FW_BASE_NAME           "fmacfw"
-#elif defined CONFIG_RWNX_FHOST
-#define RWNX_MAC_FW_BASE_NAME           "fhostfw"
 #endif /* CONFIG_RWNX_FULLMAC */
 
 #ifdef CONFIG_RWNX_TL4
