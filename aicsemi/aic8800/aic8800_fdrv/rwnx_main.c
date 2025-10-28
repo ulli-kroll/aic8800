@@ -1247,14 +1247,6 @@ static int rwnx_close(struct net_device *dev)
 	return 0;
 }
     
-#if defined(CONFIG_PLATFORM_ROCKCHIP2)
-#ifdef CONFIG_SHUTDOWN_CALLBACK
-int rwnx_close_(struct net_device *dev){
-	return rwnx_close(dev);
-}
-#endif
-#endif
-
 #define IOCTL_HOSTAPD   (SIOCIWFIRSTPRIV+28)
 #define IOCTL_WPAS      (SIOCIWFIRSTPRIV+30)
 
@@ -5385,10 +5377,6 @@ extern int get_wifi_custom_mac_address(char *addr_str);
 #endif//CONFIG_USE_CUSTOMER_MAC
 #endif//CONFIG_PLATFORM_ALLWINNER
 
-#ifdef CONFIG_PLATFORM_ROCKCHIP2
-#include <linux/rfkill-wlan.h>
-#endif
-
 #ifdef CONFIG_USE_CUSTOMER_MAC
 int rwnx_get_custom_mac_addr(u8_l *mac_addr_efuse){
     int ret = 0;
@@ -5406,10 +5394,6 @@ int rwnx_get_custom_mac_addr(u8_l *mac_addr_efuse){
 #endif
 
 #endif//CONFIG_PLATFORM_ALLWINNER
-
-#ifdef CONFIG_PLATFORM_ROCKCHIP2
-            ret = rockchip_wifi_mac_addr(mac_addr_efuse);
-#endif//CONFIG_PLATFORM_ROCKCHIP
 
     if(ret == 0){
         AICWFDBG(LOGINFO, "%s %02x:%02x:%02x:%02x:%02x:%02x", __func__,

@@ -20,9 +20,6 @@
 #include "aic_bsp_driver.h"
 #include <linux/version.h>
 #include <linux/delay.h>
-#ifdef CONFIG_PLATFORM_ROCKCHIP2
-#include <linux/rfkill-wlan.h>
-#endif /* CONFIG_PLATFORM_ROCKCHIP */
 
 
 #ifdef CONFIG_PLATFORM_ALLWINNER
@@ -139,12 +136,6 @@ static const char *aicbsp_subsys_name(int subsys)
 	}
 }
 
-#ifdef CONFIG_PLATFORM_ROCKCHIP2
-#if 1//FOR RK SUSPEND
-void rfkill_rk_sleep_bt(bool sleep);
-#endif
-#endif
-
 int aicbsp_set_subsys(int subsys, int state)
 {
 	static int pre_power_map;
@@ -176,14 +167,6 @@ int aicbsp_set_subsys(int subsys, int state)
 				goto err2;
 
 			aicbsp_sdio_release(aicbsp_sdiodev);
-
-#if defined CONFIG_PLATFORM_ROCKCHIP2
-#ifdef CONFIG_GPIO_WAKEUP
-			//BT_SLEEP:true,BT_WAKEUP:false
-			rfkill_rk_sleep_bt(true);
-			printk("%s BT wake default to SLEEP\r\n", __func__);
-#endif
-#endif
 
 		} else {
 			aicbsp_sdio_exit();
@@ -399,13 +382,6 @@ static int aicbsp_sdio_suspend(struct device *dev)
 	int err;
 	mmc_pm_flag_t sdio_flags;
 
-#if defined(CONFIG_PLATFORM_ROCKCHIP2)
-#ifdef CONFIG_GPIO_WAKEUP
-    //BT_SLEEP:true,BT_WAKEUP:false
-    rfkill_rk_sleep_bt(false);
-#endif
-#endif
-
 	sdio_dbg("%s, func->num = %d\n", __func__, func->num);
 	if (func->num != 2)
 		return 0;
@@ -423,27 +399,12 @@ static int aicbsp_sdio_suspend(struct device *dev)
 		return err;
 	}
 
-#if defined(CONFIG_PLATFORM_ROCKCHIP2)
-#ifdef CONFIG_GPIO_WAKEUP
-		//BT_SLEEP:true,BT_WAKEUP:false
-		rfkill_rk_sleep_bt(true);
-		printk("%s BT wake to SLEEP\r\n", __func__);
-#endif
-#endif
-
 	return 0;
 }
 
 static int aicbsp_sdio_resume(struct device *dev)
 {
 	sdio_dbg("%s\n", __func__);
-
-#if defined(CONFIG_PLATFORM_ROCKCHIP2)
-#ifdef CONFIG_GPIO_WAKEUP
-		//BT_SLEEP:true,BT_WAKEUP:false
-		rfkill_rk_sleep_bt(false);
-#endif
-#endif
 
 	return 0;
 }
@@ -491,14 +452,6 @@ static int aicbsp_platform_power_on(void)
 		set_power_control_lock(1);
 #endif
 
-#ifdef CONFIG_PLATFORM_ROCKCHIP2
-            rockchip_wifi_power(0);
-            mdelay(50);
-            rockchip_wifi_power(1);
-            mdelay(50);
-            rockchip_wifi_set_carddetect(1);
-#endif /*CONFIG_PLATFORM_ROCKCHIP2*/
-
 	sema_init(&aic_chipup_sem, 0);
 	ret = aicbsp_reg_sdio_notify(&aic_chipup_sem);
 	if (ret) {
@@ -533,10 +486,6 @@ static int aicbsp_platform_power_on(void)
 #endif
 
 
-#ifdef CONFIG_PLATFORM_ROCKCHIP2
-	rockchip_wifi_power(0);
-#endif /*CONFIG_PLATFORM_ROCKCHIP2*/
-
 	return -1;
 }
 
@@ -555,12 +504,6 @@ static void aicbsp_platform_power_off(void)
 	sunxi_mmc_rescan_card(aicbsp_bus_index);
 #endif //CONFIG_PLATFORM_ALLWINNER
 
-#ifdef CONFIG_PLATFORM_ROCKCHIP2
-	rockchip_wifi_set_carddetect(0);
-	mdelay(200);
-	rockchip_wifi_power(0);
-	mdelay(200);
-#endif /*CONFIG_PLATFORM_ROCKCHIP*/
 #ifdef CONFIG_PLATFORM_AMLOGIC
 	extern_wifi_set_enable(0);
 #endif
