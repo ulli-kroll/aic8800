@@ -183,9 +183,8 @@ int aicbsp_set_subsys(int subsys, int state)
 				goto err1;
 			if (aicbsp_driver_fw_init(aicbsp_sdiodev))
 				goto err2;
-#ifndef CONFIG_FDRV_NO_REG_SDIO
+
 			aicbsp_sdio_release(aicbsp_sdiodev);
-#endif
 
 #if defined CONFIG_PLATFORM_ROCKCHIP || defined CONFIG_PLATFORM_ROCKCHIP2
 #ifdef CONFIG_GPIO_WAKEUP

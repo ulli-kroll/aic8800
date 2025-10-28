@@ -882,12 +882,6 @@ fail:
 	return err;
 }
 
-void aicwf_sdio_probe_(struct sdio_func *func,
-	const struct sdio_device_id *id){
-    aicwf_sdio_probe(func, NULL);
-}
-
-
 static void aicwf_sdio_remove(struct sdio_func *func)
 {
 	struct mmc_host *host;
@@ -1157,7 +1151,6 @@ static const struct dev_pm_ops aicwf_sdio_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(aicwf_sdio_suspend, aicwf_sdio_resume)
 };
 
-#ifndef CONFIG_FDRV_NO_REG_SDIO
 static struct sdio_driver aicwf_sdio_driver = {
 	.probe = aicwf_sdio_probe,
 	.remove = aicwf_sdio_remove,
@@ -1172,7 +1165,6 @@ static struct sdio_driver aicwf_sdio_driver = {
 #endif
 	},
 };
-#endif
 
 #if 0
 #ifdef CONFIG_NANOPI_M4
@@ -1182,12 +1174,6 @@ extern struct mmc_host *aic_host_drv;
 extern int __mmc_claim_host(struct mmc_host *host, atomic_t *abort);
 extern void mmc_release_host(struct mmc_host *host);
 #endif
-#endif
-
-#ifdef CONFIG_FDRV_NO_REG_SDIO
-extern struct sdio_func *get_sdio_func(void);
-void aicwf_sdio_probe_(struct sdio_func *func, const struct sdio_device_id *id);
-void aicwf_sdio_remove_(struct sdio_func *func);
 #endif
 
 void aicwf_sdio_register(void)
@@ -1225,15 +1211,11 @@ void aicwf_sdio_register(void)
 #endif
 
 
-#ifndef CONFIG_FDRV_NO_REG_SDIO
 	if (sdio_register_driver(&aicwf_sdio_driver)) {
 
 	} else {
 		//may add mmc_rescan here
 	}
-#else
-    aicwf_sdio_probe_(get_sdio_func(), NULL);
-#endif
 }
 
 void aicwf_sdio_exit(void)
@@ -1259,11 +1241,7 @@ void aicwf_sdio_exit(void)
 
     udelay(500);
 
-#ifndef CONFIG_FDRV_NO_REG_SDIO  
 	sdio_unregister_driver(&aicwf_sdio_driver);
-#else
-    aicwf_sdio_remove_(get_sdio_func());
-#endif
 
 #if 0
 #ifdef CONFIG_PLATFORM_AMLOGIC
@@ -2363,11 +2341,7 @@ static int aicwf_sdio_bus_start(struct device *dev)
 
 
 	sdio_claim_host(sdiodev->func);
-#ifndef CONFIG_FDRV_NO_REG_SDIO
 	sdio_claim_irq(sdiodev->func, aicwf_sdio_hal_irqhandler);
-#else
-    set_irq_handler(aicwf_sdio_hal_irqhandler);  
-#endif
     if(sdiodev->chipid == PRODUCT_ID_AIC8800D80 || sdiodev->chipid == PRODUCT_ID_AIC8800D80X2){
         sdio_f0_writeb(sdiodev->func, 0x07, 0x04, &ret);
         if (ret) {
