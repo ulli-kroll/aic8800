@@ -33,9 +33,6 @@
 #ifdef CONFIG_INGENIC_T20
 #include "mach/jzmmc.h"
 #endif /* CONFIG_INGENIC_T20 */
-#ifdef CONFIG_PLATFORM_ROCKCHIP
-#include <linux/rfkill-wlan.h>
-#endif
 #ifdef CONFIG_PLATFORM_ROCKCHIP2
 #include <linux/rfkill-wlan.h>
 #endif
@@ -602,14 +599,6 @@ static int rwnx_register_hostwake_irq(struct device *dev)
 #endif
 #endif //CONFIG_PLATFORM_ALLWINNER
 
-//For Rockchip
-#ifdef CONFIG_PLATFORM_ROCKCHIP
-		hostwake_irq_num = rockchip_wifi_get_oob_irq();
-		printk("%s hostwake_irq_num:%d \r\n", __func__, hostwake_irq_num);
-		irq_flags = (IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHLEVEL | IORESOURCE_IRQ_SHAREABLE) & IRQF_TRIGGER_MASK;
-		printk("%s irq_flags:%d \r\n", __func__, irq_flags);
-		wakeup_enable = 1;
-#endif //CONFIG_PLATFORM_ROCKCHIP
     //For Rockchip
 #ifdef CONFIG_PLATFORM_ROCKCHIP2
             hostwake_irq_num = rockchip_wifi_get_oob_irq();
@@ -918,7 +907,7 @@ void aicwf_sdio_remove_(struct sdio_func *func){
     aicwf_sdio_remove(func);
 }
 
-#if defined(CONFIG_PLATFORM_ROCKCHIP) || defined(CONFIG_PLATFORM_ROCKCHIP2)
+#if defined(CONFIG_PLATFORM_ROCKCHIP2)
 #ifdef CONFIG_SHUTDOWN_CALLBACK
 int rwnx_close_(struct net_device *dev);
 
@@ -1035,7 +1024,7 @@ static int aicwf_sdio_suspend(struct device *dev)
 #endif
 
 
-#if defined(CONFIG_PLATFORM_ROCKCHIP) || defined(CONFIG_PLATFORM_ROCKCHIP2)
+#if defined(CONFIG_PLATFORM_ROCKCHIP2)
 	if(sdiodev->chipid == PRODUCT_ID_AIC8801){
 		sdio_dbg("%s SDIOWIFI_INTR_CONFIG_REG Disable\n", __func__);
 		sdio_claim_host(sdiodev->func);
@@ -1078,7 +1067,7 @@ static int aicwf_sdio_resume(struct device *dev)
 	struct aicwf_bus *bus_if = dev_get_drvdata(dev);
 	struct aic_sdio_dev *sdiodev = bus_if->bus_priv.sdio;
 	struct rwnx_vif *rwnx_vif, *tmp;
-#if defined(CONFIG_PLATFORM_ROCKCHIP) || defined(CONFIG_PLATFORM_ROCKCHIP2) || defined(CONFIG_AUTO_POWERSAVE)
+#if defined(CONFIG_PLATFORM_ROCKCHIP2) || defined(CONFIG_AUTO_POWERSAVE)
 	int ret;
 #endif
 
@@ -1113,7 +1102,7 @@ static int aicwf_sdio_resume(struct device *dev)
 
 //	aicwf_sdio_hal_irqhandler(sdiodev->func);
 
-#if defined(CONFIG_PLATFORM_ROCKCHIP) || defined(CONFIG_PLATFORM_ROCKCHIP2)
+#if defined(CONFIG_PLATFORM_ROCKCHIP2)
 	if(sdiodev->chipid == PRODUCT_ID_AIC8801){
 		sdio_dbg("%s SDIOWIFI_INTR_CONFIG_REG Enable\n", __func__);
 		sdio_claim_host(sdiodev->func);
@@ -1158,7 +1147,7 @@ static struct sdio_driver aicwf_sdio_driver = {
 	.id_table = aicwf_sdmmc_ids,
 	.drv = {
 		.pm = &aicwf_sdio_pm_ops,
-#if defined(CONFIG_PLATFORM_ROCKCHIP) || defined(CONFIG_PLATFORM_ROCKCHIP2)
+#if defined(CONFIG_PLATFORM_ROCKCHIP2)
 #ifdef CONFIG_SHUTDOWN_CALLBACK
 		.shutdown = aicwf_sdio_shutdown,
 #endif
@@ -1186,14 +1175,6 @@ void aicwf_sdio_register(void)
 	mdelay(200);
 	sdio_reinit();
 #endif /*CONFIG_PLATFORM_NANOPI*/
-
-#ifdef CONFIG_PLATFORM_ROCKCHIP
-	rockchip_wifi_power(0);
-	mdelay(200);
-	rockchip_wifi_power(1);
-	mdelay(200);
-	rockchip_wifi_set_carddetect(1);
-#endif /*CONFIG_PLATFORM_ROCKCHIP*/
 
 #ifdef CONFIG_INGENIC_T20
 	jzmmc_manual_detect(1, 1);
@@ -1247,15 +1228,6 @@ void aicwf_sdio_exit(void)
 #ifdef CONFIG_PLATFORM_AMLOGIC
 	extern_wifi_set_enable(0);
 #endif /*CONFIG_PLATFORM_AMLOGIC*/
-#endif
-
-#if 0
-#ifdef CONFIG_PLATFORM_ROCKCHIP
-	rockchip_wifi_set_carddetect(0);
-	mdelay(200);
-	rockchip_wifi_power(0);
-	mdelay(200);
-#endif /*CONFIG_PLATFORM_ROCKCHIP*/
 #endif
 
 	if(g_rwnx_plat){

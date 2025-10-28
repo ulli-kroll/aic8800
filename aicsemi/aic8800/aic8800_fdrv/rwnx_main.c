@@ -1247,7 +1247,7 @@ static int rwnx_close(struct net_device *dev)
 	return 0;
 }
     
-#if defined(CONFIG_PLATFORM_ROCKCHIP) || defined(CONFIG_PLATFORM_ROCKCHIP2)
+#if defined(CONFIG_PLATFORM_ROCKCHIP2)
 #ifdef CONFIG_SHUTDOWN_CALLBACK
 int rwnx_close_(struct net_device *dev){
 	return rwnx_close(dev);
@@ -5385,9 +5385,6 @@ extern int get_wifi_custom_mac_address(char *addr_str);
 #endif//CONFIG_USE_CUSTOMER_MAC
 #endif//CONFIG_PLATFORM_ALLWINNER
 
-#ifdef CONFIG_PLATFORM_ROCKCHIP
-#include <linux/rfkill-wlan.h>
-#endif
 #ifdef CONFIG_PLATFORM_ROCKCHIP2
 #include <linux/rfkill-wlan.h>
 #endif
@@ -5410,9 +5407,6 @@ int rwnx_get_custom_mac_addr(u8_l *mac_addr_efuse){
 
 #endif//CONFIG_PLATFORM_ALLWINNER
 
-#ifdef CONFIG_PLATFORM_ROCKCHIP
-        ret = rockchip_wifi_mac_addr(mac_addr_efuse);
-#endif//CONFIG_PLATFORM_ROCKCHIP
 #ifdef CONFIG_PLATFORM_ROCKCHIP2
             ret = rockchip_wifi_mac_addr(mac_addr_efuse);
 #endif//CONFIG_PLATFORM_ROCKCHIP
@@ -5989,14 +5983,12 @@ static int __init rwnx_mod_init(void)
 	rwnx_print_version();
     rwnx_init_cmd_array();
 
-//#ifndef CONFIG_PLATFORM_ROCKCHIP
 	if (aicbsp_set_subsys(AIC_WIFI, AIC_PWR_ON) < 0) {
 		AICWFDBG(LOGERROR, "%s, set power on fail!\n", __func__);
 		if(!aicbsp_get_load_fw_in_fdrv()){
 			return -ENODEV;
 		}
 	}
-//#endif
 
 	init_completion(&hostif_register_done);
 	aicsmac_driver_register();
@@ -6038,9 +6030,7 @@ static void __exit rwnx_mod_exit(void)
 #ifdef AICWF_USB_SUPPORT
 	aicwf_usb_exit();
 #endif
-//#ifndef CONFIG_PLATFORM_ROCKCHIP
 	aicbsp_set_subsys(AIC_WIFI, AIC_PWR_OFF);
-//#endif
     rwnx_free_cmd_array();
 
 }

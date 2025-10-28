@@ -20,9 +20,6 @@
 #include "aic_bsp_driver.h"
 #include <linux/version.h>
 #include <linux/delay.h>
-#ifdef CONFIG_PLATFORM_ROCKCHIP
-#include <linux/rfkill-wlan.h>
-#endif /* CONFIG_PLATFORM_ROCKCHIP */
 #ifdef CONFIG_PLATFORM_ROCKCHIP2
 #include <linux/rfkill-wlan.h>
 #endif /* CONFIG_PLATFORM_ROCKCHIP */
@@ -142,12 +139,6 @@ static const char *aicbsp_subsys_name(int subsys)
 	}
 }
 
-#ifdef CONFIG_PLATFORM_ROCKCHIP
-#if 1//FOR RK SUSPEND
-void rfkill_rk_sleep_bt(bool sleep);
-#endif
-#endif
-
 #ifdef CONFIG_PLATFORM_ROCKCHIP2
 #if 1//FOR RK SUSPEND
 void rfkill_rk_sleep_bt(bool sleep);
@@ -186,7 +177,7 @@ int aicbsp_set_subsys(int subsys, int state)
 
 			aicbsp_sdio_release(aicbsp_sdiodev);
 
-#if defined CONFIG_PLATFORM_ROCKCHIP || defined CONFIG_PLATFORM_ROCKCHIP2
+#if defined CONFIG_PLATFORM_ROCKCHIP2
 #ifdef CONFIG_GPIO_WAKEUP
 			//BT_SLEEP:true,BT_WAKEUP:false
 			rfkill_rk_sleep_bt(true);
@@ -194,13 +185,8 @@ int aicbsp_set_subsys(int subsys, int state)
 #endif
 #endif
 
-//#ifndef CONFIG_PLATFORM_ROCKCHIP
-//			aicbsp_sdio_exit();
-//#endif
 		} else {
-		#ifndef CONFIG_PLATFORM_ROCKCHIP
 			aicbsp_sdio_exit();
-		#endif
 			aicbsp_platform_power_off();
 		}
 	} else {
@@ -413,7 +399,7 @@ static int aicbsp_sdio_suspend(struct device *dev)
 	int err;
 	mmc_pm_flag_t sdio_flags;
 
-#if defined(CONFIG_PLATFORM_ROCKCHIP) || defined(CONFIG_PLATFORM_ROCKCHIP2)
+#if defined(CONFIG_PLATFORM_ROCKCHIP2)
 #ifdef CONFIG_GPIO_WAKEUP
     //BT_SLEEP:true,BT_WAKEUP:false
     rfkill_rk_sleep_bt(false);
@@ -437,7 +423,7 @@ static int aicbsp_sdio_suspend(struct device *dev)
 		return err;
 	}
 
-#if defined(CONFIG_PLATFORM_ROCKCHIP) || defined(CONFIG_PLATFORM_ROCKCHIP2)
+#if defined(CONFIG_PLATFORM_ROCKCHIP2)
 #ifdef CONFIG_GPIO_WAKEUP
 		//BT_SLEEP:true,BT_WAKEUP:false
 		rfkill_rk_sleep_bt(true);
@@ -452,7 +438,7 @@ static int aicbsp_sdio_resume(struct device *dev)
 {
 	sdio_dbg("%s\n", __func__);
 
-#if defined(CONFIG_PLATFORM_ROCKCHIP) || defined(CONFIG_PLATFORM_ROCKCHIP2)
+#if defined(CONFIG_PLATFORM_ROCKCHIP2)
 #ifdef CONFIG_GPIO_WAKEUP
 		//BT_SLEEP:true,BT_WAKEUP:false
 		rfkill_rk_sleep_bt(false);
