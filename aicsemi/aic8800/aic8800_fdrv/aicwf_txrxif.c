@@ -105,10 +105,6 @@ int aicwf_bus_init(uint bus_hdrlen, struct device *dev)
     }
 #endif //CONFIG_OOB
 #endif
-#ifdef AICWF_USB_SUPPORT
-	bus_if->bustx_thread = kthread_run(usb_bustx_thread, (void *)bus_if, "aicwf_bustx_thread");
-	bus_if->busrx_thread = kthread_run(usb_busrx_thread, (void *)bus_if->bus_priv.usb->rx_priv, "aicwf_busrx_thread");
-#endif
 
 	if (IS_ERR(bus_if->bustx_thread)) {
 		bus_if->bustx_thread  = NULL;
@@ -132,9 +128,6 @@ fail:
 void aicwf_bus_deinit(struct device *dev)
 {
 	struct aicwf_bus *bus_if;
-#ifdef AICWF_USB_SUPPORT
-	struct aic_usb_dev *usb;
-#endif
 #ifdef AICWF_SDIO_SUPPORT
 	struct aic_sdio_dev *sdiodev;
 #endif
@@ -147,11 +140,6 @@ void aicwf_bus_deinit(struct device *dev)
 	bus_if = dev_get_drvdata(dev);
 	aicwf_bus_stop(bus_if);
 
-#ifdef AICWF_USB_SUPPORT
-	usb = bus_if->bus_priv.usb;
-	if (g_rwnx_plat->enabled)
-		rwnx_platform_deinit(usb->rwnx_hw);
-#endif
 #ifdef AICWF_SDIO_SUPPORT
 	sdiodev = bus_if->bus_priv.sdio;
 	if (g_rwnx_plat && g_rwnx_plat->enabled) {
@@ -446,86 +434,6 @@ int aicwf_process_rxframes(struct aicwf_rx_priv *rx_priv)
     #endif
 
 	return ret;
-#else //AICWF_USB_SUPPORT
-	int ret = 0;
-	unsigned long flags = 0;
-	struct sk_buff *skb = NULL; /* Packet for event or data frames */
-	u16 pkt_len = 0;
-	struct sk_buff *skb_inblock = NULL;
-	u16 aggr_len = 0, adjust_len = 0;
-	u8 *data = NULL;
-	u8_l *msg = NULL;
-
-	while (1) {
-		spin_lock_irqsave(&rx_priv->rxqlock, flags);
-		if (aicwf_is_framequeue_empty(&rx_priv->rxq)) {
-			usb_info("no more rxdata\n");
-			spin_unlock_irqrestore(&rx_priv->rxqlock, flags);
-			break;
-		}
-		skb = aicwf_frame_dequeue(&rx_priv->rxq);
-		spin_unlock_irqrestore(&rx_priv->rxqlock, flags);
-		if (skb == NULL) {
-			txrx_err("skb_error\r\n");
-			break;
-		}
-		data = skb->data;
-		pkt_len = (*skb->data | (*(skb->data + 1) << 8));
-		//printk("p:%d, s:%d , %x\n", pkt_len, skb->len, data[2]);
-		if (pkt_len > 1600) {
-			dev_kfree_skb(skb);
-			atomic_dec(&rx_priv->rx_cnt);
-				continue;
-		}
-
-		if ((skb->data[2] & USB_TYPE_CFG) != USB_TYPE_CFG) { // type : data
-			aggr_len = pkt_len + RX_HWHRD_LEN;
-			if (aggr_len & (RX_ALIGNMENT - 1))
-				adjust_len = roundup(aggr_len, RX_ALIGNMENT);
-			else
-				adjust_len = aggr_len;
-
-			skb_inblock = __dev_alloc_skb(aggr_len + CCMP_OR_WEP_INFO, GFP_KERNEL);//8 is for ccmp mic or wep icv
-			if (skb_inblock == NULL) {
-				txrx_err("no more space! skip!\n");
-				skb_pull(skb, adjust_len);
-				continue;
-			}
-
-			skb_put(skb_inblock, aggr_len);
-			memcpy(skb_inblock->data, data, aggr_len);
-			rwnx_rxdataind_aicwf(rx_priv->usbdev->rwnx_hw, skb_inblock, (void *)rx_priv);
-			///TODO: here need to add rx data process
-
-			skb_pull(skb, adjust_len);
-		} else { //  type : config
-			aggr_len = pkt_len;
-			if (aggr_len & (RX_ALIGNMENT - 1))
-				adjust_len = roundup(aggr_len, RX_ALIGNMENT);
-			else
-				adjust_len = aggr_len;
-
-			msg = kmalloc(aggr_len+4, GFP_KERNEL);
-			if (msg == NULL) {
-				txrx_err("no more space for msg!\n");
-				aicwf_dev_skb_free(skb);
-				return -EBADE;
-			}
-			memcpy(msg, data, aggr_len + 4);
-			if ((*(msg + 2) & 0x7f) == USB_TYPE_CFG_CMD_RSP)
-				rwnx_rx_handle_msg(rx_priv->usbdev->rwnx_hw, (struct ipc_e2a_msg *)(msg + 4));
-
-			if ((*(msg + 2) & 0x7f) == USB_TYPE_CFG_DATA_CFM)
-				aicwf_usb_host_tx_cfm_handler(&(rx_priv->usbdev->rwnx_hw->usb_env), (u32 *)(msg + 4));
-			skb_pull(skb, adjust_len + 4);
-			kfree(msg);
-		}
-
-		dev_kfree_skb(skb);
-		atomic_dec(&rx_priv->rx_cnt);
-	}
-
-	return ret;
 #endif //AICWF_SDIO_SUPPORT
 }
 
@@ -630,14 +538,6 @@ void aicwf_rx_deinit(struct aicwf_rx_priv *rx_priv)
     }
 #endif //CONFIG_OOB
 #endif
-#ifdef AICWF_USB_SUPPORT
-	if (rx_priv->usbdev->bus_if->busrx_thread) {
-		complete_all(&rx_priv->usbdev->bus_if->busrx_trgg);
-		kthread_stop(rx_priv->usbdev->bus_if->busrx_thread);
-		rx_priv->usbdev->bus_if->busrx_thread = NULL;
-	}
-#endif
-
 	#ifdef CONFIG_PREALLOC_RX_SKB
 	rxbuff_queue_flush(rx_priv);
 	#else

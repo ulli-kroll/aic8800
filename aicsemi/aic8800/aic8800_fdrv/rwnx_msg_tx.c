@@ -310,13 +310,6 @@ static int rwnx_send_msg(struct rwnx_hw *rwnx_hw, const void *msg_params,
     __func__, reqid, RWNX_ID2STR(reqid), reqcfm, (int)in_irq(), (int)in_softirq(), (int)in_atomic());
 
 
-#ifdef AICWF_USB_SUPPORT
-	if (rwnx_hw->usbdev->state == USB_DOWN_ST) {
-		rwnx_msg_free(rwnx_hw, msg_params);
-		usb_err("bus is down\n");
-		return 0;
-	}
-#endif
 #ifdef AICWF_SDIO_SUPPORT
 	rwnx_wakeup_lock(rwnx_hw->ws_tx);
 	if (rwnx_hw->sdiodev->bus_if->state == BUS_DOWN_ST) {

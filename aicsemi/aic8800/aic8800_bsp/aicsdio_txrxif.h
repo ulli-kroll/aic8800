@@ -101,9 +101,6 @@ struct aicwf_tx_priv {
 	spinlock_t txqlock;
 	struct semaphore txctl_sema;
 #endif
-#ifdef AICWF_USB_SUPPORT
-	struct aic_usb_dev *usbdev;
-#endif
 	struct sk_buff *aggr_buf;
 	atomic_t aggr_count;
 	u8 *head;

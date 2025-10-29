@@ -80,9 +80,6 @@ struct rwnx_plat {
 	struct aic_sdio_dev *sdiodev;
 #endif
 
-#ifdef AICWF_USB_SUPPORT
-	struct aic_usb_dev *usbdev;
-#endif
 	bool enabled;
 
 	int (*enable)(struct rwnx_hw *rwnx_hw);

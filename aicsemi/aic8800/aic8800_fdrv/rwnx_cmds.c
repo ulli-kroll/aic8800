@@ -127,9 +127,6 @@ static int cmd_mgr_queue(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd)
 	int ret;
 	struct aic_sdio_dev *sdiodev = container_of(cmd_mgr, struct aic_sdio_dev, cmd_mgr);
 #endif
-#ifdef AICWF_USB_SUPPORT
-	struct aic_usb_dev *usbdev = container_of(cmd_mgr, struct aic_usb_dev, cmd_mgr);
-#endif
 	bool defer_push = false;
 	u8_l empty = 0;
 
@@ -343,9 +340,6 @@ void cmd_mgr_task_process(struct work_struct *work)
 #ifdef AICWF_SDIO_SUPPORT
 			struct aic_sdio_dev *sdiodev = container_of(cmd_mgr, struct aic_sdio_dev, cmd_mgr);
 #endif
-#ifdef AICWF_USB_SUPPORT
-			struct aic_usb_dev *usbdev = container_of(cmd_mgr, struct aic_usb_dev, cmd_mgr);
-#endif
 			next->flags &= ~RWNX_CMD_FLAG_WAIT_PUSH;
 
 			//printk("cmd_process, cmd->id=%d, tkn=%d\r\n",next->reqid, next->tkn);
@@ -414,10 +408,6 @@ static int cmd_mgr_msgind(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd_e2amsg *
 #ifdef AICWF_SDIO_SUPPORT
 	struct aic_sdio_dev *sdiodev = container_of(cmd_mgr, struct aic_sdio_dev, cmd_mgr);
 	struct rwnx_hw *rwnx_hw = sdiodev->rwnx_hw;
-#endif
-#ifdef AICWF_USB_SUPPORT
-	struct aic_usb_dev *usbdev = container_of(cmd_mgr, struct aic_usb_dev, cmd_mgr);
-	struct rwnx_hw *rwnx_hw = usbdev->rwnx_hw;
 #endif
 	struct rwnx_cmd *cmd, *pos;
 	bool found = false;

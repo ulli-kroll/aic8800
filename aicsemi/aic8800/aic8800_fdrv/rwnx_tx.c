@@ -675,24 +675,6 @@ void rwnx_tx_push(struct rwnx_hw *rwnx_hw, struct rwnx_txhdr *txhdr, int flags)
 	}
 	aicwf_frame_tx((void *)(rwnx_hw->sdiodev), skb);
 #endif
-#ifdef AICWF_USB_SUPPORT
-	if (((sw_txhdr->desc.host.flags & TXU_CNTRL_MGMT) && \
-		((*(skb->data+sw_txhdr->headroom) == 0xd0) || (*(skb->data+sw_txhdr->headroom) == 0x10) || (*(skb->data+sw_txhdr->headroom) == 0x30))) || \
-		(sw_txhdr->desc.host.ethertype == 0x8e88)) {
-		printk("push need cfm flags 0x%x\n", sw_txhdr->desc.host.flags);
-		sw_txhdr->need_cfm = 1;
-		sw_txhdr->desc.host.hostid = ((1<<31) | rwnx_hw->usb_env.txdesc_free_idx[0]);
-		aicwf_usb_host_txdesc_push(&(rwnx_hw->usb_env), 0, (long)(skb));
-	} else {
-		sw_txhdr->need_cfm = 0;
-		sw_txhdr->desc.host.hostid = 0;
-
-		sw_txhdr->rwnx_vif->net_stats.tx_packets++;
-		sw_txhdr->rwnx_vif->net_stats.tx_bytes += sw_txhdr->frame_len;
-		rwnx_hw->stats.last_tx = jiffies;
-	}
-	aicwf_frame_tx((void *)(rwnx_hw->usbdev), skb);
-#endif
 #endif
 #if 0
 	txq->hwq->credits[user]--;
@@ -1474,7 +1456,7 @@ netdev_tx_t rwnx_start_monitor_if_xmit(struct sk_buff *skb, struct net_device *d
                         break;
                     }
                 }
-                
+
                 if (idx < HW_RATE_MAX) {
                     rate_idx = idx;
                     AICWFDBG(LOGDEBUG, "rate_idx = %d \r\n", rate_idx);
@@ -1975,15 +1957,6 @@ int rwnx_txdatacfm(void *pthis, void *host_id)
 		return -1;
 	}
 
-#ifdef AICWF_USB_SUPPORT
-    if (rwnx_hw->usbdev->state == USB_DOWN_ST) {
-        headroom = sw_txhdr->headroom;
-        kmem_cache_free(rwnx_hw->sw_txhdr_cache, sw_txhdr);
-        skb_pull(skb, headroom);
-        consume_skb(skb);
-        return 0;
-    }
-#endif
 #ifdef AICWF_SDIO_SUPPORT
     if(rwnx_hw->sdiodev->bus_if->state == BUS_DOWN_ST) {
         headroom = sw_txhdr->headroom;

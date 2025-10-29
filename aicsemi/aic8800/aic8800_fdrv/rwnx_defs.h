@@ -39,10 +39,6 @@
 #include "sdio_host.h"
 #endif
 
-#ifdef AICWF_USB_SUPPORT
-#include "usb_host.h"
-#endif
-
 #define WPI_HDR_LEN    18
 #define WPI_PN_LEN     16
 #define WPI_PN_OFST     2
@@ -568,10 +564,10 @@ struct amsdu_subframe_hdr {
 /* rwnx driver status */
 void rwnx_set_conn_state(atomic_t *drv_conn_state, int state);
 
-enum rwnx_drv_connect_status { 
+enum rwnx_drv_connect_status {
 	RWNX_DRV_STATUS_DISCONNECTED = 0,
-	RWNX_DRV_STATUS_DISCONNECTING, 
-	RWNX_DRV_STATUS_CONNECTING, 
+	RWNX_DRV_STATUS_DISCONNECTING,
+	RWNX_DRV_STATUS_CONNECTING,
 	RWNX_DRV_STATUS_CONNECTED,
 	RWNX_DRV_STATUS_ROAMING,
 };
@@ -590,9 +586,6 @@ struct rwnx_hw {
 	struct device *dev;
 #ifdef AICWF_SDIO_SUPPORT
 	struct aic_sdio_dev *sdiodev;
-#endif
-#ifdef AICWF_USB_SUPPORT
-	struct aic_usb_dev *usbdev;
 #endif
 	struct wiphy *wiphy;
 	struct list_head vifs;
@@ -637,9 +630,6 @@ struct rwnx_hw {
 	struct ipc_host_env_tag *ipc_env;
 #ifdef AICWF_SDIO_SUPPORT
 	struct sdio_host_env_tag sdio_env;
-#endif
-#ifdef AICWF_USB_SUPPORT
-	struct usb_host_env_tag usb_env;
 #endif
 
 	struct rwnx_ipc_elem_pool e2amsgs_pool;
@@ -686,7 +676,7 @@ struct rwnx_hw {
 	bool band_5g_support;
 	u8_l vendor_info;
 	bool fwlog_en;
-	
+
 	struct list_head defrag_list;
 	spinlock_t defrag_lock;
 

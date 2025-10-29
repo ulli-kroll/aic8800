@@ -24,9 +24,6 @@
 #include "aicwf_sdio.h"
 #endif
 
-#ifdef AICWF_USB_SUPPORT
-#include "aicwf_usb.h"
-#endif
 #include "md5.h"
 #include "aicwf_compat_8800dc.h"
 #include "aicwf_compat_8800d80.h"
@@ -2244,7 +2241,7 @@ static int rwnx_platform_reset(struct rwnx_plat *rwnx_plat)
 {
 	u32 regval;
 
-#if defined(AICWF_USB_SUPPORT) || defined(AICWF_SDIO_SUPPORT)
+#if defined(AICWF_SDIO_SUPPORT)
 	return 0;
 #endif
 
@@ -3222,7 +3219,7 @@ int rwnx_platform_on(struct rwnx_hw *rwnx_hw, void *config)
  */
 void rwnx_platform_off(struct rwnx_hw *rwnx_hw, void **config)
 {
-#if defined(AICWF_USB_SUPPORT) || defined(AICWF_SDIO_SUPPORT)
+#if defined(AICWF_SDIO_SUPPORT)
 	tasklet_kill(&rwnx_hw->task);
 	rwnx_hw->plat->enabled = false;
 	return ;
@@ -3283,9 +3280,6 @@ struct device *rwnx_platform_get_dev(struct rwnx_plat *rwnx_plat)
 {
 #ifdef AICWF_SDIO_SUPPORT
 	return rwnx_plat->sdiodev->dev;
-#endif
-#ifdef AICWF_USB_SUPPORT
-	return rwnx_plat->usbdev->dev;
 #endif
 }
 

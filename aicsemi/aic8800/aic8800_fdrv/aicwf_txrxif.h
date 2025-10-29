@@ -135,9 +135,6 @@ struct aicwf_tx_priv {
 	spinlock_t txqlock;
 	struct semaphore txctl_sema;
 #endif
-#ifdef AICWF_USB_SUPPORT
-	struct aic_usb_dev *usbdev;
-#endif
 	struct sk_buff *aggr_buf;
 	atomic_t aggr_count;
 	u8 *head;
@@ -198,10 +195,6 @@ struct aicwf_rx_priv {
 #ifdef AICWF_SDIO_SUPPORT
 	struct aic_sdio_dev *sdiodev;
 #endif
-#ifdef AICWF_USB_SUPPORT
-	struct aic_usb_dev *usbdev;
-#endif
-
 	void *rwnx_vif;
 	atomic_t rx_cnt;
 	u32 data_len;

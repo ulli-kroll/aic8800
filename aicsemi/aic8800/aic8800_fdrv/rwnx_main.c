@@ -44,9 +44,6 @@
 #ifdef AICWF_SDIO_SUPPORT
 #include "aicwf_sdio.h"
 #endif
-#ifdef AICWF_USB_SUPPORT
-#include "aicwf_usb.h"
-#endif
 #include "aic_bsp_export.h"
 #include "aicwf_compat_8800dc.h"
 #include "aicwf_compat_8800d80.h"
@@ -1080,12 +1077,7 @@ static int rwnx_close(struct net_device *dev)
 	struct rwnx_vif *rwnx_vif = netdev_priv(dev);
 	struct rwnx_hw *rwnx_hw = rwnx_vif->rwnx_hw;
 	int ret;
-#if defined(AICWF_USB_SUPPORT)
-	struct aicwf_bus *bus_if = NULL;
-	struct aic_usb_dev *usbdev = NULL;
-	bus_if = dev_get_drvdata(rwnx_hw->dev);
-	usbdev = bus_if->bus_priv.usb;
-#elif defined(AICWF_SDIO_SUPPORT)
+#if defined(AICWF_SDIO_SUPPORT)
 	struct aicwf_bus *bus_if = NULL;
 	struct aic_sdio_dev *sdiodev = NULL;
 #else
@@ -1108,7 +1100,7 @@ static int rwnx_close(struct net_device *dev)
 		}
 	}
 
-#if defined(AICWF_USB_SUPPORT) || defined(AICWF_SDIO_SUPPORT)
+#if defined(AICWF_SDIO_SUPPORT)
 	if (scanning) {
 		scanning = false;
 	}
@@ -1166,12 +1158,6 @@ static int rwnx_close(struct net_device *dev)
 
 	}
 
-#if defined(AICWF_USB_SUPPORT)
-	if (usbdev != NULL) {
-		if (usbdev->state != USB_DOWN_ST)
-			rwnx_send_remove_if (rwnx_hw, rwnx_vif->vif_index, false);
-	}
-#endif
 #if defined(AICWF_SDIO_SUPPORT)
 	bus_if = dev_get_drvdata(rwnx_hw->dev);
 	if (bus_if) {
@@ -1224,11 +1210,7 @@ static int rwnx_close(struct net_device *dev)
 #if 0
 		rwnx_ipc_tx_drain(rwnx_hw);
 #else
-#ifdef AICWF_USB_SUPPORT
-		if (usbdev->bus_if->state != BUS_DOWN_ST) {
-#else
 		if (sdiodev->bus_if->state != BUS_DOWN_ST) {
-#endif
 				rwnx_send_reset(rwnx_hw);
 				// Set parameters to firmware
 			if (testmode == 0) {
@@ -5807,11 +5789,7 @@ void rwnx_cfg80211_deinit(struct rwnx_hw *rwnx_hw)
 
 	RWNX_DBG(RWNX_FN_ENTRY_STR);
 
-#ifdef AICWF_USB_SUPPORT
-	if (rwnx_hw->usbdev->bus_if->state != BUS_DOWN_ST)
-#else
 	if (rwnx_hw->sdiodev->bus_if->state != BUS_DOWN_ST)
-#endif
 		rwnx_send_set_stack_start_req(rwnx_hw, 0, 0, 0, 0, &set_start_cfm);
 
 	rwnx_hw->fwlog_en = 0;
@@ -5863,9 +5841,6 @@ static void aicsmac_driver_register(void)
 #ifdef AICWF_SDIO_SUPPORT
 	aicwf_sdio_register();
 #endif
-#ifdef AICWF_USB_SUPPORT
-	aicwf_usb_register();
-#endif
 }
 
 //static DECLARE_WORK(aicsmac_driver_work, aicsmac_driver_register);
@@ -5909,9 +5884,6 @@ static int __init rwnx_mod_init(void)
 #ifdef AICWF_SDIO_SUPPORT
 		aicwf_sdio_exit();
 #endif /* AICWF_SDIO_SUPPORT */
-#ifdef AICWF_USB_SUPPORT
-		aicwf_usb_exit();
-#endif /*AICWF_USB_SUPPORT */
         aicbsp_set_subsys(AIC_WIFI, AIC_PWR_OFF);
 		return -ENODEV;
 	}
@@ -5930,9 +5902,6 @@ static void __exit rwnx_mod_exit(void)
 	aicwf_sdio_exit();
 #endif
 
-#ifdef AICWF_USB_SUPPORT
-	aicwf_usb_exit();
-#endif
 	aicbsp_set_subsys(AIC_WIFI, AIC_PWR_OFF);
     rwnx_free_cmd_array();
 
