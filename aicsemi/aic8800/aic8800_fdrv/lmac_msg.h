@@ -2991,28 +2991,6 @@ struct dbg_gpio_init_req {
     uint8_t gpio_val; //for output, 1 high, 0 low;
 };
 
-#ifdef CONFIG_MCU_MESSAGE
-/// Structure containing the parameters of the @ref DBG_CUSTOM_MSG_REQ message.
-struct dbg_custom_msg_req
-{
-    u32_l cmd;
-    u32_l len;
-    u32_l flags;
-    u32_l buf[1];
-};
-
-/// Structure containing the parameters of the @ref DBG_CUSTOM_MSG_CFM message.
-struct dbg_custom_msg_cfm
-{
-    u32_l cmd;
-    u32_l len;
-    u32_l status;
-    u32_l buf[1];
-};
-
-typedef struct dbg_custom_msg_cfm dbg_custom_msg_ind_t;
-#endif
-
 /// Structure containing the parameters of the @ref DBG_SET_MOD_FILTER_REQ message.
 struct dbg_set_mod_filter_req {
 	/// Bit field indicating for each module if the traces are enabled or not

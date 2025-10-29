@@ -1736,10 +1736,6 @@ u32 patch_tbl[][2] = {
 #if !defined(CONFIG_LINK_DET_5G)
     {0x0104, 0x00000000}, //link_det_5g
 #endif
-#if defined(CONFIG_MCU_MESSAGE)
-    {0x004c, 0x0000004B}, //pkt_cnt_1724=0x4B
-    {0x0050, 0x0011FC00}, //ipc_base_addr
-#endif
 };
 
 u32 syscfg_tbl_masked[][3] = {
@@ -2094,14 +2090,12 @@ int aicbsp_driver_fw_init(struct aic_sdio_dev *sdiodev)
 
 	AICWFDBG(LOGINFO, "aicbsp: %s, chip rev: %d\n", __func__, aicbsp_info.chip_rev);
 
-	#ifndef CONFIG_MCU_MESSAGE
 	if (testmode != 4) {
 		if(btenable == 1){
 			if (aicbt_init(sdiodev))
 				return -1;
 		}
 	}
-	#endif
 
 	ret = aicwifi_init(sdiodev);
 	if (ret)

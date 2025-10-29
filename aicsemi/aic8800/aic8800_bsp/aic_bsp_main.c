@@ -50,9 +50,7 @@ const struct aicbsp_firmware fw_u03[] = {
 		.bt_adid       = "fw_adid_u03.bin",
 		.bt_patch      = "fw_patch_u03.bin",
 		.bt_table      = "fw_patch_table_u03.bin",
-		#ifdef CONFIG_MCU_MESSAGE
-		.wl_fw         = "fmacfw_8800m_custmsg.bin"
-		#elif defined(CONFIG_SDIO_BT)
+		#if defined(CONFIG_SDIO_BT)
 		.wl_fw         = "fmacfwbt.bin"
 		#else
 		.wl_fw         = "fmacfw.bin"

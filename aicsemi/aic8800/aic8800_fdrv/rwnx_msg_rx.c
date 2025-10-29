@@ -1366,26 +1366,6 @@ static inline int rwnx_rx_dbg_error_ind(struct rwnx_hw *rwnx_hw,
 	return 0;
 }
 
-#ifdef CONFIG_MCU_MESSAGE
-static inline int rwnx_rx_dbg_custmsg_ind(struct rwnx_hw *rwnx_hw,
-                                          struct rwnx_cmd *cmd,
-                                          struct ipc_e2a_msg *msg)
-{
-    dbg_custom_msg_ind_t * ind;
-    char str_msg[32 + 1];
-    int str_len;
-    RWNX_DBG(RWNX_FN_ENTRY_STR);
-
-    ind = (dbg_custom_msg_ind_t *)msg->param;
-    str_len = (ind->len < 32) ? ind->len : 32;
-    memcpy(str_msg, (char *)ind->buf, str_len);
-    str_msg[str_len] = '\0';
-    printk("CustMsgInd: cmd=0x%x, len=%d, str=%s\r\n", ind->cmd, ind->len, str_msg);
-
-    return 0;
-}
-#endif
-
 static msg_cb_fct mm_hdlrs[MSG_I(MM_MAX)] = {
 	[MSG_I(MM_CHANNEL_SWITCH_IND)]     = rwnx_rx_chan_switch_ind,
 	[MSG_I(MM_CHANNEL_PRE_SWITCH_IND)] = rwnx_rx_chan_pre_switch_ind,
@@ -1432,9 +1412,6 @@ static msg_cb_fct mesh_hdlrs[MSG_I(MESH_MAX)] = {
 
 static msg_cb_fct dbg_hdlrs[MSG_I(DBG_MAX)] = {
 	[MSG_I(DBG_ERROR_IND)]                = rwnx_rx_dbg_error_ind,
-#ifdef CONFIG_MCU_MESSAGE
-	[MSG_I(DBG_CUSTOM_MSG_IND)]           = rwnx_rx_dbg_custmsg_ind,
-#endif
 };
 
 static msg_cb_fct tdls_hdlrs[MSG_I(TDLS_MAX)] = {

@@ -144,11 +144,6 @@ int rwnx_send_dbg_set_mod_filter_req(struct rwnx_hw *rwnx_hw, u32 filter);
 #ifdef CONFIG_RFTEST
 int rwnx_send_rftest_req(struct rwnx_hw *rwnx_hw, u32_l cmd, u32_l argc, u8_l *argv, struct dbg_rftest_cmd_cfm *cfm);
 #endif
-#ifdef CONFIG_MCU_MESSAGE
-int rwnx_send_dbg_custom_msg_req(struct rwnx_hw *rwnx_hw,
-                                 u32 cmd, void *buf, u32 len, u32 action,
-                                 struct dbg_custom_msg_cfm *cfm);
-#endif
 int rwnx_send_dbg_set_sev_filter_req(struct rwnx_hw *rwnx_hw, u32 filter);
 int rwnx_send_dbg_get_sys_stat_req(struct rwnx_hw *rwnx_hw,
 								   struct dbg_get_sys_stat_cfm *cfm);

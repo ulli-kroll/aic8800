@@ -1268,9 +1268,6 @@ static int rwnx_do_ioctl(struct net_device *net, struct ifreq *req, void __user 
 		break;
 	case (SIOCDEVPRIVATE+2):
 		AICWFDBG(LOGINFO, "IOCTL PRIVATE+2\n");
-		#ifdef CONFIG_MCU_MESSAGE
-		devipc_cust_msg(net, req, cmd);
-		#endif
 		break;
 	default:
 		ret = -EOPNOTSUPP;

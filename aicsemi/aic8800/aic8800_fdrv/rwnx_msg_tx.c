@@ -3983,35 +3983,6 @@ int rwnx_send_rftest_req(struct rwnx_hw *rwnx_hw, u32_l cmd, u32_l argc, u8_l *a
 }
 #endif
 
-#ifdef CONFIG_MCU_MESSAGE
-int rwnx_send_dbg_custom_msg_req(struct rwnx_hw *rwnx_hw,
-                                 u32 cmd, void *buf, u32 len, u32 action,
-                                 struct dbg_custom_msg_cfm *cfm)
-{
-    struct dbg_custom_msg_req *cust_msg_req;
-
-    RWNX_DBG(RWNX_FN_ENTRY_STR);
-
-    /* Build the DBG_CUSTOM_MSG_REQ message */
-    cust_msg_req =
-        rwnx_msg_zalloc(DBG_CUSTOM_MSG_REQ, TASK_DBG, DRV_TASK_ID,
-                        offsetof(struct dbg_custom_msg_req, buf) + len);
-    if (!cust_msg_req)
-        return -ENOMEM;
-
-    /* Set parameters for the DBG_CUSTOM_MSG_REQ message */
-    cust_msg_req->cmd = cmd;
-    cust_msg_req->len = len;
-    cust_msg_req->flags = action;
-    if (buf) {
-        memcpy(cust_msg_req->buf, buf, len);
-    }
-
-    /* Send the DBG_CUSTOM_MSG_REQ message to LMAC FW */
-    return rwnx_send_msg(rwnx_hw, cust_msg_req, 1, DBG_CUSTOM_MSG_CFM, cfm);
-}
-#endif
-
 int rwnx_send_dbg_set_mod_filter_req(struct rwnx_hw *rwnx_hw, u32 filter)
 {
 	struct dbg_set_mod_filter_req *set_mod_filter_req;
