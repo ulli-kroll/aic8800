@@ -5866,9 +5866,6 @@ static void aicsmac_driver_register(void)
 #ifdef AICWF_USB_SUPPORT
 	aicwf_usb_register();
 #endif
-#ifdef AICWF_PCIE_SUPPORT
-	aicwf_pcie_register();
-#endif
 }
 
 //static DECLARE_WORK(aicsmac_driver_work, aicsmac_driver_register);
@@ -5928,10 +5925,6 @@ static int __init rwnx_mod_init(void)
 static void __exit rwnx_mod_exit(void)
 {
 	RWNX_DBG(RWNX_FN_ENTRY_STR);
-
-#ifdef AICWF_PCIE_SUPPORT
-	rwnx_platform_unregister_drv();
-#endif
 
 #ifdef AICWF_SDIO_SUPPORT
 	aicwf_sdio_exit();
