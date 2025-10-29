@@ -60,7 +60,6 @@ CONFIG_RWNX_AMSDUS_TX ?= n
 CONFIG_RWNX_BFMER ?= n
 
 CONFIG_SDIO_SUPPORT =y
-CONFIG_USB_SUPPORT =n
 CONFIG_RX_REORDER ?=y
 CONFIG_ARP_OFFLOAD =y
 CONFIG_RADAR_OR_IR_DETECT =n
@@ -235,10 +234,6 @@ ccflags-y += -DAICWF_SDIO_SUPPORT
 ccflags-$(CONFIG_SDIO_PWRCTRL) += -DCONFIG_SDIO_PWRCTRL
 endif
 
-ifeq ($(CONFIG_USB_SUPPORT), y)
-ccflags-y += -DAICWF_USB_SUPPORT
-endif
-
 ifeq ($(CONFIG_RWNX_MUMIMO_TX), y)
 ccflags-y += -DCONFIG_USER_MAX=2
 else
@@ -313,11 +308,6 @@ aic8800_fdrv-$(CONFIG_FILTER_TCP_ACK)   += \
 aic8800_fdrv-$(CONFIG_SDIO_BT)   += \
 	aicsemi/aic8800/aic8800_fdrv/aic_btsdio.o \
 	aicsemi/aic8800/aic8800_fdrv/btsdio.o
-
-aic8800_fdrv-$(CONFIG_USB_SUPPORT) += \
-	aicsemi/aic8800/aic8800_fdrv/usb_host.o \
-	aicsemi/aic8800/aic8800_fdrv/aicwf_txrxif.o \
-	aicsemi/aic8800/aic8800_fdrv/aicwf_usb.o
 
 aic8800_btlpm-y += \
 	aicsemi/aic8800/aic8800_btlpm/aic_bluetooth_main.o \
