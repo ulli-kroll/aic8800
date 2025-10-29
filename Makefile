@@ -282,7 +282,6 @@ aic8800_fdrv-y += \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_compat_8800d80.o \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_wakelock.o \
 	aicsemi/aic8800/aic8800_fdrv/regdb.o \
-	aicsemi/aic8800/aic8800_fdrv/aic_priv_cmd.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_rx_prealloc.o
 
 aic8800_fdrv-$(CONFIG_RWNX_RADAR) += \

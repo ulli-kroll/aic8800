@@ -54,7 +54,6 @@
 #ifdef CONFIG_SDIO_BT
 #include "aic_btsdio.h"
 #endif
-#include "aic_priv_cmd.h"
 
 #define RW_DRV_DESCRIPTION  "RivieraWaves 11nac driver for Linux cfg80211"
 #define RW_DRV_COPYRIGHT    "Copyright(c) 2015-2017 RivieraWaves"
@@ -1266,10 +1265,6 @@ static int rwnx_do_ioctl(struct net_device *net, struct ifreq *req, void __user 
 		break;
 	case SIOCDEVPRIVATE:
 		AICWFDBG(LOGINFO, "IOCTL SIOCDEVPRIVATE\n");
-		break;
-	case (SIOCDEVPRIVATE+1):
-		AICWFDBG(LOGINFO, "IOCTL PRIVATE\n");
-		ret = android_priv_cmd(net, req, cmd);
 		break;
 	case (SIOCDEVPRIVATE+2):
 		AICWFDBG(LOGINFO, "IOCTL PRIVATE+2\n");
