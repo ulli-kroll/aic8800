@@ -16,14 +16,10 @@
 #include <linux/module.h>
 #include "lmac_msg.h"
 
-#ifdef CONFIG_RWNX_SDM
-#define RWNX_80211_CMD_TIMEOUT_MS    (20 * 300)
-#else
 #ifdef AICWF_USB_SUPPORT
 #define RWNX_80211_CMD_TIMEOUT_MS    2000//300
 #else
 #define RWNX_80211_CMD_TIMEOUT_MS    6000//500//300
-#endif
 #endif
 
 #define RWNX_CMD_FLAG_NONBLOCK      BIT(0)

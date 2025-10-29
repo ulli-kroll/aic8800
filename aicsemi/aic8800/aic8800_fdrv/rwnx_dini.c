@@ -146,10 +146,6 @@ static int rwnx_dini_platform_enable(struct rwnx_hw *rwnx_hw)
 	struct rwnx_plat *rwnx_plat = rwnx_hw->plat;
 	struct rwnx_dini *rwnx_dini = (struct rwnx_dini *)rwnx_plat->priv;
 
-#ifdef CONFIG_RWNX_SDM
-	writel(0x0000FFFF, rwnx_dini->pci_bar0_vaddr + CFPGA_BAR_TOUT);
-#endif
-
 	dini_dma_on(rwnx_dini);
 	return rwnx_cfpga_irq_enable(rwnx_hw);
 }
@@ -278,10 +274,6 @@ int rwnx_dini_platform_init(struct pci_dev *pci_dev, struct rwnx_plat **rwnx_pla
 	(*rwnx_plat)->get_address = rwnx_dini_get_address;
 	(*rwnx_plat)->ack_irq = rwnx_dini_ack_irq;
 	(*rwnx_plat)->get_config_reg = rwnx_dini_get_config_reg;
-
-#ifdef CONFIG_RWNX_SDM
-	writel(0x0000FFFF, rwnx_dini->pci_bar0_vaddr + CFPGA_BAR_TOUT);
-#endif
 
 	return 0;
 

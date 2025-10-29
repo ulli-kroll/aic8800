@@ -42,7 +42,6 @@ CONFIG_RWNX_UM_HELPER_DFLT ?= "/dini/dini_bin/rwnx_umh.sh"
 
 #
 # FW ARCH:
-CONFIG_RWNX_SDM ?= n
 CONFIG_RWNX_TL4 ?= n
 
 # IPC version
@@ -219,7 +218,6 @@ ccflags-y += -DNX_TX_MAX_RATES=4
 ccflags-y += -DNX_CHAN_CTXT_CNT=3
 
 # FW ARCH:
-ccflags-$(CONFIG_RWNX_SDM) += -DCONFIG_RWNX_SDM
 ccflags-$(CONFIG_RWNX_TL4) += -DCONFIG_RWNX_TL4
 ccflags-$(CONFIG_RWNX_OLD_IPC) += -DCONFIG_RWNX_OLD_IPC
 ccflags-$(CONFIG_PLATFORM_NANOPI_M4) += -DCONFIG_NANOPI_M4

@@ -590,7 +590,6 @@ static int rwnx_check_fw_hw_feature(struct rwnx_hw *rwnx_hw,
 	}
 #endif /* CONFIG_RWNX_RADAR */
 
-#ifndef CONFIG_RWNX_SDM
 	switch (__MDM_PHYCFG_FROM_VERS(phy_feat)) {
 	case MDM_PHY_CONFIG_TRIDENT:
 	case MDM_PHY_CONFIG_ELMA:
@@ -607,7 +606,6 @@ static int rwnx_check_fw_hw_feature(struct rwnx_hw *rwnx_hw,
 		WARN_ON(1);
 		break;
 	}
-#endif /* CONFIG_RWNX_SDM */
 
 	if (rwnx_hw->mod_params->nss < 1 || rwnx_hw->mod_params->nss > 2)
 		rwnx_hw->mod_params->nss = 1;
@@ -1625,7 +1623,6 @@ if (rwnx_hw->mod_params->custregd) {
 #if 0
 static void rwnx_set_rf_params(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 {
-#ifndef CONFIG_RWNX_SDM
 	struct ieee80211_supported_band *band_5GHz = wiphy->bands[NL80211_BAND_5GHZ];
 	struct ieee80211_supported_band *band_2GHz = wiphy->bands[NL80211_BAND_2GHZ];
 	u32 mdm_phy_cfg = __MDM_PHYCFG_FROM_VERS(rwnx_hw->version_cfm.version_phy_1);
@@ -1687,7 +1684,6 @@ static void rwnx_set_rf_params(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 		WARN_ON(1);
 		break;
 	}
-#endif /* CONFIG_RWNX_SDM */
 }
 #endif
 
@@ -1716,9 +1712,9 @@ int rwnx_handle_dynparams(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
     }
 
     if (rwnx_hw->sdiodev->chipid == PRODUCT_ID_AIC8800D80 || rwnx_hw->sdiodev->chipid == PRODUCT_ID_AIC8800D80X2) {
-        rwnx_hw->mod_params->use_80 = true;    
+        rwnx_hw->mod_params->use_80 = true;
     }
-    
+
     if (rwnx_hw->sdiodev->chipid != PRODUCT_ID_AIC8800D80 && rwnx_hw->sdiodev->chipid != PRODUCT_ID_AIC8800D80X2 &&
         rwnx_hw->mod_params->he_mcs_map == IEEE80211_HE_MCS_SUPPORT_0_11) {
         AICWFDBG(LOGINFO,"%s unsupport mcs11 change to mcs9", __func__);
@@ -1748,7 +1744,7 @@ void rwnx_custregd(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0)
     if (!rwnx_hw->mod_params->custregd)
         return;
-    
+
 	/* From kernel 6.5.0, this bit is removed and will be reused later */
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 39) || LINUX_VERSION_CODE > KERNEL_VERSION(6, 2, 0))
 	wiphy->regulatory_flags |= REGULATORY_IGNORE_STALE_KICKOFF;
