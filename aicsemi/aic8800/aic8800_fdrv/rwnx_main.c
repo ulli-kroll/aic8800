@@ -5367,33 +5367,9 @@ int rwnx_ic_rf_init(struct rwnx_hw *rwnx_hw){
 }
 
 
-#ifdef CONFIG_PLATFORM_ALLWINNER
-#ifdef CONFIG_USE_CUSTOMER_MAC
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
-extern int get_custom_mac_address(int fmt, char *name, char *addr);
-#else
-extern int get_wifi_custom_mac_address(char *addr_str);
-#endif
-#endif//CONFIG_USE_CUSTOMER_MAC
-#endif//CONFIG_PLATFORM_ALLWINNER
-
 #ifdef CONFIG_USE_CUSTOMER_MAC
 int rwnx_get_custom_mac_addr(u8_l *mac_addr_efuse){
     int ret = 0;
-
-#ifdef CONFIG_PLATFORM_ALLWINNER
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
-        ret = get_custom_mac_address(1, "wifi", mac_addr_efuse);
-#else
-        ret = get_wifi_custom_mac_address(addr_str);
-        if (ret >= 0) {
-            sscanf(addr_str, "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx",
-                    &mac_addr_efuse[0], &mac_addr_efuse[1], &mac_addr_efuse[2],
-                    &mac_addr_efuse[3], &mac_addr_efuse[4], &mac_addr_efuse[5]);
-        }
-#endif
-
-#endif//CONFIG_PLATFORM_ALLWINNER
 
     if(ret == 0){
         AICWFDBG(LOGINFO, "%s %02x:%02x:%02x:%02x:%02x:%02x", __func__,

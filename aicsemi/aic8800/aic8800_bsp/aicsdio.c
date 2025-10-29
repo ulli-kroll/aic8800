@@ -22,13 +22,6 @@
 #include <linux/delay.h>
 
 
-#ifdef CONFIG_PLATFORM_ALLWINNER
-extern void sunxi_mmc_rescan_card(unsigned ids);
-extern void sunxi_wlan_set_power(int on);
-extern int sunxi_wlan_get_bus_index(void);
-static int aicbsp_bus_index = -1;
-#endif
-
 static int aicbsp_platform_power_on(void);
 static void aicbsp_platform_power_off(void);
 
@@ -428,27 +421,12 @@ static int aicbsp_platform_power_on(void)
 	struct semaphore aic_chipup_sem;
 	sdio_dbg("%s\n", __func__);
 
-#ifdef CONFIG_PLATFORM_ALLWINNER
-	if (aicbsp_bus_index < 0)
-		 aicbsp_bus_index = sunxi_wlan_get_bus_index();
-	if (aicbsp_bus_index < 0)
-		return aicbsp_bus_index;
-#endif //CONFIG_PLATFORM_ALLWINNER
-
 	sema_init(&aic_chipup_sem, 0);
 	ret = aicbsp_reg_sdio_notify(&aic_chipup_sem);
 	if (ret) {
 		sdio_dbg("%s aicbsp_reg_sdio_notify fail(%d)\n", __func__, ret);
 			return ret;
 	}
-
-#ifdef CONFIG_PLATFORM_ALLWINNER
-	sunxi_wlan_set_power(0);
-	mdelay(50);
-	sunxi_wlan_set_power(1);
-	mdelay(50);
-	sunxi_mmc_rescan_card(aicbsp_bus_index);
-#endif //CONFIG_PLATFORM_ALLWINNER
 
 	if (down_timeout(&aic_chipup_sem, msecs_to_jiffies(2000)) == 0) {
 		aicbsp_unreg_sdio_notify();
@@ -460,9 +438,6 @@ static int aicbsp_platform_power_on(void)
 	}
 
 	aicbsp_unreg_sdio_notify();
-#ifdef CONFIG_PLATFORM_ALLWINNER
-	sunxi_wlan_set_power(0);
-#endif //CONFIG_PLATFORM_ALLWINNER
 
 	return -1;
 }
@@ -470,18 +445,6 @@ static int aicbsp_platform_power_on(void)
 static void aicbsp_platform_power_off(void)
 {
 //TODO wifi disable and sdio card detection
-#ifdef CONFIG_PLATFORM_ALLWINNER
-	if (aicbsp_bus_index < 0)
-		 aicbsp_bus_index = sunxi_wlan_get_bus_index();
-	if (aicbsp_bus_index < 0) {
-		sdio_dbg("no aicbsp_bus_index\n");
-		return;
-	}
-	sunxi_wlan_set_power(0);
-	mdelay(100);
-	sunxi_mmc_rescan_card(aicbsp_bus_index);
-#endif //CONFIG_PLATFORM_ALLWINNER
-
 	sdio_dbg("%s\n", __func__);
 }
 
@@ -1366,9 +1329,7 @@ void aicwf_sdio_hal_irqhandler(struct sdio_func *func)
     	            pkt = aicwf_sdio_readframes(sdiodev, 0);
     	        }
     	    } else {
-    	#ifndef CONFIG_PLATFORM_ALLWINNER
     	        sdio_err("Interrupt but no data\n");
-    	#endif
     	    }
 
     	    if (pkt)
@@ -1421,9 +1382,7 @@ void aicwf_sdio_hal_irqhandler(struct sdio_func *func)
                 }
     		}
     } else {
-    	#ifndef CONFIG_PLATFORM_ALLWINNER
             sdio_err("Interrupt but no data\n");
-    	#endif
         }
 
         if (pkt)
@@ -1472,9 +1431,7 @@ void aicwf_sdio_hal_irqhandler_func2(struct sdio_func *func)
 	            pkt = aicwf_sdio_readframes(sdiodev,1);
 	        }
 	    } else {
-		#ifndef CONFIG_PLATFORM_ALLWINNER
 	        sdio_err("Interrupt but no data\n");
-		#endif
 	    }
 
 	    if (pkt){

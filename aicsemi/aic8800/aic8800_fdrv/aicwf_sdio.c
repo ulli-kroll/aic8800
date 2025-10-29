@@ -462,15 +462,6 @@ static struct wake_lock irq_wakelock;
 #endif//ANDROID_PLATFORM
 #endif
 
-#ifdef CONFIG_PLATFORM_ALLWINNER
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
-extern int sunxi_wlan_get_oob_irq(int *, int *);
-#else
-extern int sunxi_wlan_get_oob_irq(void);
-extern int sunxi_wlan_get_oob_irq_flags(void);
-#endif
-#endif// CONFIG_PLATFORM_ALLWINNER
-
 #if 0
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 static struct wakeup_source *ws;
@@ -585,16 +576,6 @@ static int rwnx_register_hostwake_irq(struct device *dev)
 	else
 		flag_edge = IRQF_TRIGGER_FALLING | IRQF_NO_SUSPEND;
 
-
-#ifdef CONFIG_PLATFORM_ALLWINNER
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
-	hostwake_irq_num = sunxi_wlan_get_oob_irq(&irq_flags, &wakeup_enable);
-#else
-	hostwake_irq_num = sunxi_wlan_get_oob_irq();
-	irq_flags = sunxi_wlan_get_oob_irq_flags();
-	wakeup_enable = 1;
-#endif
-#endif //CONFIG_PLATFORM_ALLWINNER
 
 	if (wakeup_enable) {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
@@ -2704,9 +2685,7 @@ void aicwf_sdio_hal_irqhandler(struct sdio_func *func)
     			pkt = aicwf_sdio_readframes(sdiodev);
     		}
     	} else {
-    	#ifndef CONFIG_PLATFORM_ALLWINNER
     	//	sdio_err("Interrupt but no data\n");
-    	#endif
     	}
 
     	if (pkt)
@@ -2766,9 +2745,7 @@ void aicwf_sdio_hal_irqhandler(struct sdio_func *func)
                 }
     		}
         } else {
-    #ifndef CONFIG_PLATFORM_ALLWINNER
             //sdio_err("Interrupt but no data\n");
-    #endif
         }
 
         if (pkt)

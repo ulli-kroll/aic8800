@@ -18,16 +18,7 @@ export CONFIG_RESV_MEM_SUPPORT = y
 ###################################
 
 ########## Platform support list ##########
-export CONFIG_PLATFORM_ALLWINNER = n
 export CONFIG_PLATFORM_UBUNTU = y
-
-ifeq ($(CONFIG_PLATFORM_ALLWINNER), y)
-KDIR  = /home/yaya/E/Allwinner/A133/Android10/linux-4.9
-ARCH = arm64
-CROSS_COMPILE = /home/yaya/E/Allwinner/r818/Android10/lichee/out/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
-export CONFIG_SUPPORT_LPM = y
-ccflags-y += -DANDROID_PLATFORM
-endif
 
 ifeq ($(CONFIG_PLATFORM_UBUNTU), y)
 KDIR  = /lib/modules/$(shell uname -r)/build

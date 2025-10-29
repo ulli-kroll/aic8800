@@ -5,7 +5,6 @@ obj-$(CONFIG_AIC8800_BTLPM_SUPPORT) := aic8800_btlpm.o
 ccflags-y += -I$(srctree)/$(src)/../aic8800_bsp
 
 # Platform support list
-CONFIG_PLATFORM_ALLWINNER ?= n
 CONFIG_PLATFORM_UBUNTU ?= y
 
 

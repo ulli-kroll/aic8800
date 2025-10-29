@@ -78,17 +78,8 @@ $(MODULE_NAME)-y +=	aicwf_firmware_array.o
 endif
 
 ########## Platform support list ##########
-CONFIG_PLATFORM_ALLWINNER ?=n
 CONFIG_PLATFORM_INGENIC_T20 ?= n
 CONFIG_PLATFORM_UBUNTU ?= y
-
-ifeq ($(CONFIG_PLATFORM_ALLWINNER), y)
-ccflags-$(CONFIG_PLATFORM_ALLWINNER) += -DCONFIG_PLATFORM_ALLWINNER
-KDIR  ?= /home/yaya/E/Allwinner/r818/Android10/lichee/kernel/linux-4.9/
-ARCH ?= arm64
-CROSS_COMPILE ?= /home/yaya/E/Allwinner/r818/Android10/android/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
-
-endif
 
 ifeq ($(CONFIG_PLATFORM_INGENIC_T20), y)
 KDIR ?= /home/yaya/E/T40/kernel
@@ -104,10 +95,6 @@ KVER ?= $(shell uname -r)
 MODDESTDIR ?= /lib/modules/$(KVER)/kernel/drivers/net/wireless/
 ARCH ?= x86_64
 CROSS_COMPILE ?=
-
-ifeq ($(CONFIG_AW_BSP), y)
-ccflags-y += -DCONFIG_PLATFORM_ALLWINNER
-endif
 
 endif
 ###########################################
