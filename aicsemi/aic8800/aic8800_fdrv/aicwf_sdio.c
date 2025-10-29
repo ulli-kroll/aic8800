@@ -30,10 +30,6 @@
 #endif
 #include "rwnx_wakelock.h"
 
-#ifdef CONFIG_INGENIC_T20
-#include "mach/jzmmc.h"
-#endif /* CONFIG_INGENIC_T20 */
-
 #include "aic_bsp_export.h"
 extern uint8_t scanning;
 
@@ -1079,11 +1075,6 @@ void aicwf_sdio_register(void)
 	mdelay(200);
 	sdio_reinit();
 #endif /*CONFIG_PLATFORM_NANOPI*/
-
-#ifdef CONFIG_INGENIC_T20
-	jzmmc_manual_detect(1, 1);
-#endif /* CONFIG_INGENIC_T20 */
-
 
 #ifdef CONFIG_NANOPI_M4
 	if (aic_host_drv->card == NULL) {

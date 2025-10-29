@@ -216,7 +216,6 @@ ccflags-y += -DNX_CHAN_CTXT_CNT=3
 # FW ARCH:
 ccflags-$(CONFIG_RWNX_OLD_IPC) += -DCONFIG_RWNX_OLD_IPC
 ccflags-$(CONFIG_PLATFORM_NANOPI_M4) += -DCONFIG_NANOPI_M4
-ccflags-$(CONFIG_PLATFORM_INGENIC_T20) += -DCONFIG_INGENIC_T20
 ccflags-$(CONFIG_START_FROM_BOOTROM) += -DCONFIG_START_FROM_BOOTROM
 ccflags-$(CONFIG_PMIC_SETTING) += -DCONFIG_PMIC_SETTING
 ccflags-$(CONFIG_VRF_DCDC_MODE) += -DCONFIG_VRF_DCDC_MODE
@@ -318,14 +317,7 @@ ccflags-y += -DAIC_TRACE_INCLUDE_PATH=$(src)
 MAKEFLAGS +=-j$(shell nproc)
 
 ########## Platform support list ##########
-CONFIG_PLATFORM_INGENIC_T20 ?= n
 CONFIG_PLATFORM_UBUNTU ?= y
-
-ifeq ($(CONFIG_PLATFORM_INGENIC_T20), y)
-KDIR ?= /home/yaya/E/T40/kernel
-ARCH ?= mips
-CROSS_COMPILE ?= /home/yaya/E/T40/mips-linux-gnu-ingenic-gcc7.2.0-glibc2.29-fp64/bin/mips-linux-gnu-
-endif
 
 ifeq ($(CONFIG_PLATFORM_UBUNTU), y)
 ccflags-$(CONFIG_PLATFORM_UBUNTU) += -DCONFIG_PLATFORM_UBUNTU
