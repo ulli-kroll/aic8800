@@ -163,8 +163,6 @@ $(MODULE_NAME)-y := \
 	rwnx_mod_params.o      \
 	rwnx_mesh.o            \
 	rwnx_platform.o        \
-	rwnx_pci.o             \
-	rwnx_dini.o            \
 	rwnx_v7.o              \
 	ipc_host.o             \
 	rwnx_tdls.o            \

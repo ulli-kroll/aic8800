@@ -113,9 +113,6 @@ void rwnx_platform_deinit(struct rwnx_hw *rwnx_hw);
 int rwnx_platform_on(struct rwnx_hw *rwnx_hw, void *config);
 void rwnx_platform_off(struct rwnx_hw *rwnx_hw, void **config);
 
-int rwnx_platform_register_drv(void);
-void rwnx_platform_unregister_drv(void);
-
 void get_userconfig_txpwr_idx(txpwr_idx_conf_t *txpwr_idx);
 void get_userconfig_txpwr_ofst(txpwr_ofst_conf_t *txpwr_ofst);
 void get_userconfig_xtal_cap(xtal_cap_conf_t *xtal_cap);

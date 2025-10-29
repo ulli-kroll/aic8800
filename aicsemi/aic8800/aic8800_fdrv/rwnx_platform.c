@@ -17,7 +17,6 @@
 #include "reg_access.h"
 #include "hal_desc.h"
 #include "rwnx_main.h"
-#include "rwnx_pci.h"
 #include "ipc_host.h"
 #include "rwnx_msg_tx.h"
 
@@ -3280,23 +3279,6 @@ void rwnx_platform_deinit(struct rwnx_hw *rwnx_hw)
 	rwnx_cfg80211_deinit(rwnx_hw);
 }
 
-/**
- * rwnx_platform_register_drv() - Register all possible platform drivers
- */
-int rwnx_platform_register_drv(void)
-{
-	return rwnx_pci_register_drv();
-}
-
-
-/**
- * rwnx_platform_unregister_drv() - Unegister all platform drivers
- */
-void rwnx_platform_unregister_drv(void)
-{
-	return rwnx_pci_unregister_drv();
-}
-
 struct device *rwnx_platform_get_dev(struct rwnx_plat *rwnx_plat)
 {
 #ifdef AICWF_SDIO_SUPPORT
@@ -3305,7 +3287,6 @@ struct device *rwnx_platform_get_dev(struct rwnx_plat *rwnx_plat)
 #ifdef AICWF_USB_SUPPORT
 	return rwnx_plat->usbdev->dev;
 #endif
-	return &(rwnx_plat->pci_dev->dev);
 }
 
 

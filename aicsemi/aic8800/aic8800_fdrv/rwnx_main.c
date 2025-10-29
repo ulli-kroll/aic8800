@@ -887,11 +887,11 @@ void rwnx_update_mesh_power_mode(struct rwnx_vif *vif)
 void rwnx_set_conn_state(atomic_t *drv_conn_state, int state){
 
     if((int)atomic_read(drv_conn_state) != state){
-        AICWFDBG(LOGDEBUG, "%s drv_conn_state:%p %s --> %s \r\n", __func__, 
+        AICWFDBG(LOGDEBUG, "%s drv_conn_state:%p %s --> %s \r\n", __func__,
             drv_conn_state,
-            s_conn_state[(int)atomic_read(drv_conn_state)], 
+            s_conn_state[(int)atomic_read(drv_conn_state)],
             s_conn_state[state]);
-        
+
         atomic_set(drv_conn_state, state);
     }
 }
@@ -1008,7 +1008,7 @@ static int rwnx_open(struct net_device *dev)
 		rwnx_vif->up = true;
 		rwnx_hw->vif_started++;
 		rwnx_hw->vif_table[add_if_cfm.inst_nbr] = rwnx_vif;
-        AICWFDBG(LOGDEBUG, "%s ap create vif in rwnx_hw->vif_table[%d] \r\n", 
+        AICWFDBG(LOGDEBUG, "%s ap create vif in rwnx_hw->vif_table[%d] \r\n",
             __func__, rwnx_vif->vif_index);
 		spin_unlock_bh(&rwnx_hw->cb_lock);
 	} else {
@@ -1031,7 +1031,7 @@ static int rwnx_open(struct net_device *dev)
 		rwnx_vif->up = true;
 		rwnx_hw->vif_started++;
 		rwnx_hw->vif_table[add_if_cfm.inst_nbr] = rwnx_vif;
-        AICWFDBG(LOGDEBUG, "%s sta create vif in rwnx_hw->vif_table[%d] \r\n", 
+        AICWFDBG(LOGDEBUG, "%s sta create vif in rwnx_hw->vif_table[%d] \r\n",
             __func__, rwnx_vif->vif_index);
 		spin_unlock_bh(&rwnx_hw->cb_lock);
 
@@ -1246,7 +1246,7 @@ static int rwnx_close(struct net_device *dev)
 
 	return 0;
 }
-    
+
 #define IOCTL_HOSTAPD   (SIOCIWFIRSTPRIV+28)
 #define IOCTL_WPAS      (SIOCIWFIRSTPRIV+30)
 
@@ -1986,7 +1986,7 @@ static int rwnx_cfg80211_change_iface(struct wiphy *wiphy,
 	    vif->rwnx_hw->vif_table[add_if_cfm.inst_nbr] = vif;
 	    spin_unlock_bh(&vif->rwnx_hw->cb_lock);
 	}
-    
+
     if (type == NL80211_IFTYPE_MONITOR) {
         vif->rwnx_hw->monitor_vif = vif->vif_index;
     #if defined(CONFIG_RWNX_MON_XMIT)
@@ -2318,13 +2318,13 @@ static int rwnx_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 			(sme->crypto.ciphers_pairwise[0] == WLAN_CIPHER_SUITE_WEP104));
 
 	RWNX_DBG(RWNX_FN_ENTRY_STR);
-    
+
 #if 1
 	if((int)atomic_read(&rwnx_vif->drv_conn_state) == (int)RWNX_DRV_STATUS_CONNECTED) {
 		AICWFDBG(LOGDEBUG, "%s this connection is roam \r\n", __func__);
 		rwnx_vif->sta.is_roam = true;
 	}else{
-		rwnx_vif->sta.is_roam = false; 
+		rwnx_vif->sta.is_roam = false;
 	}
 
 	if((int)atomic_read(&rwnx_vif->drv_conn_state) == (int)RWNX_DRV_STATUS_DISCONNECTING||
@@ -2339,7 +2339,7 @@ static int rwnx_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
     }else{
 		rwnx_set_conn_state(&rwnx_vif->drv_conn_state, (int)RWNX_DRV_STATUS_CONNECTING);
     }
-    
+
     if (is_wep) {
             if(sme->auth_type == NL80211_AUTHTYPE_AUTOMATIC) {
                     if(rwnx_vif->wep_enabled && rwnx_vif->wep_auth_err) {
@@ -2375,7 +2375,7 @@ static int rwnx_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 		key_params.key_len = sme->key_len;
 		key_params.seq_len = 0;
 		key_params.cipher = sme->crypto.cipher_group;
-		rwnx_cfg80211_add_key(wiphy, dev, 
+		rwnx_cfg80211_add_key(wiphy, dev,
 #if (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION2)
                                 0,
 #endif
@@ -2438,7 +2438,7 @@ static int rwnx_cfg80211_disconnect(struct wiphy *wiphy, struct net_device *dev,
 
 	AICWFDBG(LOGINFO, "%s drv_vif_index:%d disconnect reason:%d \r\n",
 		__func__, rwnx_vif->drv_vif_index, reason_code);
-    
+
 	if(atomic_read(&rwnx_vif->drv_conn_state) == RWNX_DRV_STATUS_DISCONNECTED) {
 		AICWFDBG(LOGERROR, "%s this\r\n",__func__);
         WARN_ON(1);
@@ -2464,7 +2464,7 @@ static int rwnx_cfg80211_disconnect(struct wiphy *wiphy, struct net_device *dev,
 		}
 #endif
 		return ret;
-	} 
+	}
 #if 0
     else {
 		cfg80211_connect_result(dev,  NULL, NULL, 0, NULL, 0,
@@ -5965,11 +5965,7 @@ static int __init rwnx_mod_init(void)
 		return -ENODEV;
 	}
 
-#ifdef AICWF_PCIE_SUPPORT
-	return rwnx_platform_register_drv();
-#else
 	return 0;
-#endif
 }
 
 /**
