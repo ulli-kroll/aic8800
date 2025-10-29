@@ -19,7 +19,6 @@ export CONFIG_RESV_MEM_SUPPORT = y
 
 ########## Platform support list ##########
 export CONFIG_PLATFORM_ALLWINNER = n
-export CONFIG_PLATFORM_AMLOGIC = n
 export CONFIG_PLATFORM_UBUNTU = y
 
 ifeq ($(CONFIG_PLATFORM_ALLWINNER), y)
@@ -28,14 +27,6 @@ ARCH = arm64
 CROSS_COMPILE = /home/yaya/E/Allwinner/r818/Android10/lichee/out/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
 export CONFIG_SUPPORT_LPM = y
 ccflags-y += -DANDROID_PLATFORM
-endif
-
-ifeq ($(CONFIG_PLATFORM_AMLOGIC), y)
-ARCH = arm
-CROSS_COMPILE = /home/yaya/D/Workspace/CyberQuantum/JinHaoYue/amls905x3/SDK/20191101-0tt-asop/android9.0/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androidkernel-
-KDIR = /home/yaya/D/Workspace/CyberQuantum/JinHaoYue/amls905x3/SDK/20191101-0tt-asop/android9.0/out/target/product/u202/obj/KERNEL_OBJ/
-ccflags-y += -DANDROID_PLATFORM
-export CONFIG_SUPPORT_LPM = y
 endif
 
 ifeq ($(CONFIG_PLATFORM_UBUNTU), y)

@@ -6,7 +6,6 @@ ccflags-y += -I$(srctree)/$(src)/../aic8800_bsp
 
 # Platform support list
 CONFIG_PLATFORM_ALLWINNER ?= n
-CONFIG_PLATFORM_AMLOGIC ?= n
 CONFIG_PLATFORM_UBUNTU ?= y
 
 
@@ -22,19 +21,6 @@ aic8800_btlpm-$(CONFIG_SUPPORT_LPM) += lpm.o
 ccflags-y += -DAIC_TRACE_INCLUDE_PATH=$(src)
 
 ccflags-$(CONFIG_AUTO_PM) += -DCONFIG_AUTO_PM
-
-ifeq ($(CONFIG_PLATFORM_ALLWINNER), y)
-ccflags-$(CONFIG_PLATFORM_ALLWINNER) += -DCONFIG_PLATFORM_ALLWINNER
-KDIR  ?= /home/yaya/E/Allwinner/R818/R818/AndroidQ/lichee/kernel/linux-4.9/
-ARCH ?= arm64
-CROSS_COMPILE ?= /home/yaya/E/Allwinner/R818/R818/AndroidQ/android/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
-ccflags-y += -DANDROID_PLATFORM
-endif
-
-ifeq ($(CONFIG_PLATFORM_AMLOGIC), y)
-ccflags-$(CONFIG_PLATFORM_NANOPI) += -DCONFIG_PLATFORM_NANOPI
-ccflags-y += -DANDROID_PLATFORM
-endif
 
 ifeq ($(CONFIG_PLATFORM_UBUNTU), y)
 KDIR  ?= /lib/modules/$(shell uname -r)/build

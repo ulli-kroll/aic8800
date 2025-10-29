@@ -29,14 +29,6 @@ extern int sunxi_wlan_get_bus_index(void);
 static int aicbsp_bus_index = -1;
 #endif
 
-#ifdef CONFIG_PLATFORM_AMLOGIC//for AML
-#include <linux/amlogic/aml_gpio_consumer.h>
-extern void sdio_reinit(void);
-extern void extern_wifi_set_enable(int is_on);
-extern void set_power_control_lock(int lock);
-#endif//for AML
-
-
 static int aicbsp_platform_power_on(void);
 static void aicbsp_platform_power_off(void);
 
@@ -443,15 +435,6 @@ static int aicbsp_platform_power_on(void)
 		return aicbsp_bus_index;
 #endif //CONFIG_PLATFORM_ALLWINNER
 
-#ifdef CONFIG_PLATFORM_AMLOGIC
-		extern_wifi_set_enable(0);
-		mdelay(200);
-		extern_wifi_set_enable(1);
-		mdelay(200);
-		sdio_reinit();
-		set_power_control_lock(1);
-#endif
-
 	sema_init(&aic_chipup_sem, 0);
 	ret = aicbsp_reg_sdio_notify(&aic_chipup_sem);
 	if (ret) {
@@ -481,11 +464,6 @@ static int aicbsp_platform_power_on(void)
 	sunxi_wlan_set_power(0);
 #endif //CONFIG_PLATFORM_ALLWINNER
 
-#ifdef CONFIG_PLATFORM_AMLOGIC
-        extern_wifi_set_enable(0);
-#endif
-
-
 	return -1;
 }
 
@@ -504,11 +482,6 @@ static void aicbsp_platform_power_off(void)
 	sunxi_mmc_rescan_card(aicbsp_bus_index);
 #endif //CONFIG_PLATFORM_ALLWINNER
 
-#ifdef CONFIG_PLATFORM_AMLOGIC
-	extern_wifi_set_enable(0);
-#endif
-
-
 	sdio_dbg("%s\n", __func__);
 }
 
@@ -526,7 +499,7 @@ int aicbsp_sdio_init(void)
 		return -1;
 	}
 
-	
+
 	return 0;
 }
 
@@ -905,7 +878,7 @@ static int aicwf_sdio_tx_msg(struct aic_sdio_dev *sdiodev)
 	} else
 		len = payload_len;
 
-	if(sdiodev->chipid == PRODUCT_ID_AIC8801 || sdiodev->chipid == PRODUCT_ID_AIC8800D80 || 
+	if(sdiodev->chipid == PRODUCT_ID_AIC8801 || sdiodev->chipid == PRODUCT_ID_AIC8800D80 ||
 		sdiodev->chipid == PRODUCT_ID_AIC8800D80X2){
 		buffer_cnt = aicwf_sdio_flow_ctrl(sdiodev);
 		while ((buffer_cnt <= 0 || (buffer_cnt > 0 && len > (buffer_cnt * BUFFER_SIZE))) && retry < 10) {

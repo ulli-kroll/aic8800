@@ -771,12 +771,12 @@ static int aicwf_sdio_probe(struct sdio_func *func,
 
 	sdiodev->func = func;
 	sdiodev->bus_if = bus_if;
-    
+
 #ifdef CONFIG_OOB
     if(sdiodev->chipid == PRODUCT_ID_AIC8801){
         AICWFDBG(LOGERROR, "%s ERROR!!! 8801 not support OOB \r\n", __func__);
         sdiodev->oob_enable = false;
-    }else{    
+    }else{
 	    sdiodev->oob_enable = true;
     }
 #else
@@ -824,14 +824,14 @@ static int aicwf_sdio_probe(struct sdio_func *func,
     if(sdiodev->oob_enable){
         AICWFDBG(LOGINFO, "%s SDIOWIFI_INTR_CONFIG_REG Disable\n", __func__);
         sdio_claim_host(sdiodev->func);
-        //disable sdio interrupt    
+        //disable sdio interrupt
         err = aicwf_sdio_writeb(sdiodev, SDIOWIFI_INTR_CONFIG_REG, 0x0);
         if (err < 0) {
             sdio_err("reg:%d write failed!\n", SDIOWIFI_INTR_CONFIG_REG);
-        }    
+        }
         sdio_release_irq(sdiodev->func);
         sdio_release_host(sdiodev->func);
-#if 0      
+#if 0
 #if 0//old oob feature
         sdiodev->oob_enable = true;
 #else//new oob feature
@@ -1148,9 +1148,6 @@ void aicwf_sdio_exit(void)
 	sdio_unregister_driver(&aicwf_sdio_driver);
 
 #if 0
-#ifdef CONFIG_PLATFORM_AMLOGIC
-	extern_wifi_set_enable(0);
-#endif /*CONFIG_PLATFORM_AMLOGIC*/
 #endif
 
 	if(g_rwnx_plat){
@@ -1237,7 +1234,7 @@ int aicwf_sdio_sleep_allow(struct aic_sdio_dev *sdiodev)
 			if (aicwf_sdio_writeb(sdiodev, sdiodev->sdio_reg.wakeup_reg, 0x02) < 0) {
 				sdio_err("reg:%d write failed!\n", sdiodev->sdio_reg.wakeup_reg);
 			}
-		} else if (sdiodev->chipid == PRODUCT_ID_AIC8801 || sdiodev->chipid == PRODUCT_ID_AIC8800DC || 
+		} else if (sdiodev->chipid == PRODUCT_ID_AIC8801 || sdiodev->chipid == PRODUCT_ID_AIC8800DC ||
 				sdiodev->chipid == PRODUCT_ID_AIC8800DW) {
 			if (aicwf_sdio_func2_writeb(sdiodev, sdiodev->sdio_reg.wakeup_reg, 0x2) < 0) {
 				sdio_err("reg:%d write failed!\n", sdiodev->sdio_reg.wakeup_reg);
@@ -2044,15 +2041,15 @@ int aicwf_sdio_aggr(struct aicwf_tx_priv *tx_priv, struct sk_buff *pkt)
 			return -ENOMEM;
 		}
 		//AICWFDBG(LOGTRACE,"tmp_len %d pkt_len %d \n",tmp_skb->len,pkt->len);
-		
+
 		skb_pull(tmp_skb, txhdr->sw_hdr->headroom);
-		
+
 		//AICWFDBG(LOGTRACE,"pull_tmp_len %d  \n",tmp_skb->len);
-		
+
 		skb_push(tmp_skb,sizeof(struct txdesc_api));//skb header is enough
-		
+
 		//AICWFDBG(LOGTRACE,"push_tmp_len %d  \n",tmp_skb->len);
-		
+
 		memcpy(tmp_skb->data, (u8 *)(long)&tmp_txdesc,sizeof(struct txdesc_api));
 		AICWFDBG(LOGTRACE,"need cfm len %d \n",tmp_skb->len);
 
@@ -2064,13 +2061,13 @@ int aicwf_sdio_aggr(struct aicwf_tx_priv *tx_priv, struct sk_buff *pkt)
 		headroom = txhdr->sw_hdr->headroom;
 		kmem_cache_free(txhdr->sw_hdr->rwnx_vif->rwnx_hw->sw_txhdr_cache, txhdr->sw_hdr);
 		skb_pull(pkt, headroom);
-		
+
 		//AICWFDBG(LOGTRACE,"pull_pkt_len %d  \n",pkt->len);
-		
+
 		skb_push(pkt,sizeof(struct txdesc_api));//skb header is enough
-		
+
 		//AICWFDBG(LOGTRACE,"push_pkt_len %d  \n",pkt->len);
-		
+
 		memcpy(pkt->data, (u8 *)(long)&tmp_txdesc,sizeof(struct txdesc_api));
 
 		//rwnx_data_dump("data",pkt->data,((pkt->len>64) ? 64 : pkt->len));
@@ -2080,7 +2077,7 @@ int aicwf_sdio_aggr(struct aicwf_tx_priv *tx_priv, struct sk_buff *pkt)
 		aicwf_adma_add(tx_priv, pkt);
 		tx_priv->copyd[tx_priv->aggr_segcnt -1] = false;
 	}
-	
+
 #else
 
 	struct rwnx_txhdr *txhdr = (struct rwnx_txhdr *)pkt->data;
@@ -2094,7 +2091,7 @@ int aicwf_sdio_aggr(struct aicwf_tx_priv *tx_priv, struct sk_buff *pkt)
 	sdio_header[0] = ((pkt->len - txhdr->sw_hdr->headroom + sizeof(struct txdesc_api)) & 0xff);
 	sdio_header[1] = (((pkt->len - txhdr->sw_hdr->headroom + sizeof(struct txdesc_api)) >> 8)&0x0f);
 	sdio_header[2] = 0x01; //data
-	if (tx_priv->sdiodev->chipid == PRODUCT_ID_AIC8801 || 
+	if (tx_priv->sdiodev->chipid == PRODUCT_ID_AIC8801 ||
         tx_priv->sdiodev->chipid == PRODUCT_ID_AIC8800DC ||
         tx_priv->sdiodev->chipid == PRODUCT_ID_AIC8800DW)
         sdio_header[3] = 0; //reserved
@@ -2303,10 +2300,10 @@ module_param_named(rx_thread_wait_to, rx_thread_wait_to, int, 0644);
 int sdio_busirq_thread(void *data){
         struct aicwf_rx_priv *rx_priv = (struct aicwf_rx_priv *)data;
         struct aicwf_bus *bus_if = rx_priv->sdiodev->bus_if;
-#if 0    
+#if 0
 #ifdef CONFIG_THREAD_INFO_IN_TASK
         int set_cpu_ret = 0;
-       
+
         AICWFDBG(LOGINFO, "%s the cpu is:%d\n", __func__, current->cpu);
         set_cpu_ret = set_cpus_allowed_ptr(current, cpumask_of(0));
         AICWFDBG(LOGINFO, "%s set_cpu_ret is:%d\n", __func__, set_cpu_ret);
@@ -2329,8 +2326,8 @@ int sdio_busirq_thread(void *data){
         AICWFDBG(LOGINFO, "%s the policy of current thread is:%d\n", __func__, current->policy);
         AICWFDBG(LOGINFO, "%s the rt_priority of current thread is:%d\n", __func__, current->rt_priority);
         AICWFDBG(LOGINFO, "%s the current pid is:%d\n", __func__, current->pid);
-    
-    
+
+
     while (1) {
 #if 0
             if (kthread_should_stop()) {
@@ -2341,7 +2338,7 @@ int sdio_busirq_thread(void *data){
             if(!wait_for_completion_timeout(&bus_if->busirq_trgg, msecs_to_jiffies(rx_thread_wait_to))){
                 AICWFDBG(LOGRXPOLL, "%s wait for completion timout \r\n", __func__);
             }
-       
+
             if (bus_if->state == BUS_DOWN_ST){
                 AICWFDBG(LOGERROR, "%s bus down thread exit \r\n", __func__);
                 break;
@@ -2358,7 +2355,7 @@ int sdio_busirq_thread(void *data){
 #endif
             aicwf_sdio_hal_irqhandler(bus_if->bus_priv.sdio->func);
         }
-    
+
     aic_thread_wait_stop();
 
     return 0;
@@ -2373,7 +2370,7 @@ int sdio_bustx_thread(void *data)
 {
 	struct aicwf_bus *bus = (struct aicwf_bus *) data;
 	struct aic_sdio_dev *sdiodev = bus->bus_priv.sdio;
-#if 0    
+#if 0
 #ifdef CONFIG_THREAD_INFO_IN_TASK
     int set_cpu_ret = 0;
 
@@ -2427,7 +2424,7 @@ int sdio_bustx_thread(void *data)
             rwnx_wakeup_unlock(sdiodev->rwnx_hw->ws_tx);
 		}
 	}
-    
+
 	aic_thread_wait_stop();
 	AICWFDBG(LOGINFO, "%s Exit\r\n", __func__);
 	return 0;
@@ -2453,11 +2450,11 @@ int sdio_busrx_thread(void *data)
             sched_setscheduler(current, SCHED_FIFO, &param);
     }
 #endif
-    
+
     AICWFDBG(LOGINFO, "%s the policy of current thread is:%d\n", __func__, current->policy);
     AICWFDBG(LOGINFO, "%s the rt_priority of current thread is:%d\n", __func__, current->rt_priority);
     AICWFDBG(LOGINFO, "%s the current pid is:%d\n", __func__, current->pid);
-    
+
 while (1) {
     if (kthread_should_stop()) {
         AICWFDBG(LOGERROR, "sdio busrx thread stop\n");
@@ -2489,7 +2486,7 @@ while (1) {
         }
 #endif
     }
-    
+
     return 0;
 
 }
@@ -2498,8 +2495,8 @@ int sdio_busrx_thread(void *data)
 {
     struct aicwf_rx_priv *rx_priv = (struct aicwf_rx_priv *)data;
     struct aicwf_bus *bus_if = rx_priv->sdiodev->bus_if;
-    
-    
+
+
 #if 0
 	struct cpumask cpumask;
 	cpumask_clear(&cpumask);
@@ -2529,11 +2526,11 @@ int sdio_busrx_thread(void *data)
 #endif
     }
 #endif
-    
+
     AICWFDBG(LOGINFO, "%s the policy of current thread is:%d\n", __func__, current->policy);
     AICWFDBG(LOGINFO, "%s the rt_priority of current thread is:%d\n", __func__, current->rt_priority);
     AICWFDBG(LOGINFO, "%s the current pid is:%d\n", __func__, current->pid);
-    
+
     while (1) {
         #if 0
         if (kthread_should_stop()) {
@@ -2576,7 +2573,7 @@ static int aicwf_sdio_pwrctl_thread(void *data)
 				continue;
 
             rwnx_wakeup_lock(sdiodev->rwnx_hw->ws_pwrctrl);
-            
+
 			if ((int)(atomic_read(&sdiodev->tx_priv->tx_pktcnt) <= 0) && (sdiodev->tx_priv->cmd_txstate == false) && \
 					atomic_read(&sdiodev->rx_priv->rx_cnt) == 0)
 				aicwf_sdio_pwr_stctl(sdiodev, SDIO_SLEEP_ST);
@@ -2875,7 +2872,7 @@ void aicwf_sdio_reg_init(struct aic_sdio_dev *sdiodev)
 {
     sdio_dbg("%s\n", __func__);
 
-    if(sdiodev->chipid == PRODUCT_ID_AIC8801 || sdiodev->chipid == PRODUCT_ID_AIC8800DC || 
+    if(sdiodev->chipid == PRODUCT_ID_AIC8801 || sdiodev->chipid == PRODUCT_ID_AIC8800DC ||
        sdiodev->chipid == PRODUCT_ID_AIC8800DW){
         sdiodev->sdio_reg.bytemode_len_reg =       SDIOWIFI_BYTEMODE_LEN_REG;
         sdiodev->sdio_reg.intr_config_reg =        SDIOWIFI_INTR_CONFIG_REG;
