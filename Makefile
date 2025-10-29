@@ -279,7 +279,6 @@ aic8800_fdrv-y += \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_mod_params.o \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_mesh.o \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_platform.o \
-	aicsemi/aic8800/aic8800_fdrv/rwnx_v7.o \
 	aicsemi/aic8800/aic8800_fdrv/ipc_host.o \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_tdls.o \
 	aicsemi/aic8800/aic8800_fdrv/aic_vendor.o \

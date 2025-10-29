@@ -16,7 +16,6 @@
 #include "rwnx_tx.h"
 #include "hal_desc.h"
 #include "rwnx_cfgfile.h"
-#include "rwnx_dini.h"
 #include "reg_access.h"
 #include "rwnx_compat.h"
 
@@ -880,7 +879,7 @@ static void rwnx_set_vht_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 	    }
 
 		rwnx_hw->vht_cap_5G.cap |= IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK;
-	} 
+	}
 #endif//USE_5G
 	return;
 #else
@@ -1324,7 +1323,7 @@ static void rwnx_set_he_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 	#endif
 	if (rwnx_hw->mod_params->stbc_on)
 		he_cap->he_cap_elem.phy_cap_info[2] |= IEEE80211_HE_PHY_CAP2_STBC_RX_UNDER_80MHZ;
-	
+
 	#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 13, 0)
 	he_cap->he_cap_elem.phy_cap_info[3] |= IEEE80211_HE_PHY_CAP3_DCM_MAX_CONST_RX_16_QAM |
 		IEEE80211_HE_PHY_CAP3_DCM_MAX_RX_NSS_1 |
@@ -1334,7 +1333,7 @@ static void rwnx_set_he_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 		IEEE80211_HE_PHY_CAP3_DCM_MAX_RX_NSS_1 |
 		IEEE80211_HE_PHY_CAP3_RX_HE_MU_PPDU_FROM_NON_AP_STA;
 	#endif
-	
+
 
 	if (rwnx_hw->mod_params->bfmee) {
 		he_cap->he_cap_elem.phy_cap_info[4] |= IEEE80211_HE_PHY_CAP4_SU_BEAMFORMEE;

@@ -24,7 +24,6 @@
 #include <linux/random.h>
 #include <linux/vmalloc.h>
 #include "rwnx_defs.h"
-#include "rwnx_dini.h"
 #include "rwnx_msg_tx.h"
 #include "reg_access.h"
 #include "hal_desc.h"
