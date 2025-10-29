@@ -458,85 +458,6 @@ typedef struct
 powerlimit_info_t powerlimit_info = {0,};
 #endif
 
-#ifdef CONFIG_RWNX_TL4
-/**
- * rwnx_plat_tl4_fw_upload() - Load the requested FW into embedded side.
- *
- * @rwnx_plat: pointer to platform structure
- * @fw_addr: Virtual address where the fw must be loaded
- * @filename: Name of the fw.
- *
- * Load a fw, stored as a hex file, into the specified address
- */
-static int rwnx_plat_tl4_fw_upload(struct rwnx_plat *rwnx_plat, u8 *fw_addr,
-								   char *filename)
-{
-	struct device *dev = rwnx_platform_get_dev(rwnx_plat);
-	const struct firmware *fw;
-	int err = 0;
-	u32 *dst;
-	u8 const *file_data;
-	char typ0, typ1;
-	u32 addr0, addr1;
-	u32 dat0, dat1;
-	int remain;
-
-	err = request_firmware(&fw, filename, dev);
-	if (err) {
-		return err;
-	}
-	file_data = fw->data;
-	remain = fw->size;
-
-	/* Copy the file on the Embedded side */
-	dev_dbg(dev, "\n### Now copy %s firmware, @ = %p\n", filename, fw_addr);
-
-	/* Walk through all the lines of the configuration file */
-	while (remain >= 16) {
-		u32 data, offset;
-
-		if (sscanf(file_data, "%c:%08X %04X", &typ0, &addr0, &dat0) != 3)
-			break;
-		if ((addr0 & 0x01) != 0) {
-			addr0 = addr0 - 1;
-			dat0 = 0;
-		} else {
-			file_data += 16;
-			remain -= 16;
-		}
-		if ((remain < 16) ||
-			(sscanf(file_data, "%c:%08X %04X", &typ1, &addr1, &dat1) != 3) ||
-			(typ1 != typ0) || (addr1 != (addr0 + 1))) {
-			typ1 = typ0;
-			addr1 = addr0 + 1;
-			dat1 = 0;
-		} else {
-			file_data += 16;
-			remain -= 16;
-		}
-
-		if (typ0 == 'C') {
-			offset = 0x00200000;
-			if ((addr1 % 4) == 3)
-				offset += 2*(addr1 - 3);
-			else
-				offset += 2*(addr1 + 1);
-
-			data = dat1 | (dat0 << 16);
-		} else {
-			offset = 2*(addr1 - 1);
-			data = dat0 | (dat1 << 16);
-		}
-		dst = (u32 *)(fw_addr + offset);
-		*dst = data;
-	}
-
-	release_firmware(fw);
-
-	return err;
-}
-#endif
-
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0)
 MODULE_IMPORT_NS("VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver");
@@ -3392,8 +3313,6 @@ MODULE_FIRMWARE(RWNX_AGC_FW_NAME);
 MODULE_FIRMWARE(RWNX_FCU_FW_NAME);
 MODULE_FIRMWARE(RWNX_LDPC_RAM_NAME);
 MODULE_FIRMWARE(RWNX_MAC_FW_NAME);
-#ifndef CONFIG_RWNX_TL4
 MODULE_FIRMWARE(RWNX_MAC_FW_NAME2);
-#endif
 
 
