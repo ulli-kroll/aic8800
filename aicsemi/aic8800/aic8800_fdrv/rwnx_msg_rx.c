@@ -905,7 +905,7 @@ static inline int rwnx_rx_sm_connect_ind(struct rwnx_hw *rwnx_hw,
 #else
     		chan = ieee80211_get_channel(rwnx_hw->wiphy, ind->center_freq);
     		cfg80211_roamed(dev
-#if LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 39) || defined(COMPAT_KERNEL_RELEASE)
+#if LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 39)
     			, chan
 #endif
     			, (const u8 *)ind->bssid.array
@@ -914,7 +914,7 @@ static inline int rwnx_rx_sm_connect_ind(struct rwnx_hw *rwnx_hw,
     			, rsp_ie
     			, ind->assoc_rsp_ie_len
     			, GFP_ATOMIC);
-            
+
 #endif /*LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)*/
 			rwnx_set_conn_state(&rwnx_vif->drv_conn_state, (int)RWNX_DRV_STATUS_CONNECTED);
     	}
@@ -925,7 +925,7 @@ static inline int rwnx_rx_sm_connect_ind(struct rwnx_hw *rwnx_hw,
 		netif_tx_start_all_queues(dev);
 		netif_carrier_on(dev);
 	}
-    
+
 exit:
     rwnx_vif->sta.is_roam = false;
 	return 0;
