@@ -905,9 +905,7 @@ static inline int rwnx_rx_sm_connect_ind(struct rwnx_hw *rwnx_hw,
 #else
     		chan = ieee80211_get_channel(rwnx_hw->wiphy, ind->center_freq);
     		cfg80211_roamed(dev
-#if LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 39)
     			, chan
-#endif
     			, (const u8 *)ind->bssid.array
     			, req_ie
     			, ind->assoc_req_ie_len
