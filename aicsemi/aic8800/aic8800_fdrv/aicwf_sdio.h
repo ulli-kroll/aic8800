@@ -89,10 +89,6 @@ int aicwf_sdio_send(struct aicwf_tx_priv *tx_priv);
 void aicwf_sdio_aggr_send(struct aicwf_tx_priv *tx_priv);
 void aicwf_sdio_aggrbuf_reset(struct aicwf_tx_priv* tx_priv);
 extern void aicwf_hostif_ready(void);
-#ifdef CONFIG_PLATFORM_NANOPI
-extern void extern_wifi_set_enable(int is_on);
-extern void sdio_reinit(void);
-#endif /*CONFIG_PLATFORM_NANOPI*/
 
 #endif /* AICWF_SDIO_SUPPORT */
 
