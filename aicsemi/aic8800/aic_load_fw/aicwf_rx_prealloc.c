@@ -11,11 +11,7 @@
 struct aicwf_rx_buff_list aic_rx_buff_list;
 
 int aic_rxbuff_num_max = 1000;
-#ifdef CONFIG_PLATFORM_HI
-int aic_rxbuff_size = (4 * 512) * 1;
-#else
 int aic_rxbuff_size = (4 * 512) * 10;
-#endif
 
 int rx_buff_list_ava = 0;
 
@@ -26,7 +22,7 @@ int aicwf_rxbuff_size_get(void)
     return aic_rxbuff_size;
 }
 
-struct rx_buff *aicwf_prealloc_rxbuff_alloc(spinlock_t *lock) 
+struct rx_buff *aicwf_prealloc_rxbuff_alloc(spinlock_t *lock)
 {
     unsigned long flags;
     struct rx_buff *rxbuff = NULL;

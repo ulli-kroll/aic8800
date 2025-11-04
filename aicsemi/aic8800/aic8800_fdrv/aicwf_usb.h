@@ -72,11 +72,7 @@ enum AICWF_IC{
 #endif
 #define AICWF_USB_TX_LOW_WATER         (AICWF_USB_TX_URBS/4)//25%
 #define AICWF_USB_TX_HIGH_WATER        (AICWF_USB_TX_LOW_WATER*3)//75%
-#ifdef CONFIG_PLATFORM_HI
-#define AICWF_USB_AGGR_MAX_PKT_SIZE     (2048*1)
-#else
 #define AICWF_USB_AGGR_MAX_PKT_SIZE     (2048*10)
-#endif
 #define AICWF_USB_MSG_MAX_PKT_SIZE      (2048)
 #define AICWF_USB_MAX_PKT_SIZE          (2048)
 #define AICWF_USB_MAX_AMSDU_PKT_SIZE    (2048*6)
