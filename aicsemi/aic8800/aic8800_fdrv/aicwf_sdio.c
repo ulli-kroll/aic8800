@@ -254,13 +254,6 @@ static struct sdio_driver aicwf_sdio_driver = {
     },
 };
 
-#ifdef CONFIG_NANOPI_M4
-    extern int mmc_rescan_try_freq(struct mmc_host *host, unsigned freq);
-    extern unsigned  aic_max_freqs;
-    extern struct mmc_host* aic_host_drv;
-    extern int __mmc_claim_host(struct mmc_host *host, atomic_t *abort);
-    extern void mmc_release_host(struct mmc_host *host);
-#endif
 void aicwf_sdio_register(void)
 {
 
