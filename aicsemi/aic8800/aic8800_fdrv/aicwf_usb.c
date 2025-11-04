@@ -2285,16 +2285,6 @@ static int rwnx_register_hostwake_irq(struct device *dev)
 
 //Setting hostwake gpio for platform
 //For Allwinner
-#ifdef CONFIG_PLATFORM_ALLWINNER
-		int irq_flags;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
-	hostwake_irq_num = sunxi_wlan_get_oob_irq(&irq_flags, &wakeup_enable);
-#else
-	hostwake_irq_num = sunxi_wlan_get_oob_irq();
-	irq_flags = sunxi_wlan_get_oob_irq_flags();
-	wakeup_enable = 1;
-#endif
-#endif //CONFIG_PLATFORM_ALLWINNER
 
 
 	ret = request_irq(hostwake_irq_num,
