@@ -23,10 +23,6 @@
 #define _RWNX_COMPAT_H_
 #include <linux/version.h>
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 10, 0)
-#error "Minimum kernel version supported is 3.10"
-#endif
-
 /* Generic */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
 #define __bf_shf(x) (__builtin_ffsll(x) - 1)
