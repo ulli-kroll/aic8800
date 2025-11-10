@@ -47,19 +47,9 @@ static int __init aic_bluetooth_mod_init(void)
 		pr_err("rfkill init fail\n");
 		goto err1;
 	}
-#if defined(ANDROID_PLATFORM)
-	ret = bluesleep_init(aicbt_pdev);
-	if (ret) {
-		pr_err("bluesleep init fail\n");
-		goto err2;
-	}
-#endif
 
 	return 0;
 
-#if defined(ANDROID_PLATFORM)
-err2:
-#endif
 	rfkill_bluetooth_remove(aicbt_pdev);
 err1:
 	platform_device_del(aicbt_pdev);
@@ -71,9 +61,6 @@ err0:
 static void __exit aic_bluetooth_mod_exit(void)
 {
 	printk("%s\n", __func__);
-#if defined(ANDROID_PLATFORM)
-	bluesleep_exit(aicbt_pdev);
-#endif
 	rfkill_bluetooth_remove(aicbt_pdev);
 	platform_device_del(aicbt_pdev);
 	platform_driver_unregister(&aicbt_driver);

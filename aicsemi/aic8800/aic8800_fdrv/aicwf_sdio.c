@@ -449,25 +449,12 @@ static u32 hostwake_irq_num;
 //static struct wakeup_source *ws;
 #endif
 #else
-#ifdef ANDROID_PLATFORM
-#ifdef CONFIG_GPIO_WAKEUP
-#include <linux/wakelock.h>
-static struct wake_lock irq_wakelock;
-//struct wake_lock irq_wakelock;
-#endif//CONFIG_GPIO_WAKEUP
-#endif//ANDROID_PLATFORM
 #endif
 
 #if 0
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 static struct wakeup_source *ws;
 #else
-#ifdef ANDROID_PLATFORM
-#ifdef CONFIG_GPIO_WAKEUP
-#include <linux/wakelock.h>
-static struct wake_lock irq_wakelock;
-#endif//CONFIG_GPIO_WAKEUP
-#endif//ANDROID_PLATFORM
 #endif
 #endif
 
@@ -483,11 +470,6 @@ void rwnx_pm_stay_awake(struct aic_sdio_dev *sdiodev){
             AICWFDBG(LOGWAKELOCK, "%s active_count:%d relax_count:%d\r\n", __func__, (int)ws->active_count, (int)ws->relax_count);
 		}
 #else
-#ifdef ANDROID_PLATFORM
-#ifdef CONFIG_GPIO_WAKEUP
-		wake_lock(&irq_wakelock);
-#endif //CONFIG_GPIO_WAKEUP
-#endif //ANDROID_PLATFORM
 #endif
 
 	spin_unlock_bh(&sdiodev->wslock);
@@ -505,11 +487,6 @@ void rwnx_pm_relax(struct aic_sdio_dev *sdiodev){
         AICWFDBG(LOGWAKELOCK, "%s active_count:%d relax_count:%d\r\n", __func__, (int)ws->active_count, (int)ws->relax_count);
 	}
 #else
-#ifdef ANDROID_PLATFORM
-#ifdef CONFIG_GPIO_WAKEUP
-	wake_unlock(&irq_wakelock);
-#endif //CONFIG_GPIO_WAKEUP
-#endif //ANDROID_PLATFORM
 #endif
 	spin_unlock_bh(&sdiodev->wslock);
 #endif
@@ -531,9 +508,6 @@ static irqreturn_t rwnx_hostwake_irq_handler(int irq, void *para)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 	rwnx_wakeup_lock_timeout(g_rwnx_plat->sdiodev->rwnx_hw->ws_rx, 1000);
 #else
-#ifdef ANDROID_PLATFORM
-	wake_lock_timeout(&irq_wakelock, HZ);
-#endif //ANDROID_PLATFORM
 #endif
 
 	AICWFDBG(LOGIRQ, "%s(%d): wake_irq_cnt = %d\n", __func__, __LINE__, wake_cnt);
@@ -580,9 +554,6 @@ static int rwnx_register_hostwake_irq(struct device *dev)
 		//ws_rx_sdio = wakeup_source_register(dev, "wifi_rx_sleep");
 		//ws_sdio_pwrctrl = wakeup_source_register(dev, "sdio_pwrctrl_sleep");
 #else
-#ifdef ANDROID_PLATFORM
-		wake_lock_init(&irq_wakelock, WAKE_LOCK_SUSPEND, "wifisleep");
-#endif
 #endif
 		ret = device_init_wakeup(dev, true);
 		if (ret < 0) {
@@ -626,9 +597,6 @@ fail1:
 	//wakeup_source_unregister(ws_rx_sdio);
 	//wakeup_source_unregister(ws_sdio_pwrctrl);
 #else
-#ifdef ANDROID_PLATFORM
-	wake_lock_destroy(&irq_wakelock);
-#endif
 #endif
 #endif//CONFIG_GPIO_WAKEUP
 	return ret;
@@ -651,9 +619,6 @@ static int rwnx_unregister_hostwake_irq(struct device *dev)
 		//wakeup_source_unregister(ws_rx_sdio);
 		//wakeup_source_unregister(ws_sdio_pwrctrl);
 #else
-#ifdef ANDROID_PLATFORM
-		wake_lock_destroy(&irq_wakelock);
-#endif //ANDROID_PLATFORM
 #endif
 	}
 	free_irq(hostwake_irq_num, NULL);
