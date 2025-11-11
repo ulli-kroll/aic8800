@@ -1521,11 +1521,7 @@ static void aicwf_usb_free_urb(struct list_head *q, spinlock_t *qlock)
         #if defined CONFIG_USB_NO_TRANS_DMA_MAP
         // free dma buf if needed
         if (usb_buf->data_buf) {
-            #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35))
             usb_free_coherent(usb_buf->usbdev->udev, DATA_BUF_MAX, usb_buf->data_buf, usb_buf->data_dma_trans_addr);
-            #else
-            usb_buffer_free(usb_buf->usbdev->udev, DATA_BUF_MAX, usb_buf->data_buf, usb_buf->data_dma_trans_addr);
-            #endif
             usb_buf->data_buf = NULL;
             usb_buf->data_dma_trans_addr = 0x0;
         }
@@ -1583,11 +1579,7 @@ static int aicwf_usb_alloc_tx_urb(struct aic_usb_dev *usb_dev)
         #endif
         #if defined CONFIG_USB_NO_TRANS_DMA_MAP
         // alloc dma buf
-        #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35))
         usb_buf->data_buf = usb_alloc_coherent(usb_dev->udev, DATA_BUF_MAX, (in_interrupt() ? GFP_ATOMIC : GFP_KERNEL), &usb_buf->data_dma_trans_addr);
-        #else
-        usb_buf->data_buf = usb_buffer_alloc(usb_dev->udev, DATA_BUF_MAX, (in_interrupt() ? GFP_ATOMIC : GFP_KERNEL), &usb_buf->data_dma_trans_addr);
-        #endif
         if (usb_buf->data_buf == NULL) {
             usb_err("could not allocate tx data dma buf\n");
             goto err;
@@ -1933,11 +1925,7 @@ static void aicwf_usb_cancel_all_urbs_(struct aic_usb_dev *usb_dev)
         #if defined CONFIG_USB_NO_TRANS_DMA_MAP
         // free dma buf if needed
         if (usb_buf->data_buf) {
-            #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35))
             usb_free_coherent(usb_buf->usbdev->udev, DATA_BUF_MAX, usb_buf->data_buf, usb_buf->data_dma_trans_addr);
-            #else
-            usb_buffer_free(usb_buf->usbdev->udev, DATA_BUF_MAX, usb_buf->data_buf, usb_buf->data_dma_trans_addr);
-            #endif
             usb_buf->data_buf = NULL;
             usb_buf->data_dma_trans_addr = 0x0;
         } else {
