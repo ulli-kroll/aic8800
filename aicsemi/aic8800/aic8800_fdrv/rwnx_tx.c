@@ -1165,11 +1165,8 @@ int aic_br_client_tx(struct rwnx_vif *vif, struct sk_buff **pskb)
 					printk("%s(): skb_is_nonlinear!!\n", __FUNCTION__);
 
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 18))
-				res = skb_linearize(skb, GFP_ATOMIC);
-#else	/* (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 18)) */
 				res = skb_linearize(skb);
-#endif /* (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 18)) */
+
 				if (res < 0) {
 					printk("TX DROP: skb_linearize fail!\n");
 					/* goto free_and_stop; */
