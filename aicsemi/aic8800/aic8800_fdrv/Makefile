@@ -57,7 +57,6 @@ CONFIG_RWNX_AMSDUS_TX ?= n
 # Enable BFMER support (need FW support)
 CONFIG_RWNX_BFMER ?= n
 
-CONFIG_SDIO_SUPPORT =n
 CONFIG_USB_SUPPORT =y
 CONFIG_RX_REORDER =y
 CONFIG_ARP_OFFLOAD =y
@@ -197,9 +196,6 @@ $(MODULE_NAME)-$(CONFIG_DEBUG_FS)         += rwnx_fw_trace.o
 $(MODULE_NAME)-$(CONFIG_NL80211_TESTMODE) += rwnx_testmode.o
 $(MODULE_NAME)-$(CONFIG_RWNX_BFMER)       += rwnx_bfmer.o
 $(MODULE_NAME)-$(CONFIG_RWNX_MUMIMO_TX)   += rwnx_mu_group.o
-$(MODULE_NAME)-$(CONFIG_SDIO_SUPPORT)     += sdio_host.o
-$(MODULE_NAME)-$(CONFIG_SDIO_SUPPORT)     += aicwf_txrxif.o
-$(MODULE_NAME)-$(CONFIG_SDIO_SUPPORT)     += aicwf_sdio.o
 $(MODULE_NAME)-$(CONFIG_FILTER_TCP_ACK)   += aicwf_tcp_ack.o
 
 $(MODULE_NAME)-$(CONFIG_USB_SUPPORT)     += usb_host.o

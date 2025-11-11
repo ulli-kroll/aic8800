@@ -57,7 +57,6 @@ CONFIG_RWNX_AMSDUS_TX ?= n
 # Enable BFMER support (need FW support)
 CONFIG_RWNX_BFMER ?= n
 
-CONFIG_SDIO_SUPPORT =n
 CONFIG_USB_SUPPORT =y
 CONFIG_RX_REORDER =y
 CONFIG_ARP_OFFLOAD =y
@@ -208,11 +207,6 @@ aic8800_fdrv-$(CONFIG_RWNX_BFMER) += \
 aic8800_fdrv-$(CONFIG_RWNX_MUMIMO_TX) += \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_mu_group.o
 
-aic8800_fdrv-$(CONFIG_SDIO_SUPPORT) += \
-	aicsemi/aic8800/aic8800_fdrv/sdio_host.o \
-	aicsemi/aic8800/aic8800_fdrv/aicwf_txrxif.o \
-	aicsemi/aic8800/aic8800_fdrv/aicwf_sdio.o
-
 aic8800_fdrv-$(CONFIG_FILTER_TCP_ACK) += \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_tcp_ack.o
 
@@ -297,10 +291,6 @@ ccflags-$(CONFIG_DYNAMIC_PWR) += -DCONFIG_DYNAMIC_PWR
 ccflags-$(CONFIG_DYNAMIC_PERPWR) += -DCONFIG_DYNAMIC_PERPWR
 ccflags-$(CONFIG_BAND_STEERING) += -DCONFIG_BAND_STEERING
 ccflags-$(CONFIG_WRITE_FILE_D80X2) += -DRF_WRITE_FILE
-
-ifeq ($(CONFIG_SDIO_SUPPORT), y)
-ccflags-y += -DAICWF_SDIO_SUPPORT
-endif
 
 ifeq ($(CONFIG_USB_SUPPORT), y)
 ccflags-y += -DAICWF_USB_SUPPORT
