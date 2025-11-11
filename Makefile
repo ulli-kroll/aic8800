@@ -78,7 +78,6 @@ CONFIG_USB_ALIGN_DATA = y
 CONFIG_RX_TASKLET = n
 CONFIG_TX_TASKLET = n
 CONFIG_RX_NETIF_RECV_SKB = y
-CONFIG_BR_SUPPORT = n
 CONFIG_USB_MSG_OUT_EP = y
 CONFIG_USB_MSG_IN_EP = y
 CONFIG_USB_RX_REASSEMBLE = n
@@ -159,7 +158,6 @@ CONFIG_FILTER_TCP_ACK =y
 # extra DEBUG config
 CONFIG_RWNX_SW_PROFILING ?= n
 CONFIG_RWNX_DBG ?= y
-BR_NAME = br0
 
 aic8800_fdrv-y += \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_wakelock.o \
@@ -193,9 +191,6 @@ aic8800_fdrv-y += \
 aic8800_fdrv-$(CONFIG_BAND_STEERING) += \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_manager.o    \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_steering.o
-
-$(MODULE_NAME)-$(CONFIG_BR_SUPPORT) += \
-	aicsemi/aic8800/aic8800_fdrvaic_br_ext.o
 
 aic8800_fdrv-$(CONFIG_RWNX_RADAR) += \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_radar.o
@@ -309,10 +304,6 @@ endif
 
 ifeq ($(CONFIG_USB_SUPPORT), y)
 ccflags-y += -DAICWF_USB_SUPPORT
-endif
-ifeq ($(CONFIG_BR_SUPPORT), y)
-ccflags-y += -DCONFIG_BR_SUPPORT
-ccflags-y += '-DCONFIG_BR_SUPPORT_BRNAME="'$(BR_NAME)'"'
 endif
 
 ifeq ($(CONFIG_RWNX_MUMIMO_TX), y)

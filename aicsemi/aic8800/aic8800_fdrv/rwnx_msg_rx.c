@@ -1204,12 +1204,6 @@ static inline int rwnx_rx_sm_disconnect_ind(struct rwnx_hw *rwnx_hw,
 	rwnx_dbgfs_unregister_rc_stat(rwnx_hw, rwnx_vif->sta.ap);
 #endif
 
-#ifdef CONFIG_BR_SUPPORT
-	struct rwnx_vif *vif = netdev_priv(dev);
-        /* clear bridge database */
-        nat25_db_cleanup(rwnx_vif);
-#endif /* CONFIG_BR_SUPPORT */
-
     if(rwnx_vif->wdev.iftype == NL80211_IFTYPE_P2P_CLIENT)
         rwnx_hw->is_p2p_connected = 0;
     /* if vif is not up, rwnx_close has already been called */

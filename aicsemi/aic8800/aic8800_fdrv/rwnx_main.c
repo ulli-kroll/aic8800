@@ -1246,55 +1246,14 @@ void aicwf_steering_timeout(struct timer_list *t)
 #endif
 
 
-#ifdef CONFIG_BR_SUPPORT
-void netdev_br_init(struct net_device *netdev)
-{
-	struct rwnx_vif *rwnx_vif = netdev_priv(netdev);
-
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35))
-	rcu_read_lock();
-#endif
-
-	/* if(check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE) */
-	{
-		/* struct net_bridge	*br = netdev->br_port->br; */ /* ->dev->dev_addr; */
-		#if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
-		if (netdev->br_port)
-		#else
-		if (rcu_dereference(rwnx_vif->ndev->rx_handler_data))
-		#endif
-		{
-			struct net_device *br_netdev;
-
-			br_netdev = dev_get_by_name(&init_net, CONFIG_BR_SUPPORT_BRNAME);
-			if (br_netdev) {
-				memcpy(rwnx_vif->br_mac, br_netdev->dev_addr, ETH_ALEN);
-				dev_put(br_netdev);
-				AICWFDBG(LOGINFO, FUNC_NDEV_FMT" bind bridge dev "NDEV_FMT"("MAC_FMT")\n"
-					, FUNC_NDEV_ARG(netdev), NDEV_ARG(br_netdev), MAC_ARG(br_netdev->dev_addr));
-			} else {
-				AICWFDBG(LOGINFO, FUNC_NDEV_FMT" can't get bridge dev by name \"%s\"\n"
-					, FUNC_NDEV_ARG(netdev), CONFIG_BR_SUPPORT_BRNAME);
-			}
-		}
-
-		rwnx_vif->ethBrExtInfo.addPPPoETag = 1;
-	}
-
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35))
-	rcu_read_unlock();
-#endif
-}
-#endif /* CONFIG_BR_SUPPORT */
-
 void rwnx_set_conn_state(atomic_t *drv_conn_state, int state){
 
     if((int)atomic_read(drv_conn_state) != state){
-        AICWFDBG(LOGDEBUG, "%s drv_conn_state:%p %s --> %s \r\n", __func__, 
+        AICWFDBG(LOGDEBUG, "%s drv_conn_state:%p %s --> %s \r\n", __func__,
             drv_conn_state,
-            s_conn_state[(int)atomic_read(drv_conn_state)], 
+            s_conn_state[(int)atomic_read(drv_conn_state)],
             s_conn_state[state]);
-        
+
         atomic_set(drv_conn_state, state);
     }
 }
@@ -1456,10 +1415,6 @@ static int rwnx_open(struct net_device *dev)
 	AICWFDBG(LOGINFO, "monitor xmit: netif_carrier_on\n");
     #endif
 
-#ifdef CONFIG_BR_SUPPORT
-    netdev_br_init(dev);
-#endif /* CONFIG_BR_SUPPORT */
-
     //netif_carrier_off(dev);
     netif_start_queue(dev);
 
@@ -1619,13 +1574,6 @@ static int rwnx_close(struct net_device *dev)
         } else {
             netdev_warn(dev, "AP not stopped when disabling interface");
 		}
-#ifdef CONFIG_BR_SUPPORT
-        /* if (OPMODE & (WIFI_STATION_STATE | WIFI_ADHOC_STATE)) */
-        {
-            /* void nat25_db_cleanup(_adapter *priv); */
-            nat25_db_cleanup(rwnx_vif);
-        }
-#endif /* CONFIG_BR_SUPPORT */
 	}
 
 
@@ -1904,9 +1852,6 @@ static struct rwnx_vif *rwnx_interface_add(struct rwnx_hw *rwnx_hw,
     vif->ch_index = RWNX_CH_NOT_SET;
     memset(&vif->net_stats, 0, sizeof(vif->net_stats));
     vif->is_p2p_vif = 0;
-#ifdef CONFIG_BR_SUPPORT
-    spin_lock_init(&vif->br_ext_lock);
-#endif /* CONFIG_BR_SUPPORT */
 
     switch (type) {
     case NL80211_IFTYPE_STATION:

@@ -46,10 +46,6 @@
 #include "usb_host.h"
 #endif
 
-#ifdef CONFIG_BR_SUPPORT
-#include "aic_br_ext.h"
-#endif /* CONFIG_BR_SUPPORT */
-
 #define WPI_HDR_LEN    18
 #define WPI_PN_LEN     16
 #define WPI_PN_OFST     2
@@ -472,20 +468,6 @@ struct rwnx_vif {
 	u8_l is_p2p_vif;
 	struct apm_probe_sta sta_probe;
 
-    #ifdef CONFIG_BR_SUPPORT
-	spinlock_t			    br_ext_lock;
-	/* unsigned int			macclone_completed; */
-	struct nat25_network_db_entry	*nethash[NAT25_HASH_SIZE];
-	int				pppoe_connection_in_progress;
-	unsigned char			pppoe_addr[MACADDRLEN];
-	unsigned char			scdb_mac[MACADDRLEN];
-	unsigned char			scdb_ip[4];
-	struct nat25_network_db_entry	*scdb_entry;
-	unsigned char			br_mac[MACADDRLEN];
-	unsigned char			br_ip[4];
-
-	struct br_ext_info		ethBrExtInfo;
-    #endif /* CONFIG_BR_SUPPORT */
 #ifdef CONFIG_BAND_STEERING
 	struct workqueue_struct *rsp_wq;
 	struct timer_list steer_timer;
