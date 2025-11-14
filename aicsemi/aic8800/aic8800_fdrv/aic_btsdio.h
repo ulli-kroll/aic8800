@@ -65,14 +65,12 @@ struct btusb_data {
     struct usb_anchor deferred;*/
     int tx_in_flight;
     spinlock_t txlock;
-	
+
 #if (CONFIG_BLUEDROID == 0)
-#if HCI_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
 		spinlock_t rxlock;
 		struct sk_buff *evt_skb;
 		struct sk_buff *acl_skb;
 		struct sk_buff *sco_skb;
-#endif
 #endif
 
     /*struct usb_endpoint_descriptor *intr_ep;
@@ -89,9 +87,7 @@ struct btusb_data {
     uint16_t sco_handle;
 
 #if (CONFIG_BLUEDROID == 0)
-#if HCI_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
     int (*recv_bulk) (struct btusb_data * data, void *buffer, int count);
-#endif
 #endif
 
 //#ifdef CONFIG_HAS_EARLYSUSPEND

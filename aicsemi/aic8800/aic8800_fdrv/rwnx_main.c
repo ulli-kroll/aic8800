@@ -2462,10 +2462,8 @@ static int rwnx_cfg80211_sched_scan_start(struct wiphy *wiphy,
 
     scan_request->wiphy = wiphy;
     scan_request->scan_start = request->scan_start;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,19,0)
     memcpy(scan_request->mac_addr, request->mac_addr, ETH_ALEN);
     memcpy(scan_request->mac_addr_mask, request->mac_addr_mask, ETH_ALEN);
-#endif
     rwnx_hw->sched_scan_req = request;
     scan_request->wdev = &rwnx_vif->wdev;
     AICWFDBG(LOGDEBUG, "%s scan_request->n_channels:%d \r\n", __func__, scan_request->n_channels);
