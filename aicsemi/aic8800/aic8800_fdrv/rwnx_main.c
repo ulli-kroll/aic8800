@@ -3809,36 +3809,19 @@ static int rwnx_cfg80211_get_channel(struct wiphy *wiphy,
 /**
  * @mgmt_tx: Transmit a management frame.
  */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
 static int rwnx_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 								 struct cfg80211_mgmt_tx_params *params,
 								 u64 *cookie)
-#else
-static int rwnx_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
-								 struct ieee80211_channel *channel, bool offchan,
-								 unsigned int wait, const u8 *buf, size_t len,
-							#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 2, 0))
-								 bool no_cck,
-							#endif
-							#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 3, 0))
-								 bool dont_wait_for_ack,
-							#endif
-								 u64 *cookie)
-#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0) */
 {
 	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
 	struct rwnx_vif *rwnx_vif = container_of(wdev, struct rwnx_vif, wdev);//netdev_priv(wdev->netdev);
 	struct rwnx_sta *rwnx_sta;
-	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
 	struct ieee80211_channel *channel = params->chan;
 	const u8 *buf = params->buf;
 	//size_t len = params->len;
-	#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0) */
 	struct ieee80211_mgmt *mgmt = (void *)buf;
 	bool ap = false;
-	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
 	bool offchan = false;
-	#endif
 
 	/* Check if provided VIF is an AP or a STA one */
 	switch (RWNX_VIF_TYPE(rwnx_vif)) {
@@ -3907,16 +3890,10 @@ static int rwnx_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 		//rwnx_hw->roc_elem->mgmt_roc = true;
 	}
 
-	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
 	offchan = true;
-	#endif
 
 send_frame:
-	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
 	return rwnx_start_mgmt_xmit(rwnx_vif, rwnx_sta, params, offchan, cookie);
-	#else
-	return rwnx_start_mgmt_xmit(rwnx_vif, rwnx_sta, channel, offchan, wait, buf, len, no_cck, dont_wait_for_ack, cookie);
-	#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0) */
 }
 
 /**

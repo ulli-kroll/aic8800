@@ -126,11 +126,7 @@ static inline u8_l get_chan_flags(uint32_t flags)
 {
 	u8_l chan_flags = 0;
 #ifdef CONFIG_RADAR_OR_IR_DETECT
-	#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0)
 	if (flags & IEEE80211_CHAN_PASSIVE_SCAN)
-	#else
-	if (flags & IEEE80211_CHAN_NO_IR)
-	#endif
 		chan_flags |= CHAN_NO_IR;
 	if (flags & IEEE80211_CHAN_RADAR)
 		chan_flags |= CHAN_RADAR;
@@ -2655,12 +2651,10 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
 	if (params->sta_flags_set & BIT(NL80211_STA_FLAG_MFP))
 		req->flags |= STA_MFP_CAPA;
 
-	#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
 	if (link_sta_params->opmode_notif_used) {
 		req->flags |= STA_OPMOD_NOTIF;
 		req->opmode = link_sta_params->opmode_notif_used;
 	}
-	#endif
 
 	req->aid = cpu_to_le16(params->aid);
 	req->uapsd_queues = params->uapsd_queues;
