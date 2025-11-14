@@ -436,11 +436,7 @@ rwnx_tdls_add_aid_ie(struct rwnx_vif *rwnx_vif, struct sk_buff *skb)
 {
 	u8 *pos = (void *)skb_put(skb, 4);
 
-	#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 12, 0)
 	*pos++ = WLAN_EID_AID;
-	#else
-	*pos++ = 197;
-	#endif
 	*pos++ = 2; /* len */
 	*pos++ = rwnx_vif->sta.ap->aid;
 }

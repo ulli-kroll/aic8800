@@ -17,9 +17,6 @@
 #include <linux/vmalloc.h>
 #include <linux/firmware.h>
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0)
-#include <linux/hardirq.h>
-#endif
 #include <linux/fs.h>
 #include "aicsdio_txrxif.h"
 #include "aicsdio.h"

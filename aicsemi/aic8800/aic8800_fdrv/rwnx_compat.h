@@ -256,7 +256,7 @@ enum ieee80211_radiotap_he_mu_bits {
 #define REGULATORY_IGNORE_STALE_KICKOFF 0
 #endif
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0)) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 12, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0)) && (1)
 #define cfg80211_rx_mgmt(wdev, freq, rssi, buf, len, flags)             \
 	cfg80211_rx_mgmt(wdev, freq, rssi, buf, len, flags, GFP_ATOMIC)
 #endif
