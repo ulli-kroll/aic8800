@@ -263,13 +263,8 @@ enum ieee80211_radiotap_he_mu_bits {
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
 #if 0
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0)
 #define rwnx_cfg80211_tdls_mgmt(wiphy, dev, peer, act, tok, status, peer_capability, initiator, buf, len) \
 	rwnx_cfg80211_tdls_mgmt(wiphy, dev, peer, act, tok, status, peer_capability, buf, len)
-#else
-#define rwnx_cfg80211_tdls_mgmt(wiphy, dev, peer, act, tok, status, peer_capability, initiator, buf, len) \
-	rwnx_cfg80211_tdls_mgmt(wiphy, dev, peer, act, tok, status, buf, len)
-#endif
 #endif
 
 #include <linux/types.h>
