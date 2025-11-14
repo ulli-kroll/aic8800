@@ -83,7 +83,7 @@ void rwnx_ps_bh_enable(struct rwnx_hw *rwnx_hw, struct rwnx_sta *sta,
 	if (enable) {
 #ifdef CREATE_TRACE_POINTS
 		trace_ps_enable(sta);
-#endif 
+#endif
 		spin_lock_bh(&rwnx_hw->tx_lock);
 		sta->ps.active = true;
 		sta->ps.sp_cnt[LEGACY_PS_ID] = 0;
@@ -1787,7 +1787,6 @@ int rwnx_start_mgmt_xmit(struct rwnx_vif *vif, struct rwnx_sta *sta,
 
 		robust = ieee80211_is_robust_mgmt_frame(skb);
 
-	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0))
 	/* Update CSA counter if present */
 	if (unlikely(params->n_csa_offsets) &&
 		vif->wdev.iftype == NL80211_IFTYPE_AP &&
@@ -1799,7 +1798,6 @@ int rwnx_start_mgmt_xmit(struct rwnx_vif *vif, struct rwnx_sta *sta,
 			data[params->csa_offsets[i]] = vif->ap.csa->count;
 		}
 	}
-	#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0) */
 
 	/*
 	 * Go back to the beginning of the allocated data area
