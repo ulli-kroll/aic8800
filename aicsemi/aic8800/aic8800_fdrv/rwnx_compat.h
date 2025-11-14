@@ -261,34 +261,6 @@ enum ieee80211_radiotap_he_mu_bits {
 	cfg80211_rx_mgmt(wdev, freq, rssi, buf, len, flags, GFP_ATOMIC)
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
-#if 0
-#define rwnx_cfg80211_tdls_mgmt(wiphy, dev, peer, act, tok, status, peer_capability, initiator, buf, len) \
-	rwnx_cfg80211_tdls_mgmt(wiphy, dev, peer, act, tok, status, peer_capability, buf, len)
-#endif
-
-#include <linux/types.h>
-
-struct ieee80211_wmm_ac_param {
-	u8 aci_aifsn; /* AIFSN, ACM, ACI */
-	u8 cw; /* ECWmin, ECWmax (CW = 2^ECW - 1) */
-	__le16 txop_limit;
-} __packed;
-
-struct ieee80211_wmm_param_ie {
-	u8 element_id; /* Element ID: 221 (0xdd); */
-	u8 len; /* Length: 24 */
-	/* required fields for WMM version 1 */
-	u8 oui[3]; /* 00:50:f2 */
-	u8 oui_type; /* 2 */
-	u8 oui_subtype; /* 1 */
-	u8 version; /* 1 for WMM version 1.0 */
-	u8 qos_info; /* AP/STA specific QoS info */
-	u8 reserved; /* 0 */
-	/* AC_BE, AC_BK, AC_VI, AC_VO */
-	struct ieee80211_wmm_ac_param ac[4];
-} __packed;
-#endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 enum {
@@ -370,11 +342,6 @@ enum {
 	rwnx_ops_sw_scan_complete(hw)
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
-#define rwnx_ops_hw_scan(hw, vif, hw_req) \
-	rwnx_ops_hw_scan(hw, vif, struct cfg80211_scan_request *req)
-#endif
-
 /* NET */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 #define rwnx_select_queue(dev, skb, sb_dev) \
@@ -391,22 +358,10 @@ enum {
 #define sk_pacing_shift_update(sk, shift)
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
-#define alloc_netdev_mqs(size, name, assign, setup, txqs, rxqs) \
-	alloc_netdev_mqs(size, name, setup, txqs, rxqs)
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
-#define NET_NAME_UNKNOWN 0
-#endif
 
 /* TRACE */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
 #define trace_print_symbols_seq ftrace_print_symbols_seq
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
-#define trace_seq_buffer_ptr(p) (p->buffer + p->len)
 #endif
 
 /* TIME */
@@ -416,10 +371,6 @@ enum {
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 19, 0)
 #define ktime_get_real_seconds get_seconds
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
-typedef __s64 time64_t;
 #endif
 
 #endif /* _RWNX_COMPAT_H_ */
