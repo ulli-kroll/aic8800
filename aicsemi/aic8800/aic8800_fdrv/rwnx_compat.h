@@ -235,22 +235,7 @@ enum ieee80211_radiotap_he_mu_bits {
 #define SURVEY_TIME_BUSY(s) s->time_busy
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 19, 0)
-#define cfg80211_ch_switch_started_notify(dev, chandef, count)
-
-#define WLAN_BSS_COEX_INFORMATION_REQUEST	BIT(0)
-#define WLAN_EXT_CAPA1_EXT_CHANNEL_SWITCHING	BIT(2)
-#define WLAN_EXT_CAPA4_TDLS_BUFFER_STA		BIT(4)
-#define WLAN_EXT_CAPA4_TDLS_PEER_PSM		BIT(5)
-#define WLAN_EXT_CAPA4_TDLS_CHAN_SWITCH		BIT(6)
-#define WLAN_EXT_CAPA5_TDLS_CH_SW_PROHIBITED	BIT(7)
-#define NL80211_FEATURE_TDLS_CHANNEL_SWITCH     0
-
-#define STA_TDLS_INITIATOR(sta) 0
-
-#else
 #define STA_TDLS_INITIATOR(sta) sta->tdls_initiator
-#endif
 
 #ifndef REGULATORY_IGNORE_STALE_KICKOFF
 #define REGULATORY_IGNORE_STALE_KICKOFF 0
@@ -329,13 +314,6 @@ enum {
 #define ieee80211_hw_set(hw, feat) {hw->flags |= IEEE80211_HW_##feat; }
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 19, 0)
-#define rwnx_ops_sw_scan_start(hw, vif, mac_addr) \
-	rwnx_ops_sw_scan_start(hw)
-#define rwnx_ops_sw_scan_complete(hw, vif) \
-	rwnx_ops_sw_scan_complete(hw)
-#endif
-
 /* NET */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 #define rwnx_select_queue(dev, skb, sb_dev) \
@@ -361,10 +339,6 @@ enum {
 /* TIME */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 8, 0)
 #define time64_to_tm(t, o, tm) time_to_tm((time_t)t, o, tm)
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 19, 0)
-#define ktime_get_real_seconds get_seconds
 #endif
 
 #endif /* _RWNX_COMPAT_H_ */
