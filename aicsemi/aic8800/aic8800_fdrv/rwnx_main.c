@@ -5215,7 +5215,6 @@ static const struct wiphy_wowlan_support aic_wowlan_support = {
 /**
  *
  */
-extern int aicwf_vendor_init(struct wiphy *wiphy);
 extern txpwr_idx_conf_t nvram_txpwr_idx;
 
 
@@ -5651,8 +5650,6 @@ int rwnx_cfg80211_init(struct rwnx_plat *rwnx_plat, void **platform_data)
 		rwnx_limits[0].types = BIT(NL80211_IFTYPE_MONITOR);
 		rwnx_limits_dfs[0].types = BIT(NL80211_IFTYPE_MONITOR);
 	}
-
-	aicwf_vendor_init(wiphy);
 
 	ret = wiphy_register(wiphy);
 	if (ret) {
