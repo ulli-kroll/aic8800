@@ -259,9 +259,6 @@ enum ieee80211_radiotap_he_mu_bits {
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0)) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 12, 0))
 #define cfg80211_rx_mgmt(wdev, freq, rssi, buf, len, flags)             \
 	cfg80211_rx_mgmt(wdev, freq, rssi, buf, len, flags, GFP_ATOMIC)
-#elif LINUX_VERSION_CODE < KERNEL_VERSION(3, 11, 0)
-#define cfg80211_rx_mgmt(wdev, freq, rssi, buf, len, flags)             \
-	cfg80211_rx_mgmt(wdev, freq, rssi, buf, len, GFP_ATOMIC)
 #endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)

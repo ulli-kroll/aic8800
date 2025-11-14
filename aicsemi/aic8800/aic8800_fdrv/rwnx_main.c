@@ -5521,11 +5521,7 @@ int rwnx_cfg80211_init(struct rwnx_plat *rwnx_plat, void **platform_data)
 
 #if IS_ENABLED(CONFIG_PM)
 	/* Set WoWLAN flags */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)
 	wiphy->wowlan = &aic_wowlan_support;
-#else
-	wiphy->wowlan.flags = aic_wowlan_support.flags;
-#endif
 #endif
 	wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL |
 		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 12, 0))
