@@ -23,11 +23,7 @@
 #include "rwnx_platform.h"
 #include "aicwf_rx_prealloc.h"
 #include "rwnx_msg_tx.h"
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
 #include <linux/pm_wakeirq.h>
-#else
-#include <linux/pm_wakeup.h>
-#endif
 #include "rwnx_wakelock.h"
 
 #include "aic_bsp_export.h"
@@ -561,9 +557,7 @@ static int rwnx_register_hostwake_irq(struct device *dev)
 			return ret;
 		}
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
 		ret = dev_pm_set_wake_irq(dev, hostwake_irq_num);
-#endif
 		if (ret < 0) {
 			pr_err("%s(%d): can't enable wakeup src!\n", __func__, __LINE__);
 			goto fail1;
@@ -578,17 +572,13 @@ static int rwnx_register_hostwake_irq(struct device *dev)
 	}
 	//disable_irq(hostwake_irq_num);
 	rwnx_disable_hostwake_irq();
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
 	dev_pm_clear_wake_irq(dev);
-#endif
 	rwnx_enable_hostwake_irq();
 	AICWFDBG(LOGINFO, "%s(%d)\n", __func__, __LINE__);
 	return ret;
 
 fail2:
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
 	dev_pm_clear_wake_irq(dev);
-#endif
 fail1:
 	device_init_wakeup(dev, false);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
@@ -608,11 +598,7 @@ static int rwnx_unregister_hostwake_irq(struct device *dev)
 	rwnx_disable_hostwake_irq();
 	if (wakeup_enable) {
 		device_init_wakeup(dev, false);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
 		dev_pm_clear_wake_irq(dev);
-#else
-	AICWFDBG(LOGERROR, "%s kernel unsupport this feature!\r\n", __func__);
-#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 		//wakeup_source_unregister(ws);
 		//wakeup_source_unregister(ws_tx_sdio);

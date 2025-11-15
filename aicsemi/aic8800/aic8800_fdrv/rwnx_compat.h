@@ -207,11 +207,6 @@ enum ieee80211_radiotap_he_mu_bits {
 #define NUM_NL80211_BANDS IEEE80211_NUM_BANDS
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
-#define cfg80211_disconnected(dev, reason, ie, len, local, gfp) \
-	cfg80211_disconnected(dev, reason, ie, len, gfp)
-#endif
-
 #define SURVEY_TIME(s) s->time
 #define SURVEY_TIME_BUSY(s) s->time_busy
 
@@ -288,12 +283,6 @@ enum {
 #endif
 #endif /* CONFIG_VENDOR_RWNX_AMSDUS_TX */
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
-#define IEEE80211_HW_SUPPORT_FAST_XMIT 0
-#define ieee80211_hw_check(hw, feat) (hw->flags & IEEE80211_HW_##feat)
-#define ieee80211_hw_set(hw, feat) {hw->flags |= IEEE80211_HW_##feat; }
-#endif
-
 /* NET */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 #define rwnx_select_queue(dev, skb, sb_dev) \
@@ -310,11 +299,6 @@ enum {
 #define sk_pacing_shift_update(sk, shift)
 #endif
 
-
-/* TRACE */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
-#define trace_print_symbols_seq ftrace_print_symbols_seq
-#endif
 
 /* TIME */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 8, 0)

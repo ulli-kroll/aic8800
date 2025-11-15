@@ -844,7 +844,6 @@ static int __init bluesleep_probe(struct platform_device *pdev)
 #endif
 		BT_DBG("wakeup source is disabled!\n");
 	} else {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
 		ret = device_init_wakeup(dev, true);
 		if (ret < 0) {
 			BT_ERR("device init wakeup failed!\n");
@@ -857,9 +856,6 @@ static int __init bluesleep_probe(struct platform_device *pdev)
 			goto err2;
 		}
 		bsi->wakeup_enable = 1;
-#else
-			BT_ERR("%s kernel unsupport this feature!\r\n", __func__);
-#endif
 	}
 
 	bsi->ext_wake = of_get_named_gpio_flags(np, "bt_wake", 0, &config);
@@ -962,15 +958,11 @@ static int bluesleep_remove(struct platform_device *pdev)
 	wake_lock_destroy(&bsi->wake_lock);
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
 	if (bsi->wakeup_enable) {
 		BT_DBG("Deinit wakeup source");
 		device_init_wakeup(&pdev->dev, false);
 		dev_pm_clear_wake_irq(&pdev->dev);
 	}
-#else
-	BT_ERR("%s kernel unsupport this feature!\r\n", __func__);
-#endif
 	return 0;
 }
 
