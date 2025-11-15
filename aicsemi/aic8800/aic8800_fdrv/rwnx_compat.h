@@ -271,12 +271,6 @@ enum {
 #endif
 
 #ifndef CONFIG_VENDOR_RWNX_AMSDUS_TX
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 6, 0))
-#define rwnx_ops_ampdu_action(hw, vif, params) \
-	rwnx_ops_ampdu_action(hw, vif, enum ieee80211_ampdu_mlme_action action, \
-						  struct ieee80211_sta *sta, u16 tid, u16 *ssn, u8 buf_size, \
-						  bool amsdu)
-#endif
 #endif /* CONFIG_VENDOR_RWNX_AMSDUS_TX */
 
 /* NET */
