@@ -101,7 +101,7 @@ extern char country_code[];
 	}                                                           \
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0) || defined(CONFIG_HE_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)
 #define RWNX_HE_CAPABILITIES                                    \
 {                                                               \
 	.has_he = false,                                            \
@@ -316,7 +316,7 @@ static struct ieee80211_channel rwnx_5ghz_channels[] = {
 	CHAN(5970),
 };
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)) || defined(CONFIG_HE_FOR_OLD_KERNEL)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
 struct ieee80211_sband_iftype_data rwnx_he_capa = {
 	.types_mask = BIT(NL80211_IFTYPE_STATION)|BIT(NL80211_IFTYPE_AP),
 	.he_cap = RWNX_HE_CAPABILITIES,
@@ -3110,7 +3110,7 @@ static int rwnx_cfg80211_start_ap(struct wiphy *wiphy, struct net_device *dev,
 		u8 txq_status = 0;
 		rwnx_vif->ap.bcmc_index = apm_start_cfm.bcmc_idx;
 		rwnx_vif->ap.flags = 0;
-#if (defined CONFIG_HE_FOR_OLD_KERNEL) || (defined CONFIG_VHT_FOR_OLD_KERNEL)
+#if (defined CONFIG_VHT_FOR_OLD_KERNEL)
 		rwnx_vif->ap.aic_index = 0;
 #endif
 		rwnx_vif->ap.csa = NULL;
