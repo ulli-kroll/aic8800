@@ -178,13 +178,8 @@ enum ieee80211_radiotap_he_mu_bits {
 #endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0)
-#define rwnx_cfg80211_add_iface(wiphy, name, name_assign_type, type, params) \
-	rwnx_cfg80211_add_iface(wiphy, name, type, u32 *flags, params)
-#else
 #define rwnx_cfg80211_add_iface(wiphy, name, name_assign_type, type, params) \
 	rwnx_cfg80211_add_iface(wiphy, name, name_assign_type, type, u32 *flags, params)
-#endif
 
 #define rwnx_cfg80211_change_iface(wiphy, dev, type, params) \
 	rwnx_cfg80211_change_iface(wiphy, dev, type, u32 *flags, params)
@@ -215,10 +210,6 @@ enum ieee80211_radiotap_he_mu_bits {
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
 #define cfg80211_disconnected(dev, reason, ie, len, local, gfp) \
 	cfg80211_disconnected(dev, reason, ie, len, gfp)
-#endif
-
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0)) && !(defined CONFIG_VENDOR_RWNX)
-#define ieee80211_chandef_to_operating_class(chan_def, op_class) 0
 #endif
 
 #define SURVEY_TIME(s) s->time

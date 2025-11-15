@@ -1726,9 +1726,6 @@ static struct wireless_dev *rwnx_cfg80211_add_iface(struct wiphy *wiphy,
 {
 	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
 	struct wireless_dev *wdev;
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0))
-	unsigned char name_assign_type = NET_NAME_UNKNOWN;
-#endif
 
 	if (type != NL80211_IFTYPE_P2P_DEVICE) {
 		struct rwnx_vif *vif = rwnx_interface_add(rwnx_hw, name, name_assign_type, type, params);
