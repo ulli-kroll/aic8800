@@ -52,15 +52,6 @@
 #define PS_SP_INTERRUPTED  255
 #define MAC_ADDR_LEN 6
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
-struct ieee80211_vht_operation {
-        u8 vht_op_info_chwidth;
-        u8 vht_op_info_chan_center_freq_seg1_idx;
-        u8 vht_op_info_chan_center_freq_seg2_idx;
-        __le16 vht_basic_mcs_set;
-} __packed;
-#endif
-
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
 #define IEEE80211_RADIOTAP_VHT                                  21
 #define IEEE80211_RADIOTAP_VHT_KNOWN_GI                         0x0004
