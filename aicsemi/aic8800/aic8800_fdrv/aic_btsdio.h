@@ -316,9 +316,7 @@ struct hci_dev {
     int (*close)(struct hci_dev *hdev);
     int (*flush)(struct hci_dev *hdev);
     int (*send)(struct sk_buff *skb);
-#if LINUX_VERSION_CODE > KERNEL_VERSION(3, 7, 1)
     __u16               voice_setting;
-#endif
     void (*notify)(struct hci_dev *hdev, unsigned int evt);
     int (*ioctl)(struct hci_dev *hdev, unsigned int cmd, unsigned long arg);
 	u8 *align_data;
