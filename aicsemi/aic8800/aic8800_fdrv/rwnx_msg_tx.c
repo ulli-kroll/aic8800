@@ -2533,7 +2533,6 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
 		req->ht_cap.asel_capa = ht_capa->antenna_selection_info;
 	}
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
     if (link_sta_params->vht_capa) {
         const struct ieee80211_vht_cap *vht_capa = link_sta_params->vht_capa;
 
@@ -2544,7 +2543,6 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
         req->vht_cap.tx_highest = cpu_to_le16(vht_capa->supp_mcs.tx_highest);
         req->vht_cap.tx_mcs_map = cpu_to_le16(vht_capa->supp_mcs.tx_mcs_map);
     }
-#endif
 
 	AICWFDBG(LOGDEBUG,"rx map %x  rx high %x tx map %x tx high %x \n",req->vht_cap.rx_mcs_map,req->vht_cap.rx_highest,req->vht_cap.tx_mcs_map,req->vht_cap.tx_highest);
 

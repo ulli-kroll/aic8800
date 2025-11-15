@@ -434,24 +434,4 @@ enum mac_connection_flags {
 	REASSOCIATION = BIT(5),
 };
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-struct ieee80211_vht_mcs_info {
-	__le16 rx_mcs_map;
-	__le16 rx_highest;
-	__le16 tx_mcs_map;
-	__le16 tx_highest;
-} __packed;
-
-struct ieee80211_vht_cap {
-	__le32 vht_cap_info;
-	struct ieee80211_vht_mcs_info supp_mcs;
-};
-#define WLAN_EID_VHT_CAPABILITY             191
-
-struct ieee80211_sta_vht_cap {
-	bool vht_supported;
-	u32 cap; /* use IEEE80211_VHT_CAP_ */
-	struct ieee80211_vht_mcs_info vht_mcs;
-};
-#endif
 #endif // LMAC_MAC_H_
