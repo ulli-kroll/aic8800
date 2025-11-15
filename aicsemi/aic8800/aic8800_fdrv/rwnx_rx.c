@@ -551,35 +551,6 @@ static void rwnx_rx_mgmt(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
 
 	//printk("rwnx_rx_mgmt\n");
 
-#if (defined CONFIG_VHT_FOR_OLD_KERNEL)
-	struct aic_sta *sta = &rwnx_hw->aic_table[rwnx_vif->ap.aic_index];
-	const u8* ie;
-	u32 len;
-
-	if(skb->data[0]!=0x80)
-		AICWFDBG(LOGDEBUG,"rxmgmt:%x,%x\n", skb->data[0], skb->data[1]);
-
-    if (ieee80211_is_assoc_req(mgmt->frame_control) && rwnx_vif->wdev.iftype == NL80211_IFTYPE_AP) {
-        printk("ASSOC_REQ: sta_idx %d MAC %pM\n", rwnx_vif->ap.aic_index, mgmt->sa);
-        sta->sta_idx = rwnx_vif->ap.aic_index;
-        len = skb->len - (mgmt->u.assoc_req.variable - skb->data);
-
-        #ifdef CONFIG_VHT_FOR_OLD_KERNEL
-        struct ieee80211_vht_cap *vht;
-        ie = cfg80211_find_ie(WLAN_EID_VHT_CAPABILITY, mgmt->u.assoc_req.variable, len);
-        if (ie && ie[1] >= sizeof(*vht)) {
-            printk("assoc_req: find vht\n");
-			memcpy(&sta->vht_cap_info,ie+2,4);
-			memcpy(&sta->supp_mcs,ie+2+4,sizeof(struct ieee80211_vht_mcs_info));
-            sta->vht = true;
-        } else {
-            printk("assoc_req: no find vht\n");
-            sta->vht = false;
-        }
-        #endif
-    }
-#endif
-
 	/*if (ieee80211_is_mgmt(mgmt->frame_control) &&
 	    (skb->len <= 24 || skb->len > 768)) {
 	    printk("mgmt err\n");

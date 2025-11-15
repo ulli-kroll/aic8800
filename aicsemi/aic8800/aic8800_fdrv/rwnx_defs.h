@@ -52,7 +52,7 @@
 #define PS_SP_INTERRUPTED  255
 #define MAC_ADDR_LEN 6
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0)
 enum nl80211_ac {
         NL80211_AC_VO,
         NL80211_AC_VI,
@@ -62,7 +62,7 @@ enum nl80211_ac {
 };
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
 struct ieee80211_vht_operation {
         u8 vht_op_info_chwidth;
         u8 vht_op_info_chan_center_freq_seg1_idx;
@@ -71,7 +71,7 @@ struct ieee80211_vht_operation {
 } __packed;
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
 #define IEEE80211_RADIOTAP_VHT                                  21
 #define IEEE80211_RADIOTAP_VHT_KNOWN_GI                         0x0004
 #define IEEE80211_RADIOTAP_VHT_KNOWN_BANDWIDTH                  0x0040
@@ -328,9 +328,6 @@ struct rwnx_vif {
 			struct list_head sta_list; /* List of STA connected to the AP */
 			struct rwnx_bcn bcn;       /* beacon */
 			u8 bcmc_index;             /* Index of the BCMC sta to use */
-#if (defined CONFIG_VHT_FOR_OLD_KERNEL)
-			u8 aic_index;
-#endif
 			struct rwnx_csa *csa;
 
 			struct list_head mpath_list; /* List of Mesh Paths used on this interface */
@@ -396,22 +393,6 @@ struct rwnx_sta_stats {
 	struct hw_vect last_rx;
 	struct rwnx_rx_rate_stats rx_rate;
 };
-
-#if (defined CONFIG_VHT_FOR_OLD_KERNEL)
-struct aic_sta {
-    u8 sta_idx;             /* Identifier of the station */
-	bool he;               /* Flag indicating if the station supports HE */
-	bool vht;               /* Flag indicating if the station supports VHT */
-
-	struct ieee80211_he_cap_elem he_cap_elem;
-	struct ieee80211_he_mcs_nss_supp he_mcs_nss_supp;
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
-	__le32 vht_cap_info;
-	struct ieee80211_vht_mcs_info supp_mcs;
-#endif
-};
-#endif
 
 /*
  * Structure used to save information relative to the managed stations.
@@ -591,9 +572,6 @@ struct rwnx_hw {
 	struct list_head vifs;
 	struct rwnx_vif *vif_table[NX_VIRT_DEV_MAX + NX_REMOTE_STA_MAX]; /* indexed with fw id */
 	struct rwnx_sta sta_table[NX_REMOTE_STA_MAX + NX_VIRT_DEV_MAX];
-#if (defined CONFIG_VHT_FOR_OLD_KERNEL)
-	struct aic_sta aic_table[NX_REMOTE_STA_MAX + NX_VIRT_DEV_MAX];
-#endif
 	struct rwnx_survey_info survey[SCAN_CHANNEL_MAX];
 	struct cfg80211_scan_request *scan_request;
 #ifdef CONFIG_SCHED_SCAN
