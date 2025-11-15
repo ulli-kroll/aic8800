@@ -203,10 +203,6 @@ enum ieee80211_radiotap_he_mu_bits {
 	ieee80211_amsdu_to_8023s(skb, list, addr, iftype, extra_headroom, false)
 #endif
 
-#if LINUX_VERSION_CODE  < KERNEL_VERSION(4, 7, 0)
-#define NUM_NL80211_BANDS IEEE80211_NUM_BANDS
-#endif
-
 #define SURVEY_TIME(s) s->time
 #define SURVEY_TIME_BUSY(s) s->time_busy
 
