@@ -565,20 +565,14 @@ static inline int rwnx_rx_scan_done_ind(struct rwnx_hw *rwnx_hw,
 										struct rwnx_cmd *cmd,
 										struct ipc_e2a_msg *msg)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
 	struct cfg80211_scan_info info = {
 		.aborted = false,
 	};
-#endif
 	RWNX_DBG(RWNX_FN_ENTRY_STR);
 
 	rwnx_ipc_elem_var_deallocs(rwnx_hw, &rwnx_hw->scan_ie);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
 	ieee80211_scan_completed(rwnx_hw->hw, &info);
-#else
-	ieee80211_scan_completed(rwnx_hw->hw, false);
-#endif
 
 	return 0;
 }
@@ -600,15 +594,11 @@ static inline int rwnx_rx_scanu_start_cfm(struct rwnx_hw *rwnx_hw,
         && !rwnx_hw->is_sched_scan
 #endif//CONFIG_SCHED_SCAN
         ) {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
 		struct cfg80211_scan_info info = {
 			.aborted = false,
 		};
 
 		cfg80211_scan_done(rwnx_hw->scan_request, &info);
-#else
-		cfg80211_scan_done(rwnx_hw->scan_request, false);
-#endif
 	}
 
 #ifdef CONFIG_SCHED_SCAN
@@ -616,11 +606,11 @@ static inline int rwnx_rx_scanu_start_cfm(struct rwnx_hw *rwnx_hw,
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
         AICWFDBG(LOGINFO, "%s cfg80211_sched_scan_results \r\n", __func__);
-        cfg80211_sched_scan_results(rwnx_hw->scan_request->wiphy, 
+        cfg80211_sched_scan_results(rwnx_hw->scan_request->wiphy,
                 rwnx_hw->sched_scan_req->reqid);
 #else
         cfg80211_sched_scan_results(rwnx_hw->sched_scan_req->wiphy);
-#endif  
+#endif
         kfree(rwnx_hw->scan_request);
         rwnx_hw->is_sched_scan = false;
     }

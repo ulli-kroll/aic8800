@@ -3104,11 +3104,9 @@ int rwnx_send_scanu_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
 	req->ssid_cnt = (u8)min_t(int, SCAN_SSID_MAX, param->n_ssids);
 	req->bssid = mac_addr_bcst;
 	req->no_cck = param->no_cck;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
     if (param->duration_mandatory)
         //req->duration = ieee80211_tu_to_usec(param->duration);
         req->duration = 0;
-#endif
 
 #ifdef CONFIG_RADAR_OR_IR_DETECT
 	if (req->ssid_cnt == 0)
