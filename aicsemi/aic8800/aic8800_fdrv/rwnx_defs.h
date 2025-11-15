@@ -52,16 +52,6 @@
 #define PS_SP_INTERRUPTED  255
 #define MAC_ADDR_LEN 6
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0)
-enum nl80211_ac {
-        NL80211_AC_VO,
-        NL80211_AC_VI,
-        NL80211_AC_BE,
-        NL80211_AC_BK,
-        NL80211_NUM_ACS
-};
-#endif
-
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
 struct ieee80211_vht_operation {
         u8 vht_op_info_chwidth;
