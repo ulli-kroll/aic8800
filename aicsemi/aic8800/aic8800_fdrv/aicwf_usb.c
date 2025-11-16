@@ -2215,11 +2215,9 @@ static int aicwf_parse_usb(struct aic_usb_dev *usb_dev, struct usb_interface *in
         AICWFDBG(LOGINFO, "Aic super plus speed USB device detected\n");
         break;
 #endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 0, 0)
     case USB_SPEED_SUPER:
         AICWFDBG(LOGINFO, "Aic super speed USB device detected\n");
         break;
-#endif
     case USB_SPEED_HIGH:
         AICWFDBG(LOGINFO, "Aic high speed USB device detected\n");
         break;
