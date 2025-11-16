@@ -366,7 +366,6 @@ static ssize_t bluesleep_write_proc_btwrite(struct file *file,
 	return count;
 }
 
-#if LINUX_VERSION_CODE > KERNEL_VERSION(5, 10, 0)
 static const struct proc_ops lpm_fops = {
 	.proc_open	= bluesleep_lpm_proc_open,
 	.proc_read	= seq_read,
@@ -381,24 +380,6 @@ static const struct proc_ops btwrite_fops = {
 	.proc_release	= single_release,
 	.proc_write	= bluesleep_write_proc_btwrite,
 };
-#else
-static const struct file_operations lpm_fops = {
-	.owner		= THIS_MODULE,
-	.open		= bluesleep_lpm_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-	.write		= bluesleep_write_proc_lpm,
-};
-static const struct file_operations btwrite_fops = {
-	.owner		= THIS_MODULE,
-	.open		= bluesleep_btwrite_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-	.write		= bluesleep_write_proc_btwrite,
-};
-#endif
 #else
 /**
  * Handles HCI device events.
