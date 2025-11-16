@@ -19,7 +19,6 @@ ccflags-$(CONFIG_USE_FW_REQUEST) += -DCONFIG_USE_FW_REQUEST
 
 
 # Platform support list
-CONFIG_PLATFORM_ALLWINNER ?= n
 CONFIG_PLATFORM_AMLOGIC ?= n
 CONFIG_PLATFORM_UBUNTU ?= y
 
@@ -28,12 +27,6 @@ CONFIG_PLATFORM_UBUNTU ?= y
 CONFIG_PLATFORM_MTK_LINUX ?= n
 
 
-ifeq ($(CONFIG_PLATFORM_ALLWINNER), y)
-ccflags-$(CONFIG_PLATFORM_ALLWINNER) += -DCONFIG_PLATFORM_ALLWINNER
-KDIR  := /home/yaya/E/Allwinner/R818/R818/AndroidQ/lichee/kernel/linux-4.9
-ARCH ?= arm64
-CROSS_COMPILE ?= /home/yaya/E/Allwinner/R818/R818/AndroidQ/lichee/out/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
-endif
 
 ifeq ($(CONFIG_PLATFORM_AMLOGIC), y)
         ccflags-$(CONFIG_PLATFORM_AMLOGIC) += -DCONFIG_PLATFORM_AMLOGIC

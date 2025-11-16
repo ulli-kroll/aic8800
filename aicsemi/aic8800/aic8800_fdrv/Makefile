@@ -343,17 +343,9 @@ ccflags-$(CONFIG_WOWLAN) += -DCONFIG_WOWLAN
 MAKEFLAGS +=-j$(shell nproc)
 
 # Platform support list
-CONFIG_PLATFORM_ALLWINNER ?= n
 CONFIG_PLATFORM_AMLOGIC ?= n
 CONFIG_PLATFORM_HI ?= n
 CONFIG_PLATFORM_UBUNTU ?= y
-
-ifeq ($(CONFIG_PLATFORM_ALLWINNER), y)
-KDIR  ?= /home/yaya/E/Allwinner/R818/R818/AndroidQ/lichee/kernel/linux-4.9
-ARCH ?= arm64
-CROSS_COMPILE ?= /home/yaya/E/Allwinner/R818/R818/AndroidQ/lichee/out/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
-ccflags-y += -DANDROID_PLATFORM
-endif
 
 ifeq ($(CONFIG_PLATFORM_AMLOGIC), y)
 ccflags-y += -DANDROID_PLATFORM

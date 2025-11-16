@@ -16,7 +16,6 @@ CONFIG_PREALLOC_RX_SKB ?= n
 CONFIG_PREALLOC_TXQ ?= y
 
 # Platform support list
-CONFIG_PLATFORM_ALLWINNER ?= n
 CONFIG_PLATFORM_AMLOGIC ?= n
 CONFIG_PLATFORM_HI ?= n
 CONFIG_PLATFORM_UBUNTU ?= y
@@ -57,13 +56,6 @@ $(MODULE_NAME)-$(CONFIG_PREALLOC_RX_SKB)	 += aicwf_rx_prealloc.o
 $(MODULE_NAME)-$(CONFIG_PREALLOC_TXQ)     += aicwf_txq_prealloc.o
 
 
-
-ifeq ($(CONFIG_PLATFORM_ALLWINNER), y)
-ccflags-$(CONFIG_PLATFORM_ALLWINNER) += -DCONFIG_PLATFORM_ALLWINNER
-KDIR  := /home/yaya/E/Allwinner/R818/R818/AndroidQ/lichee/kernel/linux-4.9
-ARCH ?= arm64
-CROSS_COMPILE ?= /home/yaya/E/Allwinner/R818/R818/AndroidQ/lichee/out/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
-endif
 
 ifeq ($(CONFIG_PLATFORM_AMLOGIC), y)
 ccflags-$(CONFIG_PLATFORM_AMLOGIC) += -DCONFIG_PLATFORM_AMLOGIC

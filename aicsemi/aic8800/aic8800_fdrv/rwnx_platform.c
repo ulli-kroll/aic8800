@@ -853,7 +853,7 @@ int rwnx_plat_bin_fw_upload_2(struct rwnx_hw *rwnx_hw, u32 fw_addr,
 
 
 #ifndef CONFIG_ROM_PATCH_EN
-#if defined(CONFIG_PLATFORM_ALLWINNER) || defined(CONFIG_NANOPI_M4)
+#if defined(CONFIG_NANOPI_M4)
 #if 0
 static int aic_load_firmware(u32 ** fw_buf, const char *name,
                  struct device *device)
@@ -973,7 +973,7 @@ static int aic_load_firmware(u32 ** fw_buf, const char *name,
 
 
 #ifndef CONFIG_ROM_PATCH_EN
-#if defined(CONFIG_PLATFORM_ALLWINNER) || defined(CONFIG_NANOPI_M4)
+#if defined(CONFIG_NANOPI_M4)
 #if 0
 static int rwnx_plat_bin_fw_upload_android(struct rwnx_hw *rwnx_hw, u32 fw_addr,
                                char *filename)
@@ -1520,7 +1520,7 @@ static int rwnx_plat_fmac_load(struct rwnx_hw *rwnx_hw)
     int ret;
 
     RWNX_DBG(RWNX_FN_ENTRY_STR);
-    #if defined(CONFIG_NANOPI_M4) || defined(CONFIG_PLATFORM_ALLWINNER)
+    #if defined(CONFIG_NANOPI_M4)
     ret = rwnx_plat_bin_fw_upload_android(rwnx_hw, RAM_FMAC_FW_ADDR, RWNX_MAC_FW_NAME2);
     #else
     ret = rwnx_plat_bin_fw_upload_2(rwnx_hw,
