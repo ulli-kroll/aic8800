@@ -128,10 +128,6 @@ typedef struct AIC_sco_card {
 #define HDEV_BUS        hdev->bus
 #define USB_RPM            1
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 38)
-#define NUM_REASSEMBLY 3
-#endif
-
 #if LINUX_VERSION_CODE > KERNEL_VERSION(3, 4, 0)
 #define GET_DRV_DATA(x)        hci_get_drvdata(x)
 #else
@@ -876,9 +872,5 @@ int aic_load_firmware(u8 ** fw_buf, const char *name, struct device *device);
 int aicbt_patch_table_free(struct aicbt_patch_table **head);
 int download_patch(firmware_info *fw_info, int cached);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 38)
-#define NUM_REASSEMBLY 3
-#else
 #define NUM_REASSEMBLY 4
-#endif
 
