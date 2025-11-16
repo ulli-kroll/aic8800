@@ -1443,11 +1443,7 @@ void aicwf_p2p_alive_timeout(struct timer_list *t)
 	struct rwnx_vif *rwnx_vif;
 	struct rwnx_vif *rwnx_vif1, *tmp;
 	u8_l p2p = 0;
-	#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 	rwnx_hw = timer_container_of(rwnx_hw, t, p2p_alive_timer);
-	#else
-	rwnx_hw = from_timer(rwnx_hw, t, p2p_alive_timer);
-	#endif
 	rwnx_vif = rwnx_hw->p2p_dev_vif;
 
 	list_for_each_entry_safe(rwnx_vif1, tmp, &rwnx_hw->vifs, list) {
