@@ -75,7 +75,6 @@ CONFIG_USB_ALIGN_DATA = y
 CONFIG_RX_TASKLET = n
 CONFIG_TX_TASKLET = n
 CONFIG_RX_NETIF_RECV_SKB = y
-CONFIG_BR_SUPPORT = n
 CONFIG_USB_MSG_OUT_EP = y
 CONFIG_USB_MSG_IN_EP = y
 CONFIG_USB_RX_REASSEMBLE = n
@@ -181,9 +180,6 @@ aic8800_fdrv-y += \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_compat_8800dc.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_compat_8800d80.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_compat_8800d80x2.o
-
-aic8800_fdrv-$(CONFIG_BR_SUPPORT) += \
-	aicsemi/aic8800/aic8800_fdrv/aic_br_ext.o
 
 aic8800_fdrv-$(CONFIG_RWNX_RADAR) += \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_radar.o
@@ -295,10 +291,6 @@ endif
 
 ifeq ($(CONFIG_USB_SUPPORT), y)
 ccflags-y += -DAICWF_USB_SUPPORT
-endif
-ifeq ($(CONFIG_BR_SUPPORT), y)
-ccflags-y += -DCONFIG_BR_SUPPORT
-ccflags-y += '-DCONFIG_BR_SUPPORT_BRNAME="'$(BR_NAME)'"'
 endif
 
 ifeq ($(CONFIG_RWNX_MUMIMO_TX), y)
