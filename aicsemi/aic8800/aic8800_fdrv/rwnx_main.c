@@ -1505,27 +1505,18 @@ err:
 }
 
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-void aicwf_p2p_alive_timeout(ulong data)
-#else
 void aicwf_p2p_alive_timeout(struct timer_list *t)
-#endif
 {
 	struct rwnx_hw *rwnx_hw;
 	struct rwnx_vif *rwnx_vif;
 	struct rwnx_vif *rwnx_vif1, *tmp;
 	u8_l p2p = 0;
-	#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-	rwnx_vif = (struct rwnx_vif *)data;
-	rwnx_hw = rwnx_vif->rwnx_hw;
-	#else
 	#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 	rwnx_hw = timer_container_of(rwnx_hw, t, p2p_alive_timer);
 	#else
 	rwnx_hw = from_timer(rwnx_hw, t, p2p_alive_timer);
 	#endif
 	rwnx_vif = rwnx_hw->p2p_dev_vif;
-	#endif
 
 	list_for_each_entry_safe(rwnx_vif1, tmp, &rwnx_hw->vifs, list) {
 		if ((rwnx_hw->avail_idx_map & BIT(rwnx_vif1->drv_vif_index)) == 0) {
@@ -1633,13 +1624,7 @@ static struct wireless_dev *rwnx_virtual_interface_add(struct rwnx_hw *rwnx_hw,
 	spin_unlock_bh(&rwnx_hw->cb_lock);
 
 	if (rwnx_hw->is_p2p_alive == 0) {
-		#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-		init_timer(&rwnx_hw->p2p_alive_timer);
-		rwnx_hw->p2p_alive_timer.data = (unsigned long)vif;
-		rwnx_hw->p2p_alive_timer.function = aicwf_p2p_alive_timeout;
-		#else
 		timer_setup(&rwnx_hw->p2p_alive_timer, aicwf_p2p_alive_timeout, 0);
-		#endif
 		rwnx_hw->is_p2p_alive = 0;
 		rwnx_hw->is_p2p_connected = 0;
 		rwnx_hw->p2p_dev_vif = vif;
@@ -5564,13 +5549,7 @@ int rwnx_cfg80211_init(struct rwnx_plat *rwnx_plat, void **platform_data)
 	//wiphy_info(wiphy, "New interface create %s", vif->ndev->name);
 	AICWFDBG(LOGINFO, "New interface create %s \r\n", vif->ndev->name);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-	init_timer(&rwnx_hw->p2p_alive_timer);
-	rwnx_hw->p2p_alive_timer.data = (unsigned long)vif;
-	rwnx_hw->p2p_alive_timer.function = aicwf_p2p_alive_timeout;
-#else
 	timer_setup(&rwnx_hw->p2p_alive_timer, aicwf_p2p_alive_timeout, 0);
-#endif
 	rwnx_hw->is_p2p_alive = 0;
 	rwnx_hw->is_p2p_connected = 0;
 	atomic_set(&rwnx_hw->p2p_alive_timer_count, 0);

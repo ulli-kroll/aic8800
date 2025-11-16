@@ -1676,21 +1676,13 @@ void remove_sec_hdr_mgmt_frame(struct hw_rxhdr *hw_rxhdr, struct sk_buff *skb)
 	}
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-void defrag_timeout_cb(ulong data)
-#else
 void defrag_timeout_cb(struct timer_list *t)
-#endif
 {
 	struct defrag_ctrl_info *defrag_ctrl = NULL;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-	defrag_ctrl = (struct defrag_ctrl_info *)data;
-#else
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 	defrag_ctrl = timer_container_of(defrag_ctrl, t, defrag_timer);
 #else
 	defrag_ctrl = from_timer(defrag_ctrl, t, defrag_timer);
-#endif
 #endif
 
 	printk("%s:%p\r\n", __func__, defrag_ctrl);
@@ -2096,13 +2088,7 @@ check_len_update:
 						//printk("first:%p,%p,%p,%p,%p, %d,%d\r\n", defrag_info, defrag_info->skb, defrag_info->skb->head, defrag_info->skb->tail, defrag_info->skb->end, defrag_info->frm_len, skb->len);
 						list_add_tail(&defrag_info->list, &rwnx_hw->defrag_list);
 						spin_unlock_bh(&rwnx_hw->defrag_lock);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-						init_timer(&defrag_info->defrag_timer);
-						defrag_info->defrag_timer.data = (unsigned long)defrag_info;
-						defrag_info->defrag_timer.function = defrag_timeout_cb;
-#else
 						timer_setup(&defrag_info->defrag_timer, defrag_timeout_cb, 0);
-#endif
 						ret = mod_timer(&defrag_info->defrag_timer, jiffies + msecs_to_jiffies(DEFRAG_MAX_WAIT));
 						dev_kfree_skb(skb);
 						return 0;
