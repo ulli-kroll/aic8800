@@ -219,9 +219,6 @@ struct rwnx_txq {
     int nb_retry;
     u8 push_limit;
     u8 tid;
-#ifdef CONFIG_MAC80211_TXQ
-    unsigned long nb_ready_mac80211;
-#endif
 #ifdef CONFIG_RWNX_FULLMAC
     struct rwnx_sta *sta;
     u8 ps_id;
@@ -274,13 +271,7 @@ static inline bool rwnx_txq_is_scheduled(struct rwnx_txq *txq)
  * @tid: int updated with the TXQ tid at each iteration
  * @rwnx_hw: main driver data
  */
-#ifdef CONFIG_MAC80211_TXQ
-#define foreach_sta_txq(sta, txq, tid, rwnx_hw)                         \
-    for (tid = 0, txq = rwnx_txq_sta_get(sta, 0);                       \
-         tid < NX_NB_TXQ_PER_STA;                                       \
-         tid++, txq = rwnx_txq_sta_get(sta, tid))
-
-#elif defined(CONFIG_RWNX_FULLMAC) /* CONFIG_RWNX_FULLMAC */
+#if defined(CONFIG_RWNX_FULLMAC) /* CONFIG_RWNX_FULLMAC */
 #define foreach_sta_txq(sta, txq, tid, rwnx_hw)                          \
     for (tid = 0, txq = rwnx_txq_sta_get(sta, 0, rwnx_hw);               \
          tid < (is_multicast_sta(sta->sta_idx) ? 1 : NX_NB_TXQ_PER_STA); \
@@ -314,18 +305,10 @@ static inline bool rwnx_txq_is_scheduled(struct rwnx_txq *txq)
  * @txq: pointer to rwnx_txq updated with the next TXQ at each iteration
  * @ac:  int updated with the TXQ ac at each iteration
  */
-#ifdef CONFIG_MAC80211_TXQ
-#define foreach_vif_txq(vif, txq, ac)                                   \
-    for (ac = RWNX_HWQ_BK, txq = rwnx_txq_vif_get(vif, ac);             \
-         ac < NX_NB_TXQ_PER_VIF;                                        \
-         ac++, txq = rwnx_txq_vif_get(vif, ac))
-
-#else
 #define foreach_vif_txq(vif, txq, ac)                                   \
     for (ac = RWNX_HWQ_BK, txq = &vif->txqs[0];                         \
          ac < NX_NB_TXQ_PER_VIF;                                        \
          ac++, txq++)
-#endif
 
 #ifdef CONFIG_RWNX_FULLMAC
 struct rwnx_txq *rwnx_txq_sta_get(struct rwnx_sta *sta, u8 tid,

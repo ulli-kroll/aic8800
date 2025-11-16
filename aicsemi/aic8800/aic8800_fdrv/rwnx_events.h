@@ -479,9 +479,6 @@ TRACE_EVENT(
     TP_fast_assign(
         __entry->txq_idx = txq->idx;
         __entry->len = skb_queue_len(&txq->sk_list);
-        #ifdef CONFIG_MAC80211_TXQ
-        __entry->len += txq->nb_ready_mac80211;
-        #endif
         __entry->len_retry = txq->nb_retry;
         __entry->credit = txq->credits;
         #ifdef CONFIG_RWNX_FULLMAC
@@ -656,43 +653,6 @@ TRACE_EVENT(
               __print_txq(__entry->txq_idx), __entry->skb, __entry->retry,
               __entry->credit, __entry->q_len, __entry->q_len_retry)
 );
-
-#ifdef CONFIG_MAC80211_TXQ
-TRACE_EVENT(
-    txq_wake,
-    TP_PROTO(struct rwnx_txq *txq),
-    TP_ARGS(txq),
-    TP_STRUCT__entry(
-        __field(u16, txq_idx)
-        __field(u16, q_len)
-                     ),
-    TP_fast_assign(
-        __entry->txq_idx = txq->idx;
-        __entry->q_len = txq->nb_ready_mac80211;
-                   ),
-
-    TP_printk("%s mac80211_queue_len=%d", __print_txq(__entry->txq_idx), __entry->q_len)
-);
-
-TRACE_EVENT(
-    txq_drop,
-    TP_PROTO(struct rwnx_txq *txq, unsigned long nb_drop),
-    TP_ARGS(txq, nb_drop),
-    TP_STRUCT__entry(
-        __field(u16, txq_idx)
-        __field(u16, nb_drop)
-                     ),
-    TP_fast_assign(
-        __entry->txq_idx = txq->idx;
-        __entry->nb_drop = nb_drop;
-                   ),
-
-    TP_printk("%s %u pkt have been dropped by codel in mac80211 txq",
-              __print_txq(__entry->txq_idx), __entry->nb_drop)
-);
-
-#endif
-
 
 DECLARE_EVENT_CLASS(
     idx_template,
