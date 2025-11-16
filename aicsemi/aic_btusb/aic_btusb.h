@@ -125,13 +125,8 @@ typedef struct AIC_sco_card {
 #define AICBT_ERR(fmt, arg...) printk("aic_btusb: " fmt "\n" , ## arg)
 
 
-#if LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 33)
 #define HDEV_BUS        hdev->bus
 #define USB_RPM            1
-#else
-#define HDEV_BUS        hdev->type
-#define USB_RPM            0
-#endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 38)
 #define NUM_REASSEMBLY 3
