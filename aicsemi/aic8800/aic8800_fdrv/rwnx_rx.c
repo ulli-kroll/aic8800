@@ -532,15 +532,7 @@ static bool rwnx_rx_data_skb(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
 			* If the receive is not processed inside an ISR, the softirqd must be woken explicitly to service the NET_RX_SOFTIRQ.
 			* * In 2.6 kernels, this is handledby netif_rx_ni(), but in earlier kernels, we need to do it manually.
 			*/
-			#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
 				netif_rx_ni(rx_skb);
-			#else
-				ulong flags;
-				netif_rx(rx_skb);
-				local_irq_save(flags);
-				RAISE_RX_SOFTIRQ();
-				local_irq_restore(flags);
-			#endif
 			}
 			#endif
             REG_SW_CLEAR_PROFILING(rwnx_hw, SW_PROF_IEEE80211RX);
