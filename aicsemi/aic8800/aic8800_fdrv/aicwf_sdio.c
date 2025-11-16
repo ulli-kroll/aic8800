@@ -254,23 +254,8 @@ static struct sdio_driver aicwf_sdio_driver = {
     },
 };
 
-#ifdef CONFIG_NANOPI_M4
-    extern int mmc_rescan_try_freq(struct mmc_host *host, unsigned freq);
-    extern unsigned  aic_max_freqs;
-    extern struct mmc_host* aic_host_drv;
-    extern int __mmc_claim_host(struct mmc_host *host, atomic_t *abort);
-    extern void mmc_release_host(struct mmc_host *host);
-#endif
 void aicwf_sdio_register(void)
 {
-#ifdef CONFIG_NANOPI_M4
-    if(aic_host_drv->card == NULL){
-        __mmc_claim_host(aic_host_drv,NULL);
-        printk("aic: >>>mmc_rescan_try_freq\n");
-        mmc_rescan_try_freq(aic_host_drv,aic_max_freqs);
-        mmc_release_host(aic_host_drv);
-    }
-#endif
     if (sdio_register_driver(&aicwf_sdio_driver)) {
 
     } else {
