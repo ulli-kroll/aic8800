@@ -604,13 +604,9 @@ static inline int rwnx_rx_scanu_start_cfm(struct rwnx_hw *rwnx_hw,
 #ifdef CONFIG_SCHED_SCAN
     if(rwnx_hw->is_sched_scan){
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
         AICWFDBG(LOGINFO, "%s cfg80211_sched_scan_results \r\n", __func__);
         cfg80211_sched_scan_results(rwnx_hw->scan_request->wiphy,
                 rwnx_hw->sched_scan_req->reqid);
-#else
-        cfg80211_sched_scan_results(rwnx_hw->sched_scan_req->wiphy);
-#endif
         kfree(rwnx_hw->scan_request);
         rwnx_hw->is_sched_scan = false;
     }
@@ -868,7 +864,6 @@ static inline int rwnx_rx_sm_connect_ind(struct rwnx_hw *rwnx_hw,
 			rwnx_set_conn_state(&rwnx_vif->drv_conn_state, (int)RWNX_DRV_STATUS_DISCONNECTED);
 			rwnx_external_auth_disable(rwnx_vif);
         }else{        
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
     		struct cfg80211_roam_info info;
     		memset(&info, 0, sizeof(info));
 #if LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION
@@ -885,18 +880,6 @@ static inline int rwnx_rx_sm_connect_ind(struct rwnx_hw *rwnx_hw,
     		info.resp_ie = rsp_ie;
     		info.resp_ie_len = ind->assoc_rsp_ie_len;
     		cfg80211_roamed(dev, &info, GFP_ATOMIC);
-#else
-    		chan = ieee80211_get_channel(rwnx_hw->wiphy, ind->center_freq);
-    		cfg80211_roamed(dev
-    			, chan
-    			, (const u8 *)ind->bssid.array
-    			, req_ie
-    			, ind->assoc_req_ie_len
-    			, rsp_ie
-    			, ind->assoc_rsp_ie_len
-    			, GFP_ATOMIC);
-
-#endif /*LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)*/
 			rwnx_set_conn_state(&rwnx_vif->drv_conn_state, (int)RWNX_DRV_STATUS_CONNECTED);
     	}
         rwnx_vif->sta.is_roam = false;
