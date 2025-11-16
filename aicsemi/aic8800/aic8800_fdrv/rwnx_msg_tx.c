@@ -2883,7 +2883,7 @@ int rwnx_send_sm_connect_req(struct rwnx_hw *rwnx_hw,
     if (use_pairwise_key(&sme->crypto))
         flags |= WPA_WPA2_IN_USE;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0) || defined (CONFIG_WPA3_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
     if (sme->mfp == NL80211_MFP_REQUIRED)
         flags |= MFP_IN_USE;
 #endif
@@ -2926,7 +2926,7 @@ int rwnx_send_sm_connect_req(struct rwnx_hw *rwnx_hw,
         req->auth_type = WLAN_AUTH_SHARED_KEY;
     else if (sme->auth_type == NL80211_AUTHTYPE_FT)
         req->auth_type = WLAN_AUTH_FT;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0) || defined (CONFIG_WPA3_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
     else if (sme->auth_type == NL80211_AUTHTYPE_SAE)
         req->auth_type = WLAN_AUTH_SAE;
 #endif
