@@ -776,21 +776,6 @@ struct rwnx_hw {
     struct ieee80211_sta_vht_cap vht_cap_5G;
 #endif
 
-#ifdef CONFIG_USE_WIRELESS_EXT
-	bool wext_scan;
-	struct completion wext_scan_com;
-	struct list_head wext_scanre_list;
-	char wext_essid[33];
-	int support_freqs[SCAN_CHANNEL_MAX];
-	int support_freqs_number;
-#ifdef CONFIG_DYNAMIC_PWR
-	struct timer_list pwrloss_timer;
-	struct work_struct pwrloss_work;
-	struct rwnx_vif *read_rssi_vif;
-	s8 pwrloss_lvl;
-	u8 sta_rssi_idx;
-#endif
-#endif
 };
 
 u8 *rwnx_build_bcn(struct rwnx_bcn *bcn, struct cfg80211_beacon_data *new);

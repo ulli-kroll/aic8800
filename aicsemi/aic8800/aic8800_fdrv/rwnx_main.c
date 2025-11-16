@@ -48,10 +48,6 @@
 #include "rwnx_wakelock.h"
 #include "rwnx_msg_tx.h"
 
-#ifdef CONFIG_USE_WIRELESS_EXT
-#include "aicwf_wext_linux.h"
-#endif
-
 #ifdef AICWF_SDIO_SUPPORT
 #include "aicwf_sdio.h"
 #endif
@@ -1705,14 +1701,6 @@ static void rwnx_netdev_setup(struct net_device *dev)
     dev->hw_features = 0;
 }
 
-#ifndef CONFIG_USE_WIRELESS_EXT
-#ifdef CONFIG_WIRELESS_EXT
-    #include <net/iw_handler.h>
-    struct iw_handler_def aic_handlers_def;
-#endif
-#endif
-
-
 /*********************************************************************
  * Cfg80211 callbacks (and helper)
  *********************************************************************/
@@ -1876,15 +1864,6 @@ static struct rwnx_vif *rwnx_interface_add(struct rwnx_hw *rwnx_hw,
         ndev->ieee80211_ptr->use_4addr = params->use_4addr;
     } else
         vif->use_4addr = false;
-
-#ifdef CONFIG_USE_WIRELESS_EXT
-	aicwf_set_wireless_ext(ndev, rwnx_hw);
-#else
-#ifdef CONFIG_WIRELESS_EXT
-    memset(&aic_handlers_def, 0,sizeof(struct iw_handler_def));
-    ndev->wireless_handlers = (struct iw_handler_def *)&aic_handlers_def;
-#endif
-#endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
         if (cfg80211_register_netdevice(ndev))
@@ -3013,9 +2992,6 @@ static int rwnx_cfg80211_disconnect(struct wiphy *wiphy, struct net_device *dev,
         
 		rwnx_set_conn_state(&rwnx_vif->drv_conn_state, RWNX_DRV_STATUS_DISCONNECTING);
 
-		#ifdef CONFIG_USE_WIRELESS_EXT
-		memset(rwnx_hw->wext_essid, 0, 33);
-		#endif
 		key_flag = true;
 		return(rwnx_send_sm_disconnect_req(rwnx_hw, rwnx_vif, reason_code));
 	}
