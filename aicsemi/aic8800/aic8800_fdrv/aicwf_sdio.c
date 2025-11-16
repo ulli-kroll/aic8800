@@ -2160,13 +2160,7 @@ int sdio_busirq_thread(void *data){
 
 #ifdef CONFIG_TXRX_THREAD_PRIO
         if (busrx_thread_prio > 0) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0))
             sched_set_fifo_low(current);
-#else
-            struct sched_param param;
-            param.sched_priority = (busrx_thread_prio - 1 < MAX_RT_PRIO)?busrx_thread_prio:(MAX_RT_PRIO-1);
-            sched_setscheduler(current, SCHED_FIFO, &param);
-#endif
         }
 #endif
 
@@ -2238,13 +2232,7 @@ int sdio_bustx_thread(void *data)
 #endif
 #ifdef CONFIG_TXRX_THREAD_PRIO
 		if (bustx_thread_prio > 0) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0))
             sched_set_fifo_low(current);
-#else
-            struct sched_param param;
-            param.sched_priority = (bustx_thread_prio < MAX_RT_PRIO)?bustx_thread_prio:(MAX_RT_PRIO-1);
-            sched_setscheduler(current, SCHED_FIFO, &param);
-#endif
 		}
 #endif
 
@@ -2364,13 +2352,7 @@ int sdio_busrx_thread(void *data)
 #endif
 #ifdef CONFIG_TXRX_THREAD_PRIO
     if (busrx_thread_prio > 0) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0))
         sched_set_fifo_low(current);
-#else
-        struct sched_param param;
-        param.sched_priority = (busrx_thread_prio < MAX_RT_PRIO)?busrx_thread_prio:(MAX_RT_PRIO-1);
-        sched_setscheduler(current, SCHED_FIFO, &param);
-#endif
     }
 #endif
 
