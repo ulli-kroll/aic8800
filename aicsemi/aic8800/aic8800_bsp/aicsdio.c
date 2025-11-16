@@ -1251,7 +1251,6 @@ int aicwf_sdio_busrx_thread(void *data)
 }
 
 #if defined(CONFIG_SDIO_PWRCTRL)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 static void aicwf_sdio_bus_pwrctl(struct timer_list *t)
 {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
@@ -1273,7 +1272,6 @@ static void aicwf_sdio_bus_pwrctl(ulong data)
 		complete(&sdiodev->pwrctrl_trgg);
 	}
 }
-#endif
 
 static void aicwf_sdio_enq_rxpkt(struct aic_sdio_dev *sdiodev, struct sk_buff *pkt)
 {
@@ -1819,13 +1817,7 @@ void *aicwf_sdio_bus_init(struct aic_sdio_dev *sdiodev)
 	atomic_set(&tx_priv->tx_pktcnt, 0);
 
 #if defined(CONFIG_SDIO_PWRCTRL)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 	timer_setup(&sdiodev->timer, aicwf_sdio_bus_pwrctl, 0);
-#else
-	init_timer(&sdiodev->timer);
-	sdiodev->timer.data = (ulong) sdiodev;
-	sdiodev->timer.function = aicwf_sdio_bus_pwrctl;
-#endif
 	init_completion(&sdiodev->pwrctrl_trgg);
 #endif
 	ret = aicwf_bus_init(0, sdiodev->dev);

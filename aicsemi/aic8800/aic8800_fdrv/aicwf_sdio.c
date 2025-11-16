@@ -237,17 +237,9 @@ void aicwf_netif_worker(struct work_struct *work)
 	sdiodev->net_stop = false;
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-static void aicwf_netif_timer(ulong data)
-#else
 static void aicwf_netif_timer(struct timer_list *t)
-#endif
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-		struct aic_sdio_dev *sdiodev = (struct aic_sdio_dev *) data;
-#else
 		struct aic_sdio_dev *sdiodev = from_timer(sdiodev, t, netif_timer);
-#endif
 
 	if (!work_pending(&sdiodev->netif_work))
 		schedule_work(&sdiodev->netif_work);
@@ -273,17 +265,9 @@ void aicwf_temp_ctrl_worker(struct work_struct *work)
 	return;
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-static void aicwf_temp_ctrl_timer(ulong data)
-#else
 static void aicwf_temp_ctrl_timer(struct timer_list *t)
-#endif
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-	struct aic_sdio_dev *sdiodev = (struct aic_sdio_dev *) data;
-#else
 	struct aic_sdio_dev *sdiodev = from_timer(sdiodev, t, tp_ctrl_timer);
-#endif
 
 	if (!work_pending(&sdiodev->tp_ctrl_work))
 		schedule_work(&sdiodev->tp_ctrl_work);
@@ -437,21 +421,12 @@ static int wakeup_enable;
 static u32 hostwake_irq_num;
 #endif//CONFIG_GPIO_WAKEUP
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)//LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
-//static struct wakeup_source *ws_rx_sdio;
-//static struct wakeup_source *ws_sdio_pwrctrl;
-//static struct wakeup_source *ws_tx_sdio;
 #ifdef CONFIG_GPIO_WAKEUP
 //static struct wakeup_source *ws;
 #endif
-#else
-#endif
 
 #if 0
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 static struct wakeup_source *ws;
-#else
-#endif
 #endif
 
 #if 0
@@ -501,10 +476,7 @@ static irqreturn_t rwnx_hostwake_irq_handler(int irq, void *para)
 	static int wake_cnt;
 	wake_cnt++;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 	rwnx_wakeup_lock_timeout(g_rwnx_plat->sdiodev->rwnx_hw->ws_rx, 1000);
-#else
-#endif
 
 	AICWFDBG(LOGIRQ, "%s(%d): wake_irq_cnt = %d\n", __func__, __LINE__, wake_cnt);
 
@@ -544,13 +516,10 @@ static int rwnx_register_hostwake_irq(struct device *dev)
 
 
 	if (wakeup_enable) {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 		//ws = wakeup_source_register(dev, "wifisleep");
 		//ws_tx_sdio = wakeup_source_register(dev, "wifi_tx_sleep");
 		//ws_rx_sdio = wakeup_source_register(dev, "wifi_rx_sleep");
 		//ws_sdio_pwrctrl = wakeup_source_register(dev, "sdio_pwrctrl_sleep");
-#else
-#endif
 		ret = device_init_wakeup(dev, true);
 		if (ret < 0) {
 			pr_err("%s(%d): device init wakeup failed!\n", __func__, __LINE__);
@@ -581,13 +550,10 @@ fail2:
 	dev_pm_clear_wake_irq(dev);
 fail1:
 	device_init_wakeup(dev, false);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 	//wakeup_source_unregister(ws);
 	//wakeup_source_unregister(ws_tx_sdio);
 	//wakeup_source_unregister(ws_rx_sdio);
 	//wakeup_source_unregister(ws_sdio_pwrctrl);
-#else
-#endif
 #endif//CONFIG_GPIO_WAKEUP
 	return ret;
 }
@@ -599,13 +565,10 @@ static int rwnx_unregister_hostwake_irq(struct device *dev)
 	if (wakeup_enable) {
 		device_init_wakeup(dev, false);
 		dev_pm_clear_wake_irq(dev);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 		//wakeup_source_unregister(ws);
 		//wakeup_source_unregister(ws_tx_sdio);
 		//wakeup_source_unregister(ws_rx_sdio);
 		//wakeup_source_unregister(ws_sdio_pwrctrl);
-#else
-#endif
 	}
 	free_irq(hostwake_irq_num, NULL);
 #endif//CONFIG_GPIO_WAKEUP
@@ -2487,20 +2450,12 @@ static int aicwf_sdio_pwrctl_thread(void *data)
 	return 0;
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-static void aicwf_sdio_bus_pwrctl(ulong data)
-#else
 static void aicwf_sdio_bus_pwrctl(struct timer_list *t)
-#endif
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-	struct aic_sdio_dev *sdiodev = (struct aic_sdio_dev *) data;
-#else
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 	struct aic_sdio_dev *sdiodev = timer_container_of(sdiodev, t, timer);
 #else
 	struct aic_sdio_dev *sdiodev = from_timer(sdiodev, t, timer);
-#endif
 #endif
 
 	if (sdiodev->bus_if->state == BUS_DOWN_ST) {
@@ -3073,13 +3028,7 @@ void *aicwf_sdio_bus_init(struct aic_sdio_dev *sdiodev)
 	atomic_set(&tx_priv->tx_pktcnt, 0);
 
 #if defined(CONFIG_SDIO_PWRCTRL)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-	init_timer(&sdiodev->timer);
-	sdiodev->timer.data = (ulong) sdiodev;
-	sdiodev->timer.function = aicwf_sdio_bus_pwrctl;
-#else
 	timer_setup(&sdiodev->timer, aicwf_sdio_bus_pwrctl, 0);
-#endif
 	init_completion(&sdiodev->pwrctrl_trgg);
 #ifdef AICWF_SDIO_SUPPORT
 	sdiodev->pwrctl_tsk = kthread_run(aicwf_sdio_pwrctl_thread, sdiodev, "aicwf_pwrctl");
@@ -3094,17 +3043,8 @@ void *aicwf_sdio_bus_init(struct aic_sdio_dev *sdiodev)
 #endif
 
 #ifdef CONFIG_TEMP_CONTROL
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-	init_timer(&sdiodev->tp_ctrl_timer);
-	sdiodev->tp_ctrl_timer.data = (ulong) sdiodev;
-	sdiodev->tp_ctrl_timer.function = aicwf_temp_ctrl_timer;
-	init_timer(&sdiodev->netif_timer);
-	sdiodev->netif_timer.data = (ulong) sdiodev;
-	sdiodev->netif_timer.function = aicwf_netif_timer;
-#else
 	timer_setup(&sdiodev->tp_ctrl_timer, aicwf_temp_ctrl_timer, 0);
 	timer_setup(&sdiodev->netif_timer, aicwf_netif_timer, 0);
-#endif
 	INIT_WORK(&sdiodev->tp_ctrl_work, aicwf_temp_ctrl_worker);
 	INIT_WORK(&sdiodev->netif_work, aicwf_netif_worker);
 	mod_timer(&sdiodev->tp_ctrl_timer, jiffies + msecs_to_jiffies(TEMP_GET_INTERVAL));

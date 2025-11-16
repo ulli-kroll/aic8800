@@ -40,10 +40,6 @@
 #include <net/bluetooth/hci_core.h>
 #include <linux/serial_core.h>
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-#include <linux/wakelock.h>
-#endif
-
 #include "aic_bsp_export.h"
 
 /*
@@ -78,11 +74,7 @@ struct bluesleep_info {
 	unsigned host_wake;
 	unsigned ext_wake;
 	unsigned host_wake_irq;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 	struct wakeup_source *ws;
-#else
-	struct wake_lock wake_lock;
-#endif
 	struct uart_port *uport;
 	unsigned host_wake_assert:1;
 	unsigned ext_wake_assert:1;
@@ -219,22 +211,14 @@ static void bluesleep_sleep_work(struct work_struct *work)
 			set_bit(BT_ASLEEP, &flags);
 			/*Deactivating UART */
 			hsuart_power(0);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 			__pm_wakeup_event(bsi->ws, HZ / 2);
-#else
-			wake_lock_timeout(&bsi->wake_lock, HZ / 2);
-#endif
 		} else {
 			BT_DBG("This should never happen.\n");
 			return;
 		}
 	} else if (test_bit(BT_ASLEEP, &flags)) {
 		BT_DBG("hold wake locks for rx_task.");
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 		__pm_stay_awake(bsi->ws);
-#else
-		wake_lock(&bsi->wake_lock);
-#endif
 		clear_bit(BT_ASLEEP, &flags);
 
 		/* Add a timer to make sure that UART
@@ -294,11 +278,7 @@ static void bluesleep_outgoing_data(void)
 	/* if the tx side is sleeping... */
 	if (gpio_get_value(bsi->ext_wake) != bsi->ext_wake_assert) {
 		BT_DBG("tx was sleeping, wakeup it");
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 		__pm_stay_awake(bsi->ws);
-#else
-		wake_lock(&bsi->wake_lock);
-#endif
 		gpio_set_value(bsi->ext_wake, bsi->ext_wake_assert);
 		clear_bit(BT_ASLEEP, &flags);
 		clear_bit(BT_TXIDLE, &flags);
@@ -571,11 +551,7 @@ static int bluesleep_start(void)
 	}
 
 	set_bit(BT_PROTO, &flags);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 	__pm_stay_awake(bsi->ws);
-#else
-	wake_lock(&bsi->wake_lock);
-#endif
 
 	return 0;
 fail:
@@ -614,11 +590,7 @@ static void bluesleep_stop(void)
 
 	spin_unlock_irqrestore(&rw_lock, irq_flags);
 	free_irq(bsi->host_wake_irq, &bsi->pdev->dev);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 	__pm_wakeup_event(bsi->ws, HZ / 2);
-#else
-	wake_lock_timeout(&bsi->wake_lock, HZ / 2);
-#endif
 }
 #if 0
 /**
@@ -915,11 +887,7 @@ static int __init bluesleep_probe(struct platform_device *pdev)
 	BT_DBG("uart_index (%u)\n", uart_index);
 	bluesleep_uart_dev = sw_uart_get_pdev(uart_index);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 	bsi->ws = wakeup_source_register(dev, "bluesleep");
-#else
-	wake_lock_init(&bsi->wake_lock, WAKE_LOCK_SUSPEND, "bluesleep");
-#endif
 	bsi->pdev = pdev;
 
 	return 0;
@@ -952,11 +920,7 @@ static int bluesleep_remove(struct platform_device *pdev)
 	gpio_free(bsi->host_wake);
 	gpio_free(bsi->ext_wake);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 	wakeup_source_unregister(bsi->ws);
-#else
-	wake_lock_destroy(&bsi->wake_lock);
-#endif
 
 	if (bsi->wakeup_enable) {
 		BT_DBG("Deinit wakeup source");

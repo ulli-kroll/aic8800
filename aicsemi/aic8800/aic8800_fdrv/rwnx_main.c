@@ -2392,11 +2392,7 @@ static int rwnx_cfg80211_disconnect(struct wiphy *wiphy, struct net_device *dev,
 
 static int rwnx_cfg80211_sched_scan_stop(struct wiphy *wiphy,
 					   struct net_device *ndev
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 					   ,u64 reqid)
-#else
-                        )
-#endif
 {
 
 	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
