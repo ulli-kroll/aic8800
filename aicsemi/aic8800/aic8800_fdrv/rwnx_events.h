@@ -16,9 +16,7 @@
 #define _RWNX_EVENTS_H
 
 #include <linux/tracepoint.h>
-#ifndef CONFIG_RWNX_FHOST
 #include "rwnx_tx.h"
-#endif
 #include "rwnx_compat.h"
 
 /*****************************************************************************
@@ -229,7 +227,6 @@ TRACE_EVENT(
 /*****************************************************************************
  * TRACE function for TXQ
  ****************************************************************************/
-#ifndef CONFIG_RWNX_FHOST
 #if defined(CONFIG_TRACEPOINTS) && defined(CREATE_TRACE_POINTS)
 
 #include <linux/trace_seq.h>
@@ -1052,7 +1049,6 @@ TRACE_EVENT(
 );
 
 #endif /* CONFIG_RWNX_MUMIMO_TX */
-#endif /* ! CONFIG_RWNX_FHOST */
 
 /*****************************************************************************
  * TRACE functions for MESH

@@ -82,7 +82,6 @@ int cmd_mgr_queue_force_defer(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd
         return -EPIPE;
     }
 
-    #ifndef CONFIG_RWNX_FHOST
     if (!list_empty(&cmd_mgr->cmds)) {
         if (cmd_mgr->queue_sz == cmd_mgr->max_queue_sz) {
             printk(KERN_CRIT"Too many cmds (%d) already queued\n",
@@ -92,7 +91,6 @@ int cmd_mgr_queue_force_defer(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd
             return -ENOMEM;
         }
     }
-    #endif
 
     cmd->flags |= RWNX_CMD_FLAG_WAIT_PUSH;
     defer_push = true;
@@ -166,7 +164,6 @@ static int cmd_mgr_queue(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd)
         return -EPIPE;
     }
 
-    #ifndef CONFIG_RWNX_FHOST
     if (!list_empty(&cmd_mgr->cmds)) {
         struct rwnx_cmd *last;
 
@@ -191,7 +188,6 @@ static int cmd_mgr_queue(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd)
             defer_push = true;
         }
     }
-    #endif
 
 #if 0
     cmd->flags |= RWNX_CMD_FLAG_WAIT_ACK;
@@ -241,15 +237,6 @@ static int cmd_mgr_queue(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd)
 	}
 
     if (!(cmd->flags & RWNX_CMD_FLAG_NONBLOCK)) {
-        #ifdef CONFIG_RWNX_FHOST
-        if (wait_for_completion_killable(&cmd->complete)) {
-            cmd->result = -EINTR;
-            spin_lock_bh(&cmd_mgr->lock);
-            cmd_complete(cmd_mgr, cmd);
-            spin_unlock_bh(&cmd_mgr->lock);
-            /* TODO: kill the cmd at fw level */
-        }
-        #else
         unsigned long tout = msecs_to_jiffies(RWNX_80211_CMD_TIMEOUT_MS/*AIDEN workaround* cmd_mgr->queue_sz*/);
         if (!wait_for_completion_killable_timeout(&cmd->complete, tout)) {
             printk(KERN_CRIT"%s cmd timed-out cmd_mgr->queue_sz:%d\n", __func__,cmd_mgr->queue_sz);
@@ -283,7 +270,6 @@ static int cmd_mgr_queue(struct rwnx_cmd_mgr *cmd_mgr, struct rwnx_cmd *cmd)
             if(!list_empty(&cmd_mgr->cmds) && usbdev->state == USB_UP_ST)
                 WAKE_CMD_WORK(cmd_mgr);
 		}
-        #endif
     } else {
         cmd->result = 0;
     }

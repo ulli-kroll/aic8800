@@ -18,8 +18,6 @@
 
 #ifdef CONFIG_RWNX_SDM
 #define RWNX_80211_CMD_TIMEOUT_MS    (20 * 300)
-#elif defined(CONFIG_RWNX_FHOST)
-#define RWNX_80211_CMD_TIMEOUT_MS    (10000)
 #else
 #define RWNX_80211_CMD_TIMEOUT_MS    4000//500//300
 #endif
@@ -37,22 +35,11 @@
 
 #define RWNX_CMD_MAX_QUEUED         16//8 AIDEN
 
-#ifdef CONFIG_RWNX_FHOST
-#include "ipc_fhost.h"
-#define rwnx_cmd_e2amsg ipc_fhost_msg
-#define rwnx_cmd_a2emsg ipc_fhost_msg
-#define RWNX_CMD_A2EMSG_LEN(m) (m->param_len)
-#define RWNX_CMD_E2AMSG_LEN_MAX IPC_FHOST_MSG_BUF_SIZE
-struct rwnx_term_stream;
-
-#else /* !CONFIG_RWNX_FHOST*/
 #include "ipc_shared.h"
 #define rwnx_cmd_e2amsg ipc_e2a_msg
 #define rwnx_cmd_a2emsg lmac_msg
 #define RWNX_CMD_A2EMSG_LEN(m) (sizeof(struct lmac_msg) + m->param_len)
 #define RWNX_CMD_E2AMSG_LEN_MAX (IPC_E2A_MSG_PARAM_SIZE * 4)
-
-#endif /* CONFIG_RWNX_FHOST*/
 
 struct rwnx_hw;
 struct rwnx_cmd;
@@ -83,9 +70,6 @@ struct rwnx_cmd {
     u32 result;
 	u8 used;
 	int array_id;
-    #ifdef CONFIG_RWNX_FHOST
-    struct rwnx_term_stream *stream;
-    #endif
 };
 
 struct rwnx_cmd_mgr {

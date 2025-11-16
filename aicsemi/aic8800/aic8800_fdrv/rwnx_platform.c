@@ -18,9 +18,7 @@
 #include "hal_desc.h"
 #include "rwnx_main.h"
 #include "rwnx_pci.h"
-#ifndef CONFIG_RWNX_FHOST
 #include "ipc_host.h"
-#endif /* !CONFIG_RWNX_FHOST */
 #include "rwnx_msg_tx.h"
 
 #ifdef AICWF_SDIO_SUPPORT
@@ -1310,10 +1308,8 @@ static int rwnx_plat_fcu_load(struct rwnx_hw *rwnx_hw)
     struct rwnx_plat *rwnx_plat = rwnx_hw->plat;
     u32 agcctl, memclk;
 
-#ifndef CONFIG_RWNX_FHOST
     /* By default, we consider that there is only one RF in the system */
     rwnx_hw->phy.cnt = 1;
-#endif // CONFIG_RWNX_FHOST
 
     if (rwnx_plat_get_rf(rwnx_plat) != MDM_PHY_CONFIG_ELMA)
         /* No FCU for PHYs other than Elma */
@@ -1324,7 +1320,6 @@ static int rwnx_plat_fcu_load(struct rwnx_hw *rwnx_hw)
         /* No FCU present in this version */
         return 0;
 
-#ifndef CONFIG_RWNX_FHOST
     /* FCU is present */
 	#ifdef USE_5G
     rwnx_hw->phy.cnt = 2;
@@ -1334,7 +1329,6 @@ static int rwnx_plat_fcu_load(struct rwnx_hw *rwnx_hw)
     rwnx_hw->phy.sec_chan.center_freq1 = 5500;
     rwnx_hw->phy.sec_chan.center_freq2 = 0;
 	#endif
-#endif // CONFIG_RWNX_FHOST
 
     rwnx_plat_stop_agcfsm(rwnx_plat, FCU_RWNXFCAGCCNTL_ADDR, &agcctl, &memclk, 0,
                           MDM_MEMCLKCTRL0_ADDR);
@@ -1837,7 +1831,6 @@ static void rwnx_term_restore_config(struct rwnx_plat *rwnx_plat,
 }
 #endif
 
-#ifndef CONFIG_RWNX_FHOST
 #if 0
 static int rwnx_check_fw_compatibility(struct rwnx_hw *rwnx_hw)
 {
@@ -1968,7 +1961,6 @@ static int rwnx_check_fw_compatibility(struct rwnx_hw *rwnx_hw)
     return res;
 }
 #endif
-#endif /* !CONFIG_RWNX_FHOST */
 
 int rwnx_atoi2(char *value, int c_len)
 {
@@ -3550,7 +3542,6 @@ int rwnx_platform_on(struct rwnx_hw *rwnx_hw, void *config)
                                             rwnx_hw->mod_params->ftl)))
 	#endif
 
-    #ifndef CONFIG_RWNX_FHOST
     if ((ret = rwnx_check_fw_compatibility(rwnx_hw)))
     {
         rwnx_hw->plat->disable(rwnx_hw);
@@ -3558,7 +3549,6 @@ int rwnx_platform_on(struct rwnx_hw *rwnx_hw, void *config)
         rwnx_ipc_deinit(rwnx_hw);
         return ret;
     }
-    #endif /* !CONFIG_RWNX_FHOST */
 
     if (config)
         rwnx_term_restore_config(rwnx_plat, config);
@@ -3652,7 +3642,6 @@ int rwnx_platform_init(struct rwnx_plat *rwnx_plat, void **platform_data)
     rwnx_plat->wait_disconnect_cb = false;
     g_rwnx_plat = rwnx_plat;
 
-#if defined CONFIG_RWNX_FULLMAC
     AICWFDBG(LOGINFO, "%s rwnx_cfg80211_init enter \r\n", __func__);
     ret = rwnx_cfg80211_init(rwnx_plat, platform_data);
     AICWFDBG(LOGINFO, "%s rwnx_cfg80211_init exit \r\n", __func__);
@@ -3672,9 +3661,6 @@ int rwnx_platform_init(struct rwnx_plat *rwnx_plat, void **platform_data)
 #endif
 
     return ret;
-#elif defined CONFIG_RWNX_FHOST
-    return rwnx_fhost_init(rwnx_plat, platform_data);
-#endif
 }
 
 /**
@@ -3688,11 +3674,7 @@ void rwnx_platform_deinit(struct rwnx_hw *rwnx_hw)
 {
     RWNX_DBG(RWNX_FN_ENTRY_STR);
 
-#if defined CONFIG_RWNX_FULLMAC
     rwnx_cfg80211_deinit(rwnx_hw);
-#elif defined CONFIG_RWNX_FHOST
-    rwnx_fhost_deinit(rwnx_hw);
-#endif
 }
 
 /**
