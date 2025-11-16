@@ -2474,11 +2474,7 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
 {
 	struct me_sta_add_req *req;
 
-#if LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION
     struct link_station_parameters *link_sta_params = &params->link_sta_params;
-#else
-    struct station_parameters *link_sta_params = params;
-#endif
     u8 *ht_mcs = (u8 *)&link_sta_params->ht_capa->mcs;
 
 	int i;

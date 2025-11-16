@@ -736,10 +736,8 @@ static void rwnx_csa_finish(struct work_struct *ws)
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0);
 #elif (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION3)
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0, 0);
-#elif (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION)
+#elif
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0);
-#else
-		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef);
 #endif
 		wiphy_unlock(rwnx_hw->wiphy);
 	}
@@ -2466,13 +2464,8 @@ static int rwnx_cfg80211_add_station(struct wiphy *wiphy,
 		sta->vif_idx = rwnx_vif->vif_index;
 		sta->vlan_idx = sta->vif_idx;
 		sta->qos = (params->sta_flags_set & BIT(NL80211_STA_FLAG_WME)) != 0;
-#if LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION
                 sta->ht = params->link_sta_params.ht_capa ? 1 : 0;
                 sta->vht = params->link_sta_params.vht_capa ? 1 : 0;
-#else
-                sta->ht = params->ht_capa ? 1 : 0;
-                sta->vht = params->vht_capa ? 1 : 0;
-#endif
 		sta->acm = 0;
 		sta->key.hw_idx = 0;
 
@@ -2841,13 +2834,8 @@ static int rwnx_cfg80211_change_station(struct wiphy *wiphy,
 				sta->vif_idx = rwnx_vif->vif_index;
 				sta->vlan_idx = sta->vif_idx;
 				sta->qos = (params->sta_flags_set & BIT(NL80211_STA_FLAG_WME)) != 0;
-#if LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION
                                 sta->ht = params->link_sta_params.ht_capa ? 1 : 0;
                                 sta->vht = params->link_sta_params.vht_capa ? 1 : 0;
-#else
-                                sta->ht = params->ht_capa ? 1 : 0;
-                                sta->vht = params->vht_capa ? 1 : 0;
-#endif
 				sta->acm = 0;
 				for (tid = 0; tid < NX_NB_TXQ_PER_STA; tid++) {
 					int uapsd_bit = rwnx_hwq2uapsd[rwnx_tid2hwq[tid]];
@@ -3095,11 +3083,7 @@ static int rwnx_cfg80211_change_beacon(struct wiphy *wiphy, struct net_device *d
 /**
  * * @stop_ap: Stop being an AP, including stopping beaconing.
  */
-#if (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION)
 static int rwnx_cfg80211_stop_ap(struct wiphy *wiphy, struct net_device *dev, unsigned int link_id)
-#else
-static int rwnx_cfg80211_stop_ap(struct wiphy *wiphy, struct net_device *dev)
-#endif
 {
 	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
 	struct rwnx_vif *rwnx_vif = netdev_priv(dev);
@@ -3622,9 +3606,7 @@ static int rwnx_cfg80211_dump_survey(struct wiphy *wiphy, struct net_device *net
  */
 static int rwnx_cfg80211_get_channel(struct wiphy *wiphy,
                                                                          struct wireless_dev *wdev,
-#if LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION
                                                                          unsigned int link_id,
-#endif
                                                                          struct cfg80211_chan_def *chandef)
 {
 	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
