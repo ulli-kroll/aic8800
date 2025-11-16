@@ -20,9 +20,6 @@
 #include "sdio_host.h"
 #include "rwnx_defs.h"
 #include "rwnx_platform.h"
-#ifdef CONFIG_INGENIC_T20
-#include "mach/jzmmc.h"
-#endif /* CONFIG_INGENIC_T20 */
 
 int aicwf_sdio_readb(struct aic_sdio_dev *sdiodev, uint regaddr, u8 *val)
 {
@@ -266,10 +263,6 @@ static struct sdio_driver aicwf_sdio_driver = {
 #endif
 void aicwf_sdio_register(void)
 {
-#ifdef CONFIG_INGENIC_T20
-    jzmmc_manual_detect(1, 1);
-#endif /* CONFIG_INGENIC_T20 */
-
 #ifdef CONFIG_NANOPI_M4
     if(aic_host_drv->card == NULL){
         __mmc_claim_host(aic_host_drv,NULL);
