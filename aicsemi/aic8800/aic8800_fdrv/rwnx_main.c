@@ -4189,11 +4189,7 @@ static int rwnx_cfg80211_set_txq_params(struct wiphy *wiphy, struct net_device *
 
     RWNX_DBG(RWNX_FN_ENTRY_STR);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0)
-    hw_queue = rwnx_ac2hwq[0][params->queue];
-#else
     hw_queue = rwnx_ac2hwq[0][params->ac];
-#endif
 
     aifs  = params->aifs;
     cwmin = fls(params->cwmin);

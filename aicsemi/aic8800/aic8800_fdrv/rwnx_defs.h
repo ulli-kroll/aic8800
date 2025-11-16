@@ -79,7 +79,7 @@
 #endif
 
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+#if defined(CONFIG_VHT_FOR_OLD_KERNEL)
 enum nl80211_ac {
         NL80211_AC_VO,
         NL80211_AC_VI,
