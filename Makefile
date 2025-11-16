@@ -376,7 +376,6 @@ ccflags-$(CONFIG_WOWLAN) += -DCONFIG_WOWLAN
 MAKEFLAGS +=-j$(shell nproc)
 
 # Platform support list
-CONFIG_PLATFORM_HI ?= n
 CONFIG_PLATFORM_UBUNTU ?= y
 
 ifeq ($(CONFIG_PLATFORM_UBUNTU), y)
