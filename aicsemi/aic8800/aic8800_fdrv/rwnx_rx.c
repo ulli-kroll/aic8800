@@ -559,13 +559,6 @@ static void rwnx_rx_mgmt(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
 	if (ieee80211_is_beacon(mgmt->frame_control)) {
 		if ((RWNX_VIF_TYPE(rwnx_vif) == NL80211_IFTYPE_MESH_POINT) &&
 			hw_rxhdr->flags_new_peer) {
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0))
-			cfg80211_notify_new_peer_candidate(rwnx_vif->ndev, mgmt->sa,
-											   mgmt->u.beacon.variable,
-											   skb->len - offsetof(struct ieee80211_mgmt,
-																   u.beacon.variable),
-											   GFP_ATOMIC);
-#else
 
             /* TODO: the value of parameter sig_dbm need to be confirmed */
             cfg80211_notify_new_peer_candidate(rwnx_vif->ndev, mgmt->sa,
@@ -574,7 +567,6 @@ static void rwnx_rx_mgmt(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
                                                                    u.beacon.variable),
                                                rxvect->rssi1, GFP_ATOMIC);
 
-#endif
 		} else {
             cfg80211_report_obss_beacon(rwnx_hw->wiphy, skb->data, skb->len,
                                         hw_rxhdr->phy_info.phy_prim20_freq,
