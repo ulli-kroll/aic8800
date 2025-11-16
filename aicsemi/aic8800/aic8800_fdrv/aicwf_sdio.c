@@ -2108,11 +2108,7 @@ static int aicwf_sdio_bus_start(struct device *dev)
 
 #ifdef CONFIG_TXRX_THREAD_PRIO
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0))
 #include "uapi/linux/sched/types.h"
-#else
-#include "linux/sched/types.h"
-#endif
 
 int bustx_thread_prio = 1;
 module_param_named(bustx_thread_prio, bustx_thread_prio, int, 0644);

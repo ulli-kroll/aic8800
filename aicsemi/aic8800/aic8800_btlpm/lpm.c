@@ -849,11 +849,7 @@ static int bluesleep_probe(struct platform_device *pdev)
 	bluesleep_uart_dev = sw_uart_get_pdev(uart_index);
 
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
     bsi->ws = wakeup_source_register(dev, "bluesleep");
-#else
-	bsi->ws = wakeup_source_register("bluesleep");
-#endif
 
 	bsi->pdev = pdev;
 

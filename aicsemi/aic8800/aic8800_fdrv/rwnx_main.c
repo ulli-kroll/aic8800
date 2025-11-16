@@ -4940,11 +4940,7 @@ static void rwnx_enable_mesh(struct rwnx_hw *rwnx_hw)
 extern int rwnx_init_aic(struct rwnx_hw *rwnx_hw);
 
 #if IS_ENABLED(CONFIG_SUNXI_ADDR_MGT)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
 extern int get_custom_mac_address(int fmt, char *name, char *addr);
-#else
-extern int get_wifi_custom_mac_address(char *addr_str);
-#endif
 #endif
 #if IS_ENABLED(CONFIG_PM)
 static const struct wiphy_wowlan_support aic_wowlan_support = {
@@ -5622,12 +5618,10 @@ static void __exit rwnx_mod_exit(void)
 }
 
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0)
 MODULE_IMPORT_NS("VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver");
 #else
 MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);
-#endif
 #endif
 
 module_init(rwnx_mod_init);
