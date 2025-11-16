@@ -3754,9 +3754,6 @@ static int rwnx_cfg80211_start_ap(struct wiphy *wiphy, struct net_device *dev,
             rwnx_vif->ap.bcmc_index = apm_start_cfm.bcmc_idx;
             rwnx_vif->ap.flags = 0;
 	    rwnx_vif->ap.csa = NULL;
-            #if (defined CONFIG_VHT_FOR_OLD_KERNEL)
-            rwnx_vif->ap.aic_index = 0;
-            #endif
             sta = &rwnx_hw->sta_table[apm_start_cfm.bcmc_idx];
             sta->valid = true;
             sta->aid = 0;

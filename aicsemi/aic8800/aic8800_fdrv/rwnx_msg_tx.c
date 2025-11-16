@@ -2334,9 +2334,6 @@ int rwnx_send_set_filter(struct rwnx_hw *rwnx_hw, uint32_t filter)
 /******************************************************************************
  *    Control messages handling functions (FULLMAC only)
  *****************************************************************************/
-#ifdef CONFIG_VHT_FOR_OLD_KERNEL
-static struct ieee80211_sta_vht_cap* rwnx_vht_capa;
-#endif
 int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
 {
     struct me_config_req *req;
@@ -2350,7 +2347,7 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
     //struct ieee80211_sta_vht_cap *vht_cap = &wiphy->bands[NL80211_BAND_2GHZ]->vht_cap;
 	//#endif
 	struct ieee80211_sta_ht_cap *ht_cap;
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
 	struct ieee80211_sta_vht_cap *vht_cap;
     #endif
 
@@ -2364,18 +2361,15 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
 
 	if (rwnx_hw->band_5g_support) {
 		ht_cap = &wiphy->bands[NL80211_BAND_5GHZ]->ht_cap;
-        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
 		vht_cap = &wiphy->bands[NL80211_BAND_5GHZ]->vht_cap;
         #endif
 	} else {
 		ht_cap = &wiphy->bands[NL80211_BAND_2GHZ]->ht_cap;
-        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
 		vht_cap = &wiphy->bands[NL80211_BAND_2GHZ]->vht_cap;
         #endif
 	}
-    #ifdef CONFIG_VHT_FOR_OLD_KERNEL
-    rwnx_vht_capa = vht_cap;
-    #endif
 
 	ht_mcs = (uint8_t *)&ht_cap->mcs;
 
@@ -2389,7 +2383,7 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
 
     /* Set parameters for the ME_CONFIG_REQ message */
     req->ht_supp = ht_cap->ht_supported;
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
     req->vht_supp = vht_cap->vht_supported;
     #endif
     req->ht_cap.ht_capa_info = cpu_to_le16(ht_cap->cap | IEEE80211_HT_CAP_LDPC_CODING);
@@ -2402,7 +2396,7 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
     req->ht_cap.tx_beamforming_capa = 0;
     req->ht_cap.asel_capa = 0;
 
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
     if(req->vht_supp) {
     	req->vht_cap.vht_capa_info = cpu_to_le32(vht_cap->cap);
     	req->vht_cap.rx_highest = cpu_to_le16(vht_cap->vht_mcs.rx_highest);
@@ -2607,14 +2601,6 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
 
     int i;
     struct rwnx_vif *rwnx_vif = rwnx_hw->vif_table[inst_nbr];
-    #if (defined CONFIG_VHT_FOR_OLD_KERNEL)
-    struct aic_sta *sta = &rwnx_hw->aic_table[rwnx_vif->ap.aic_index];
-    printk("assoc_req idx %d, he: %d, vht: %d\n ", rwnx_vif->ap.aic_index, sta->he, sta->vht);
-    if (rwnx_vif->ap.aic_index < NX_REMOTE_STA_MAX + NX_VIRT_DEV_MAX)
-        rwnx_vif->ap.aic_index++;
-    else
-        rwnx_vif->ap.aic_index = 0;
-    #endif
     RWNX_DBG(RWNX_FN_ENTRY_STR);
 
     /* Build the MM_STA_ADD_REQ message */
@@ -2655,17 +2641,6 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
         req->vht_cap.rx_mcs_map = cpu_to_le16(vht_capa->supp_mcs.rx_mcs_map);
         req->vht_cap.tx_highest = cpu_to_le16(vht_capa->supp_mcs.tx_highest);
         req->vht_cap.tx_mcs_map = cpu_to_le16(vht_capa->supp_mcs.tx_mcs_map);
-    }
-#elif defined(CONFIG_VHT_FOR_OLD_KERNEL)
-    if (sta->vht) {
-        //const struct ieee80211_vht_cap *vht_capa = rwnx_vht_capa;
-
-        req->flags |= STA_VHT_CAPA;
-        req->vht_cap.vht_capa_info = cpu_to_le32(rwnx_vht_capa->cap);
-        req->vht_cap.rx_highest = sta->supp_mcs.rx_highest;//cpu_to_le16(rwnx_vht_capa->vht_mcs.rx_highest);
-        req->vht_cap.rx_mcs_map = sta->supp_mcs.rx_mcs_map;//cpu_to_le16(rwnx_vht_capa->vht_mcs.rx_mcs_map);
-        req->vht_cap.tx_highest = sta->supp_mcs.tx_highest;//cpu_to_le16(rwnx_vht_capa->vht_mcs.tx_highest);
-        req->vht_cap.tx_mcs_map = sta->supp_mcs.tx_mcs_map;//cpu_to_le16(rwnx_vht_capa->vht_mcs.tx_mcs_map);
     }
 #endif
 
