@@ -722,12 +722,7 @@ static void rwnx_csa_finish(struct work_struct *ws)
 	if (error) {
 		cfg80211_stop_iface(rwnx_hw->wiphy, &vif->wdev, GFP_KERNEL);
 	} else {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0))
 		wiphy_lock(rwnx_hw->wiphy);
-#else
-		mutex_lock(&vif->wdev.mtx);
-		__acquire(&vif->wdev.mtx);
-#endif
 		spin_lock_bh(&rwnx_hw->cb_lock);
 		rwnx_chanctx_unlink(vif);
 		rwnx_chanctx_link(vif, csa->ch_idx, &csa->chandef);
@@ -746,12 +741,7 @@ static void rwnx_csa_finish(struct work_struct *ws)
 #else
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef);
 #endif
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0))
 		wiphy_unlock(rwnx_hw->wiphy);
-#else
-		mutex_unlock(&vif->wdev.mtx);
-		__release(&vif->wdev.mtx);
-#endif
 	}
 	rwnx_del_csa(vif);
 }
@@ -1445,11 +1435,7 @@ static struct rwnx_vif *rwnx_interface_add(struct rwnx_hw *rwnx_hw,
 	} else
 		vif->use_4addr = false;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
         if (cfg80211_register_netdevice(ndev))
-#else
-        if (register_netdevice(ndev))
-#endif
             goto err;
 
 	spin_lock_bh(&rwnx_hw->cb_lock);
@@ -1704,11 +1690,7 @@ static int rwnx_cfg80211_del_iface(struct wiphy *wiphy, struct wireless_dev *wde
 
 	if (dev->reg_state == NETREG_REGISTERED) {
         /* Will call rwnx_close if interface is UP */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
         cfg80211_unregister_netdevice(dev);
-#else
-        unregister_netdevice(dev);
-#endif
 
 	}
 

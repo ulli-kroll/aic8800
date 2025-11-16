@@ -1346,15 +1346,9 @@ void rwnx_custregd(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
     wiphy->regulatory_flags |= REGULATORY_WIPHY_SELF_MANAGED;
 
     rtnl_lock();
-	#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
 		if (regulatory_set_wiphy_regd_sync(wiphy, getRegdomainFromRwnxDB(wiphy, default_ccode))){
 			wiphy_err(wiphy, "Failed to set custom regdomain\n");
 		}
-	#else
-		if (regulatory_set_wiphy_regd_sync_rtnl(wiphy, getRegdomainFromRwnxDB(wiphy, default_ccode))){
-			wiphy_err(wiphy, "Failed to set custom regdomain\n");
-		}
-	#endif
 
     else{
         wiphy_err(wiphy,"\n"
