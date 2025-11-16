@@ -912,7 +912,6 @@ static void rwnx_set_ht_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 
 static void rwnx_set_he_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	struct ieee80211_supported_band *band_5GHz = wiphy->bands[NL80211_BAND_5GHZ];
 	struct ieee80211_supported_band *band_2GHz = wiphy->bands[NL80211_BAND_2GHZ];
 	int i;
@@ -1176,7 +1175,6 @@ static void rwnx_set_he_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 			he_cap->he_mcs_nss_supp.tx_mcs_80p80 |= unsup_for_ss;
 		}
 	}
-#endif
 }
 
 static void rwnx_set_wiphy_params(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)

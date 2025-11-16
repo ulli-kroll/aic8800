@@ -135,7 +135,6 @@ extern char country_code[];
 	.ppe_thres = {0x08, 0x1c, 0x07},                            \
 }
 #else
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 #define RWNX_HE_CAPABILITIES                                    \
 {                                                               \
 	.has_he = false,                                            \
@@ -165,7 +164,6 @@ extern char country_code[];
 	},                                                          \
 	.ppe_thres = {0x08, 0x1c, 0x07},                            \
 }
-#endif
 #endif
 
 #define RATE(_bitrate, _hw_rate, _flags) {      \
@@ -316,12 +314,10 @@ static struct ieee80211_channel rwnx_5ghz_channels[] = {
 	CHAN(5970),
 };
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
 struct ieee80211_sband_iftype_data rwnx_he_capa = {
 	.types_mask = BIT(NL80211_IFTYPE_STATION)|BIT(NL80211_IFTYPE_AP),
 	.he_cap = RWNX_HE_CAPABILITIES,
 };
-#endif
 
 static struct ieee80211_supported_band rwnx_band_2GHz = {
 	.channels   = rwnx_2ghz_channels,
@@ -330,10 +326,8 @@ static struct ieee80211_supported_band rwnx_band_2GHz = {
 	.n_bitrates = ARRAY_SIZE(rwnx_ratetable),
 	.ht_cap     = RWNX_HT_CAPABILITIES,
 	.vht_cap    = RWNX_VHT_CAPABILITIES,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	.iftype_data = &rwnx_he_capa,
 	.n_iftype_data = 1,
-#endif
 };
 
 static struct ieee80211_supported_band rwnx_band_5GHz = {
@@ -343,10 +337,8 @@ static struct ieee80211_supported_band rwnx_band_5GHz = {
 	.n_bitrates = ARRAY_SIZE(rwnx_ratetable) - 4,
 	.ht_cap     = RWNX_HT_CAPABILITIES,
 	.vht_cap    = RWNX_VHT_CAPABILITIES,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	.iftype_data = &rwnx_he_capa,
 	.n_iftype_data = 1,
-#endif
 };
 
 static struct ieee80211_iface_limit rwnx_limits[] = {
@@ -4252,7 +4244,6 @@ static int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 		sinfo->txrate.mcs = rate_info->mcsIndexTx & 0xF;
 		sinfo->txrate.nss = ((rate_info->mcsIndexTx >> 4) & 0x7) + 1;
 		break;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	case FORMATMOD_HE_MU:
 	case FORMATMOD_HE_SU:
 	case FORMATMOD_HE_ER:
@@ -4260,15 +4251,6 @@ static int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 		sinfo->txrate.mcs = rate_info->mcsIndexTx & 0xF;
 		sinfo->txrate.nss = ((rate_info->mcsIndexTx >> 4) & 0x7) + 1;
 		break;
-#else
-	case FORMATMOD_HE_MU:
-	case FORMATMOD_HE_SU:
-	case FORMATMOD_HE_ER:
-		sinfo->txrate.flags = RATE_INFO_FLAGS_VHT_MCS;
-		sinfo->txrate.mcs = ((rate_info->mcsIndexTx & 0xF) > 9 ? 9 : (rate_info->mcsIndexTx & 0xF));
-		sinfo->txrate.nss = ((rate_info->mcsIndexTx >> 4) & 0x7) + 1;
-		break;
-#endif
 	default:
 		return -EINVAL;
 	}
@@ -4287,11 +4269,7 @@ static int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 		sinfo->txrate.bw = RATE_INFO_BW_160;
 		break;
 	default:
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 		sinfo->txrate.bw = RATE_INFO_BW_HE_RU;
-#else
-		sinfo->txrate.bw = RATE_INFO_BW_20;
-#endif
 		break;
 	}
 
@@ -4318,11 +4296,7 @@ static int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 		sinfo->rxrate.bw = RATE_INFO_BW_160;
 		break;
 	default:
-	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 		sinfo->rxrate.bw = RATE_INFO_BW_HE_RU;
-	#else
-		sinfo->rxrate.bw = RATE_INFO_BW_20;
-	#endif
 		break;
 	}
 
@@ -4348,7 +4322,6 @@ static int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 		sinfo->rxrate.mcs = rx_vect1->vht.mcs;
 		sinfo->rxrate.nss = rx_vect1->vht.nss + 1;
 		break;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	case FORMATMOD_HE_MU:
 		sinfo->rxrate.he_ru_alloc = rx_vect1->he.ru_size;
 		__attribute__((__fallthrough__));
@@ -4360,21 +4333,6 @@ static int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 		sinfo->rxrate.he_dcm = rx_vect1->he.dcm;
 		sinfo->rxrate.nss = rx_vect1->he.nss + 1;
 		break;
-#else
-	//kernel not support he
-	case FORMATMOD_HE_MU:
-	case FORMATMOD_HE_SU:
-	case FORMATMOD_HE_ER:
-		sinfo->rxrate.flags = RATE_INFO_FLAGS_VHT_MCS;
-        if(rx_vect1->he.mcs > 9){
-            sinfo->rxrate.mcs = 9;
-        }else{
-            sinfo->rxrate.mcs = rx_vect1->he.mcs;
-        }
-		sinfo->rxrate.mcs = (rx_vect1->he.mcs > 9 ? 9 : rx_vect1->he.mcs);
-		sinfo->rxrate.nss = rx_vect1->he.nss + 1;
-		break;
-#endif
 	default:
 		return -EINVAL;
 	}

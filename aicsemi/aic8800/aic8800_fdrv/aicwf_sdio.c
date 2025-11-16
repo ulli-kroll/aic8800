@@ -435,13 +435,10 @@ void rwnx_pm_stay_awake(struct aic_sdio_dev *sdiodev){
 #ifdef CONFIG_GPIO_WAKEUP
 	spin_lock_bh(&sdiodev->wslock);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 		if(ws != NULL){
 			__pm_stay_awake(ws);
             AICWFDBG(LOGWAKELOCK, "%s active_count:%d relax_count:%d\r\n", __func__, (int)ws->active_count, (int)ws->relax_count);
 		}
-#else
-#endif
 
 	spin_unlock_bh(&sdiodev->wslock);
 #endif
@@ -452,13 +449,6 @@ void rwnx_pm_relax(struct aic_sdio_dev *sdiodev){
 #ifdef CONFIG_GPIO_WAKEUP
 	spin_lock_bh(&sdiodev->wslock);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
-	if(ws != NULL){
-		__pm_relax(ws);
-        AICWFDBG(LOGWAKELOCK, "%s active_count:%d relax_count:%d\r\n", __func__, (int)ws->active_count, (int)ws->relax_count);
-	}
-#else
-#endif
 	spin_unlock_bh(&sdiodev->wslock);
 #endif
 

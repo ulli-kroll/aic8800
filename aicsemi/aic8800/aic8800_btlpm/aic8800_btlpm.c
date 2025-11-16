@@ -140,11 +140,7 @@ static unsigned long flags;
 static struct tasklet_struct hostwake_task;
 
 /** Reception timer */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 static void bluesleep_rx_timer_expire(struct timer_list *t);
-#else
-static void bluesleep_rx_timer_expire(unsigned long data);
-#endif
 static struct timer_list rx_timer;
 
 /** Lock for state transitions */
@@ -486,11 +482,7 @@ static void bluesleep_tx_allow_sleep(void)
  * Clear BT_RXTIMER.
  * @param data Not used.
  */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 static void bluesleep_rx_timer_expire(struct timer_list *t)
-#else
-static void bluesleep_rx_timer_expire(unsigned long data)
-#endif
 {
 	BT_DBG("bluesleep_rx_timer_expire");
 	clear_bit(BT_RXTIMER, &flags);
@@ -808,12 +800,7 @@ static int __init bluesleep_probe(struct platform_device *pdev)
 		goto err1;
 	}
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	if (!of_property_read_bool(np, "wakeup-source")) {
-#else
-	if (!of_property_read_u32(np, "wakeup-source", &bsi->wakeup_enable) &&
-		(bsi->wakeup_enable == 0)) {
-#endif
 		BT_DBG("wakeup source is disabled!\n");
 	} else {
 		ret = device_init_wakeup(dev, true);
@@ -1057,13 +1044,7 @@ static int __init bluesleep_init(void)
 	spin_lock_init(&rw_lock);
 
 	/* Initialize timer */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	timer_setup(&rx_timer, bluesleep_rx_timer_expire, 0);
-#else
-	init_timer(&rx_timer);
-	rx_timer.function = bluesleep_rx_timer_expire;
-	rx_timer.data = 0;
-#endif
 
 	/* initialize host wake tasklet */
 	tasklet_init(&hostwake_task, bluesleep_hostwake_task, 0);

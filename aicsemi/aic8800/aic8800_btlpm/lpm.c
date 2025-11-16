@@ -774,12 +774,7 @@ static int bluesleep_probe(struct platform_device *pdev)
 		goto err1;
 	}
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	if (!of_property_read_bool(np, "wakeup-source")) {
-#else
-	if (!of_property_read_u32(np, "wakeup-source", &bsi->wakeup_enable) &&
-		(bsi->wakeup_enable == 0)) {
-#endif
 		BT_DBG("wakeup source is disabled!\n");
 	} else {
 		ret = device_init_wakeup(dev, true);
