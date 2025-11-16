@@ -609,12 +609,10 @@ int rwnx_send_add_if(struct rwnx_hw *rwnx_hw, const unsigned char *mac,
     /* Set parameters for the ADD_IF_REQ message */
     memcpy(&(add_if_req_param->addr.array[0]), mac, ETH_ALEN);
     switch (iftype) {
-    #ifdef CONFIG_RWNX_FULLMAC
     //case NL80211_IFTYPE_P2P_DEVICE:
     case NL80211_IFTYPE_P2P_CLIENT:
         add_if_req_param->p2p = true;
         // no break
-    #endif /* CONFIG_RWNX_FULLMAC */
     case NL80211_IFTYPE_STATION:
         add_if_req_param->type = MM_STA;
         break;
@@ -623,11 +621,9 @@ int rwnx_send_add_if(struct rwnx_hw *rwnx_hw, const unsigned char *mac,
         add_if_req_param->type = MM_IBSS;
         break;
 
-    #ifdef CONFIG_RWNX_FULLMAC
     case NL80211_IFTYPE_P2P_GO:
         add_if_req_param->p2p = true;
         // no break
-    #endif /* CONFIG_RWNX_FULLMAC */
     case NL80211_IFTYPE_AP:
         add_if_req_param->type = MM_AP;
         break;
@@ -689,11 +685,9 @@ int rwnx_send_set_channel(struct rwnx_hw *rwnx_hw, int phy_idx,
         return -ENOMEM;
 
     if (phy_idx == 0) {
-#ifdef CONFIG_RWNX_FULLMAC
         /* On FULLMAC only setting channel of secondary chain */
         wiphy_err(rwnx_hw->wiphy, "Trying to set channel of primary chain");
         return 0;
-#endif /* CONFIG_RWNX_FULLMAC */
     } else {
         struct rwnx_sec_phy_chan *chan = &rwnx_hw->phy.sec_chan;
 
@@ -2340,7 +2334,6 @@ int rwnx_send_set_filter(struct rwnx_hw *rwnx_hw, uint32_t filter)
 /******************************************************************************
  *    Control messages handling functions (FULLMAC only)
  *****************************************************************************/
-#ifdef CONFIG_RWNX_FULLMAC
 #ifdef CONFIG_HE_FOR_OLD_KERNEL
 extern struct ieee80211_sband_iftype_data rwnx_he_capa;
 #endif
@@ -3839,7 +3832,6 @@ int rwnx_send_config_monitor_req(struct rwnx_hw *rwnx_hw,
     /* Send the ME_CONFIG_MONITOR_REQ message to FW */
     return rwnx_send_msg(rwnx_hw, req, 1, ME_CONFIG_MONITOR_CFM, cfm);
 }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 int rwnx_send_tdls_chan_switch_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
                                    struct rwnx_sta *rwnx_sta, bool sta_initiator,
@@ -3898,36 +3890,26 @@ int rwnx_send_tdls_cancel_chan_switch_req(struct rwnx_hw *rwnx_hw,
 }
 
 #ifdef CONFIG_RWNX_BFMER
-#ifdef CONFIG_RWNX_FULLMAC
 void rwnx_send_bfmer_enable(struct rwnx_hw *rwnx_hw, struct rwnx_sta *rwnx_sta,
                             const struct ieee80211_vht_cap *vht_cap)
-#endif /* CONFIG_RWNX_FULLMAC*/
 {
     struct mm_bfmer_enable_req *bfmer_en_req;
-#ifdef CONFIG_RWNX_FULLMAC
     __le32 vht_capability;
     u8 rx_nss = 0;
-#endif /* CONFIG_RWNX_FULLMAC */
 
     RWNX_DBG(RWNX_FN_ENTRY_STR);
 
-#ifdef CONFIG_RWNX_FULLMAC
     if (!vht_cap) {
-#endif /* CONFIG_RWNX_FULLMAC */
         goto end;
     }
 
-#ifdef CONFIG_RWNX_FULLMAC
     vht_capability = vht_cap->vht_cap_info;
-#endif /* CONFIG_RWNX_FULLMAC */
 
     if (!(vht_capability & IEEE80211_VHT_CAP_SU_BEAMFORMEE_CAPABLE)) {
         goto end;
     }
 
-#ifdef CONFIG_RWNX_FULLMAC
     rx_nss = rwnx_bfmer_get_rx_nss(vht_cap);
-#endif /* CONFIG_RWNX_FULLMAC */
 
     /* Allocate a structure that will contain the beamforming report */
     if (rwnx_bfmer_report_add(rwnx_hw, rwnx_sta, RWNX_BFMER_REPORT_SPACE_SIZE))
@@ -3952,10 +3934,8 @@ void rwnx_send_bfmer_enable(struct rwnx_hw *rwnx_hw, struct rwnx_sta *rwnx_sta,
     bfmer_en_req->host_bfr_addr = rwnx_sta->bfm_report->dma_addr;
     bfmer_en_req->host_bfr_size = RWNX_BFMER_REPORT_SPACE_SIZE;
     bfmer_en_req->sta_idx = rwnx_sta->sta_idx;
-#ifdef CONFIG_RWNX_FULLMAC
     bfmer_en_req->aid = rwnx_sta->aid;
     bfmer_en_req->rx_nss = rx_nss;
-#endif /* CONFIG_RWNX_FULLMAC */
 
     if (vht_capability & IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE) {
         bfmer_en_req->vht_mu_bfmee = true;

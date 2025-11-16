@@ -91,10 +91,8 @@ struct rwnx_radar {
     spinlock_t lock;                    /* lock for pulses processing */
 
     /* In softmac cac is handled by mac80211 */
-#ifdef CONFIG_RWNX_FULLMAC
     struct delayed_work cac_work;       /* Work used to handle CAC */
     struct rwnx_vif *cac_vif;           /* vif on which we started CAC */
-#endif
 };
 
 bool rwnx_radar_detection_init(struct rwnx_radar *radar);

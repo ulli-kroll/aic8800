@@ -89,15 +89,9 @@ static void ipc_host_rxdesc_handler(struct ipc_host_env_tag *env)
     // of the next hostbufs too, because it is likely that several hostbufs have been
     // filled within the time needed for this irq handling
     do {
-        #ifdef CONFIG_RWNX_FULLMAC
         // call the external function to indicate that a RX descriptor is received
         if (env->cb.recv_data_ind(env->pthis,
                                   env->ipc_host_rxdesc_array[env->ipc_host_rxdesc_idx].hostid) != 0)
-        #else
-        // call the external function to indicate that a RX packet is received
-        if (env->cb.recv_data_ind(env->pthis,
-                                  env->ipc_host_rxbuf_array[env->ipc_host_rxbuf_idx].hostid) != 0)
-        #endif //(CONFIG_RWNX_FULLMAC)
             break;
 
     }while(1);
@@ -353,9 +347,6 @@ void ipc_host_init(struct ipc_host_env_tag *env,
 
     // Initialize buffers numbers and buffers sizes needed for DMA Receptions
     env->rx_bufnb = IPC_RXBUF_CNT;
-    #ifdef CONFIG_RWNX_FULLMAC
-    env->rxdesc_nb = IPC_RXDESC_CNT;
-    #endif //(CONFIG_RWNX_FULLMAC)
     env->radar_bufnb = IPC_RADARBUF_CNT;
     env->radar_bufsz = sizeof(struct radar_pulse_array_desc);
     env->unsuprxvec_bufnb = IPC_UNSUPRXVECBUF_CNT;
@@ -408,9 +399,7 @@ void ipc_host_patt_addr_push(struct ipc_host_env_tag *env, uint32_t addr)
  ******************************************************************************
  */
 int ipc_host_rxbuf_push(struct ipc_host_env_tag *env,
-#ifdef CONFIG_RWNX_FULLMAC
                         uint32_t hostid,
-#endif
                         uint32_t hostbuf)
 {
     struct ipc_shared_env_tag *shared_env_ptr = env->shared;
@@ -418,17 +407,9 @@ int ipc_host_rxbuf_push(struct ipc_host_env_tag *env,
     REG_SW_CLEAR_HOSTBUF_IDX_PROFILING(env->pthis);
     REG_SW_SET_HOSTBUF_IDX_PROFILING(env->pthis, env->ipc_host_rxbuf_idx);
 
-#ifdef CONFIG_RWNX_FULLMAC
     // Copy the hostbuf (DMA address) in the ipc shared memory
     shared_env_ptr->host_rxbuf[env->ipc_host_rxbuf_idx].hostid   = hostid;
     shared_env_ptr->host_rxbuf[env->ipc_host_rxbuf_idx].dma_addr = hostbuf;
-#else
-    // Save the hostid and the hostbuf in global array
-    env->ipc_host_rxbuf_array[env->ipc_host_rxbuf_idx].hostid = hostid;
-    env->ipc_host_rxbuf_array[env->ipc_host_rxbuf_idx].dma_addr = hostbuf;
-
-    shared_env_ptr->host_rxbuf[env->ipc_host_rxbuf_idx] = hostbuf;
-#endif //(CONFIG_RWNX_FULLMAC)
 
     // Signal to the embedded CPU that at least one buffer is available
     ipc_app2emb_trigger_set(shared_env_ptr, IPC_IRQ_A2E_RXBUF_BACK);
@@ -439,7 +420,6 @@ int ipc_host_rxbuf_push(struct ipc_host_env_tag *env,
     return (0);
 }
 
-#ifdef CONFIG_RWNX_FULLMAC
 /**
  ******************************************************************************
  */
@@ -461,7 +441,6 @@ int ipc_host_rxdesc_push(struct ipc_host_env_tag *env, void *hostid,
 
     return (0);
 }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 /**
  ******************************************************************************

@@ -113,8 +113,6 @@ struct rwnx_ipc_skb_elem {
     dma_addr_t dma_addr;
 };
 
-#ifdef CONFIG_RWNX_FULLMAC
-
 /* Maximum number of rx buffer the fw may use at the same time */
 #define RWNX_RXBUFF_MAX (64 * NX_REMOTE_STA_MAX)
 
@@ -132,5 +130,4 @@ struct rwnx_ipc_rxbuf_elems {
     int idx;
 };
 
-#endif /* CONFIG_RWNX_FULLMAC */
 #endif /* _RWNX_IPC_UTILS_H_ */

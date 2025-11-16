@@ -17,7 +17,6 @@
 /******************************************************************************
  * Utils functions
  *****************************************************************************/
-#ifdef CONFIG_RWNX_FULLMAC
 const int nx_tid_prio[NX_NB_TID_PER_STA] = {7, 6, 5, 4, 3, 0, 2, 1};
 
 static inline int rwnx_txq_sta_idx(struct rwnx_sta *sta, u8 tid)
@@ -68,8 +67,6 @@ static inline struct rwnx_sta *rwnx_txq_2_sta(struct rwnx_txq *txq)
     return txq->sta;
 }
 
-#endif /* CONFIG_RWNX_FULLMAC */
-
 
 /******************************************************************************
  * Init/Deinit functions
@@ -88,9 +85,7 @@ static inline struct rwnx_sta *rwnx_txq_2_sta(struct rwnx_txq *txq)
  */
 static void rwnx_txq_init(struct rwnx_txq *txq, int idx, u8 status,
                           struct rwnx_hwq *hwq, int tid,
-#ifdef CONFIG_RWNX_FULLMAC
                           struct rwnx_sta *sta, struct net_device *ndev
-#endif
                           )
 {
     int i;
@@ -120,7 +115,6 @@ static void rwnx_txq_init(struct rwnx_txq *txq, int idx, u8 status,
         txq->pkt_pushed[i] = 0;
     txq->push_limit = 0;
     txq->tid = tid;
-#ifdef CONFIG_RWNX_FULLMAC
     txq->ps_id = LEGACY_PS_ID;
     if (idx < nx_first_vif_txq_idx) {
         int sta_idx = sta->sta_idx;
@@ -139,7 +133,6 @@ static void rwnx_txq_init(struct rwnx_txq *txq, int idx, u8 status,
     txq->amsdu = NULL;
     txq->amsdu_len = 0;
 #endif /* CONFIG_RWNX_AMSDUS_TX */
-#endif /* CONFIG_RWNX_FULLMAC */
 }
 
 /**
@@ -170,9 +163,7 @@ void rwnx_txq_flush(struct rwnx_hw *rwnx_hw, struct rwnx_txq *txq)
         //dma_unmap_single(rwnx_hw->dev, sw_txhdr->dma_addr, sw_txhdr->map_len,
           //               DMA_TO_DEVICE);
 
-#ifdef CONFIG_RWNX_FULLMAC
         dev_kfree_skb_any(skb);
-#endif /* CONFIG_RWNX_FULLMAC */
     }
 }
 
@@ -214,7 +205,6 @@ void rwnx_txq_vif_init(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
     struct rwnx_txq *txq;
     int idx;
 
-#ifdef CONFIG_RWNX_FULLMAC
     txq = rwnx_txq_vif_get(rwnx_vif, NX_BCMC_TXQ_TYPE);
     idx = rwnx_txq_vif_idx(rwnx_vif, NX_BCMC_TXQ_TYPE);
     rwnx_txq_init(txq, idx, status, &rwnx_hw->hwq[RWNX_HWQ_BE], 0,
@@ -225,7 +215,6 @@ void rwnx_txq_vif_init(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
     rwnx_txq_init(txq, idx, status, &rwnx_hw->hwq[RWNX_HWQ_VO], TID_MGT,
                   NULL, rwnx_vif->ndev);
 
-#endif /* CONFIG_RWNX_FULLMAC */
 }
 
 /**
@@ -238,14 +227,12 @@ void rwnx_txq_vif_deinit(struct rwnx_hw * rwnx_hw, struct rwnx_vif *rwnx_vif)
 {
     struct rwnx_txq *txq;
 
-#ifdef CONFIG_RWNX_FULLMAC
     txq = rwnx_txq_vif_get(rwnx_vif, NX_BCMC_TXQ_TYPE);
     rwnx_txq_deinit(rwnx_hw, txq);
 
     txq = rwnx_txq_vif_get(rwnx_vif, NX_UNK_TXQ_TYPE);
     rwnx_txq_deinit(rwnx_hw, txq);
 
-#endif /* CONFIG_RWNX_FULLMAC */
 }
 
 
@@ -268,7 +255,6 @@ void rwnx_txq_sta_init(struct rwnx_hw *rwnx_hw, struct rwnx_sta *rwnx_sta,
     struct rwnx_txq *txq;
     int tid, idx;
 
-#ifdef CONFIG_RWNX_FULLMAC
     struct rwnx_vif *rwnx_vif = rwnx_hw->vif_table[rwnx_sta->vif_idx];
     idx = rwnx_txq_sta_idx(rwnx_sta, 0);
 
@@ -278,8 +264,6 @@ void rwnx_txq_sta_init(struct rwnx_hw *rwnx_hw, struct rwnx_sta *rwnx_sta,
         txq->ps_id = rwnx_sta->uapsd_tids & (1 << tid) ? UAPSD_ID : LEGACY_PS_ID;
         idx++;
     }
-
-#endif /* CONFIG_RWNX_FULLMAC*/
 }
 
 /**
@@ -298,7 +282,6 @@ void rwnx_txq_sta_deinit(struct rwnx_hw *rwnx_hw, struct rwnx_sta *rwnx_sta)
     }
 }
 
-#ifdef CONFIG_RWNX_FULLMAC
 /**
  * rwnx_txq_unk_vif_init - Initialize TXQ for unknown STA linked to a vif
  *
@@ -406,7 +389,6 @@ void rwnx_txq_tdls_vif_deinit(struct rwnx_vif *rwnx_vif)
 
     rwnx_txq_unk_vif_deinit(rwnx_vif);
 }
-#endif
 
 /******************************************************************************
  * Start/Stop functions
@@ -528,9 +510,7 @@ void rwnx_txq_stop(struct rwnx_txq *txq, u16 reason)
  * To be called with tx_lock hold
  */
 void rwnx_txq_sta_start(struct rwnx_sta *rwnx_sta, u16 reason
-#ifdef CONFIG_RWNX_FULLMAC
                         , struct rwnx_hw *rwnx_hw
-#endif
                         )
 {
     struct rwnx_txq *txq;
@@ -561,9 +541,7 @@ void rwnx_txq_sta_start(struct rwnx_sta *rwnx_sta, u16 reason
  * To be called with tx_lock hold
  */
 void rwnx_txq_sta_stop(struct rwnx_sta *rwnx_sta, u16 reason
-#ifdef CONFIG_RWNX_FULLMAC
                        , struct rwnx_hw *rwnx_hw
-#endif
                        )
 {
     struct rwnx_txq *txq;
@@ -579,7 +557,6 @@ void rwnx_txq_sta_stop(struct rwnx_sta *rwnx_sta, u16 reason
     }
 }
 
-#ifdef CONFIG_RWNX_FULLMAC
 void rwnx_txq_tdls_sta_start(struct rwnx_vif *rwnx_vif, u16 reason,
                              struct rwnx_hw *rwnx_hw)
 {
@@ -593,9 +570,7 @@ void rwnx_txq_tdls_sta_start(struct rwnx_vif *rwnx_vif, u16 reason,
 
     spin_unlock_bh(&rwnx_hw->tx_lock);
 }
-#endif
 
-#ifdef CONFIG_RWNX_FULLMAC
 void rwnx_txq_tdls_sta_stop(struct rwnx_vif *rwnx_vif, u16 reason,
                             struct rwnx_hw *rwnx_hw)
 {
@@ -609,9 +584,7 @@ void rwnx_txq_tdls_sta_stop(struct rwnx_vif *rwnx_vif, u16 reason,
 
     spin_unlock_bh(&rwnx_hw->tx_lock);
 }
-#endif
 
-#ifdef CONFIG_RWNX_FULLMAC
 static inline
 void rwnx_txq_vif_for_each_sta(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
                                void (*f)(struct rwnx_sta *, u16, struct rwnx_hw *),
@@ -646,8 +619,6 @@ void rwnx_txq_vif_for_each_sta(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vi
     }
 }
 
-#endif
-
 /**
  * rwnx_txq_vif_start - START TX queues of all STA associated to the vif
  *                      and vif's TXQ
@@ -669,7 +640,6 @@ void rwnx_txq_vif_start(struct rwnx_vif *rwnx_vif, u16 reason,
 #endif
     spin_lock_bh(&rwnx_hw->tx_lock);
 
-#ifdef CONFIG_RWNX_FULLMAC
     //Reject if monitor interface
     if (rwnx_vif->wdev.iftype == NL80211_IFTYPE_MONITOR)
         goto end;
@@ -687,7 +657,6 @@ void rwnx_txq_vif_start(struct rwnx_vif *rwnx_vif, u16 reason,
     rwnx_txq_start(txq, reason);
 
 end:
-#endif /* CONFIG_RWNX_FULLMAC */
 
     spin_unlock_bh(&rwnx_hw->tx_lock);
 }
@@ -715,7 +684,6 @@ void rwnx_txq_vif_stop(struct rwnx_vif *rwnx_vif, u16 reason,
 #endif
     spin_lock_bh(&rwnx_hw->tx_lock);
 
-#ifdef CONFIG_RWNX_FULLMAC
     //Reject if monitor interface
     if (rwnx_vif->wdev.iftype == NL80211_IFTYPE_MONITOR)
         goto end;
@@ -728,12 +696,9 @@ void rwnx_txq_vif_stop(struct rwnx_vif *rwnx_vif, u16 reason,
     rwnx_txq_stop(txq, reason);
 
 end:
-#endif /* CONFIG_RWNX_FULLMAC*/
 
     spin_unlock_bh(&rwnx_hw->tx_lock);
 }
-
-#ifdef CONFIG_RWNX_FULLMAC
 
 /**
  * rwnx_start_offchan_txq - START TX queue for offchannel frame
@@ -788,7 +753,6 @@ void rwnx_txq_sta_switch_vif(struct rwnx_sta *sta, struct rwnx_vif *old_vif,
         netif_wake_subqueue(txq->ndev, txq->ndev_idx);
     }
 }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 /******************************************************************************
  * TXQ queue/schedule functions
@@ -820,7 +784,6 @@ int rwnx_txq_queue_skb(struct sk_buff *skb, struct rwnx_txq *txq,
     unsigned long flags;
 #endif
 
-#ifdef CONFIG_RWNX_FULLMAC
     if (unlikely(txq->sta && txq->sta->ps.active)) {
         txq->sta->ps.pkt_ready[txq->ps_id]++;
 #ifdef CREATE_TRACE_POINT
@@ -830,7 +793,6 @@ int rwnx_txq_queue_skb(struct sk_buff *skb, struct rwnx_txq *txq,
             rwnx_set_traffic_status(rwnx_hw, txq->sta, true, txq->ps_id);
         }
     }
-#endif
 
     if (!retry) {
         /* add buffer in the sk_list */
@@ -848,7 +810,6 @@ int rwnx_txq_queue_skb(struct sk_buff *skb, struct rwnx_txq *txq,
     trace_txq_queue_skb(skb, txq, retry);
 #endif
     /* Flowctrl corresponding netdev queue if needed */
-#ifdef CONFIG_RWNX_FULLMAC
 #ifndef CONFIG_ONE_TXQ
     /* If too many buffer are queued for this TXQ stop netdev queue */
     spin_lock_irqsave(&rwnx_hw->usbdev->tx_flow_lock, flags);
@@ -862,17 +823,6 @@ int rwnx_txq_queue_skb(struct sk_buff *skb, struct rwnx_txq *txq,
     spin_unlock_irqrestore(&rwnx_hw->usbdev->tx_flow_lock, flags);
 
 #endif /* CONFIG_ONE_TXQ */
-#else /* ! CONFIG_RWNX_FULLMAC */
-
-    if (!retry && ++txq->hwq->len == txq->hwq->len_stop) {
-#ifdef CREATE_TRACE_POINTS
-         trace_hwq_flowctrl_stop(txq->hwq->id);
-#endif
-         ieee80211_stop_queue(rwnx_hw->hw, txq->hwq->id);
-         rwnx_hw->stats.queues_stops++;
-     }
-
-#endif /* CONFIG_RWNX_FULLMAC */
 
     /* add it in the hwq list if not stopped and not yet present */
     if (!rwnx_txq_is_stopped(txq)) {
@@ -1231,7 +1181,6 @@ void rwnx_hwq_process(struct rwnx_hw *rwnx_hw, struct rwnx_hwq *hwq)
             }
         }
 
-#ifdef CONFIG_RWNX_FULLMAC
         /* Unable to complete PS traffic request because of hwq credit */
         if (txq->push_limit && txq->sta) {
             if (txq->ps_id == LEGACY_PS_ID) {
@@ -1255,7 +1204,6 @@ void rwnx_hwq_process(struct rwnx_hw *rwnx_hw, struct rwnx_hwq *hwq)
         }
 	spin_unlock_irqrestore(&rwnx_hw->usbdev->tx_flow_lock, flags);
 #endif /* CONFIG_ONE_TXQ */
-#endif /* CONFIG_RWNX_FULLMAC */
     }
 
 

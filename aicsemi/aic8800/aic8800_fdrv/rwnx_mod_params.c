@@ -20,12 +20,10 @@
 #include "reg_access.h"
 #include "rwnx_compat.h"
 
-#ifdef CONFIG_RWNX_FULLMAC
 #define COMMON_PARAM(name, default_softmac, default_fullmac)    \
     .name = default_fullmac,
 #define SOFTMAC_PARAM(name, default)
 #define FULLMAC_PARAM(name, default) .name = default,
-#endif /* CONFIG_RWNX_FULLMAC */
 
 struct rwnx_mod_params rwnx_mod_params = {
     /* common parameters */
@@ -87,11 +85,9 @@ struct rwnx_mod_params rwnx_mod_params = {
     FULLMAC_PARAM(ant_div, true)
 };
 
-#ifdef CONFIG_RWNX_FULLMAC
 /* FULLMAC specific parameters*/
 module_param_named(ant_div, rwnx_mod_params.ant_div, bool, S_IRUGO);
 MODULE_PARM_DESC(ant_div, "Enable Antenna Diversity (Default: 1)");
-#endif /* CONFIG_RWNX_FULLMAC */
 
 module_param_named(ht_on, rwnx_mod_params.ht_on, bool, S_IRUGO);
 MODULE_PARM_DESC(ht_on, "Enable HT (Default: 1)");
@@ -401,8 +397,6 @@ static int rwnx_check_fw_hw_feature(struct rwnx_hw *rwnx_hw,
         rwnx_hw->mod_params->tdls = false;
     }
 
-#ifdef CONFIG_RWNX_FULLMAC
-
     if (!(sys_feat & BIT(MM_FEAT_UMAC_BIT))) {
         wiphy_err(wiphy,
                   "Loading softmac firmware with fullmac driver\n");
@@ -412,8 +406,6 @@ static int rwnx_check_fw_hw_feature(struct rwnx_hw *rwnx_hw,
     if (!(sys_feat & BIT(MM_FEAT_ANT_DIV_BIT))) {
         rwnx_hw->mod_params->ant_div = false;
     }
-
-#endif /* CONFIG_RWNX_FULLMAC */
 
     if (!(sys_feat & BIT(MM_FEAT_VHT_BIT))) {
         rwnx_hw->mod_params->vht_on = false;
@@ -490,7 +482,6 @@ static int rwnx_check_fw_hw_feature(struct rwnx_hw *rwnx_hw,
         rwnx_hw->mod_params->uf = false;
     }
 
-#ifdef CONFIG_RWNX_FULLMAC
     if ((sys_feat & BIT(MM_FEAT_MON_DATA_BIT))) {
 #ifndef CONFIG_RWNX_MON_DATA
         wiphy_err(wiphy,
@@ -504,7 +495,6 @@ static int rwnx_check_fw_hw_feature(struct rwnx_hw *rwnx_hw,
         res = -1;
 #endif /* CONFIG_RWNX_MON_DATA */
     }
-#endif
 
     // Check supported AMSDU RX size
     amsdu_rx = (sys_feat >> MM_AMSDU_MAX_SIZE_BIT0) & 0x03;
@@ -582,15 +572,11 @@ static int rwnx_check_fw_hw_feature(struct rwnx_hw *rwnx_hw,
         rwnx_enable_wapi(rwnx_hw);
     }
 
-#ifdef CONFIG_RWNX_FULLMAC
     if (sys_feat & BIT(MM_FEAT_MFP_BIT)) {
         rwnx_enable_mfp(rwnx_hw);
     }
-#endif
 
-#ifdef CONFIG_RWNX_FULLMAC
 #define QUEUE_NAME "Broadcast/Multicast queue "
-#endif /* CONFIG_RWNX_FULLMAC */
 
     if (sys_feat & BIT(MM_FEAT_BCN_BIT)) {
 #if NX_TXQ_CNT == 4
@@ -1622,31 +1608,25 @@ static void rwnx_set_wiphy_params(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 	struct ieee80211_regdomain *regdomain;
 #endif
 
-#ifdef CONFIG_RWNX_FULLMAC
     /* FULLMAC specific parameters */
     wiphy->flags |= WIPHY_FLAG_REPORTS_OBSS;
     wiphy->max_scan_ssids = SCAN_SSID_MAX;
     wiphy->max_scan_ie_len = SCANU_MAX_IE_LEN;
-#endif /* CONFIG_RWNX_FULLMAC */
 
     if (rwnx_hw->mod_params->tdls) {
         /* TDLS support */
         wiphy->flags |= WIPHY_FLAG_SUPPORTS_TDLS;
-#ifdef CONFIG_RWNX_FULLMAC
         /* TDLS external setup support */
         wiphy->flags |= WIPHY_FLAG_TDLS_EXTERNAL_SETUP;
-#endif
     }
 
     if (rwnx_hw->mod_params->ap_uapsd_on)
         wiphy->flags |= WIPHY_FLAG_AP_UAPSD;
 
-#ifdef CONFIG_RWNX_FULLMAC
     if (rwnx_hw->mod_params->ps_on)
         wiphy->flags |= WIPHY_FLAG_PS_ON_BY_DEFAULT;
     else
         wiphy->flags &= ~WIPHY_FLAG_PS_ON_BY_DEFAULT;
-#endif
 
     if (rwnx_hw->mod_params->custregd) {
 
