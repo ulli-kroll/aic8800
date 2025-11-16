@@ -3208,11 +3208,7 @@ void rwnx_cfg80211_mgmt_frame_register(struct wiphy *wiphy,
  *	have changed. The actual parameter values are available in
  *	struct wiphy. If returning an error, no value should be changed.
  */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
-static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, u32 changed)
-#else
 static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, int radio_idx, u32 changed)
-#endif
 {
 	return 0;
 }
@@ -3226,11 +3222,7 @@ static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, int radio_idx, u3
  *	(as advertised by the nl80211 feature flag.)
  */
 static int rwnx_cfg80211_set_tx_power(struct wiphy *wiphy, struct wireless_dev *wdev,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
-									  enum nl80211_tx_power_setting type, int mbm)
-#else
 									  int radio_idx, enum nl80211_tx_power_setting type, int mbm)
-#endif
 {
 	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
 	struct rwnx_vif *vif;
@@ -3259,11 +3251,7 @@ static int rwnx_cfg80211_set_tx_power(struct wiphy *wiphy, struct wireless_dev *
 
 static int rwnx_cfg80211_get_tx_power(struct wiphy *wiphy,
  struct wireless_dev *wdev,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
- unsigned int link_id,
-#else
  int radio_idx, unsigned int link_id,
-#endif
 	int *mbm)
 {
     //struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
