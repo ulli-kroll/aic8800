@@ -75,11 +75,7 @@
 #define IPC_A2E_MSG_BUF_SIZE    127 // size in 4-byte words
 #define IPC_E2A_MSG_SIZE_BASE   256 // size in 4-byte words
 
-#ifdef CONFIG_RWNX_TL4
 #define IPC_E2A_MSG_PARAM_SIZE  (IPC_E2A_MSG_SIZE_BASE + (IPC_E2A_MSG_SIZE_BASE / 2))
-#else
-#define IPC_E2A_MSG_PARAM_SIZE  IPC_E2A_MSG_SIZE_BASE
-#endif
 
 /*
  * Debug messages buffers size (in bytes)

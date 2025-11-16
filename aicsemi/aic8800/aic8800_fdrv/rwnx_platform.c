@@ -478,7 +478,6 @@ static inline struct inode *file_inode(const struct file *f)
 
 
 
-#ifdef CONFIG_RWNX_TL4
 /**
  * rwnx_plat_tl4_fw_upload() - Load the requested FW into embedded side.
  *
@@ -555,7 +554,6 @@ static int rwnx_plat_tl4_fw_upload(struct rwnx_plat *rwnx_plat, u8* fw_addr,
 
     return err;
 }
-#endif
 
 #if 0
 /**
@@ -1027,7 +1025,6 @@ static int rwnx_plat_bin_fw_upload_android(struct rwnx_hw *rwnx_hw, u32 fw_addr,
 
 
 #if 0
-#ifndef CONFIG_RWNX_TL4
 #define IHEX_REC_DATA           0
 #define IHEX_REC_EOF            1
 #define IHEX_REC_EXT_SEG_ADD    2
@@ -1208,7 +1205,6 @@ static int rwnx_plat_ihex_fw_upload(struct rwnx_plat *rwnx_plat, u8* fw_addr,
 
     return err;
 }
-#endif /* CONFIG_RWNX_TL4 */
 
 /**
  * rwnx_plat_get_rf() - Retrun the RF used in the platform
@@ -1472,11 +1468,6 @@ static int rwnx_plat_lmac_load(struct rwnx_plat *rwnx_plat)
 {
     int ret;
 
-    #ifdef CONFIG_RWNX_TL4
-    ret = rwnx_plat_tl4_fw_upload(rwnx_plat,
-                                  RWNX_ADDR(rwnx_plat, RWNX_ADDR_CPU, RAM_LMAC_FW_ADDR),
-                                  RWNX_MAC_FW_NAME);
-    #else
     ret = rwnx_plat_ihex_fw_upload(rwnx_plat,
                                    RWNX_ADDR(rwnx_plat, RWNX_ADDR_CPU, RAM_LMAC_FW_ADDR),
                                    RWNX_MAC_FW_NAME);
@@ -1486,7 +1477,6 @@ static int rwnx_plat_lmac_load(struct rwnx_plat *rwnx_plat)
                                       RWNX_ADDR(rwnx_plat, RWNX_ADDR_CPU, RAM_LMAC_FW_ADDR),
                                       RWNX_MAC_FW_NAME2);
     }
-    #endif
 
     return ret;
 }
@@ -3694,8 +3684,6 @@ MODULE_FIRMWARE(RWNX_AGC_FW_NAME);
 MODULE_FIRMWARE(RWNX_FCU_FW_NAME);
 MODULE_FIRMWARE(RWNX_LDPC_RAM_NAME);
 MODULE_FIRMWARE(RWNX_MAC_FW_NAME);
-#ifndef CONFIG_RWNX_TL4
 MODULE_FIRMWARE(RWNX_MAC_FW_NAME2);
-#endif
 
 

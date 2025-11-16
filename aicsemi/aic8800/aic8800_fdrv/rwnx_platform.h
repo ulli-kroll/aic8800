@@ -22,12 +22,8 @@
 #define RWNX_LDPC_RAM_NAME              "ldpcram.bin"
 #define RWNX_MAC_FW_BASE_NAME           "fmacfw"
 
-#ifdef CONFIG_RWNX_TL4
-#define RWNX_MAC_FW_NAME RWNX_MAC_FW_BASE_NAME".hex"
-#else
 #define RWNX_MAC_FW_NAME  RWNX_MAC_FW_BASE_NAME".ihex"
 #define RWNX_MAC_FW_NAME2 RWNX_MAC_FW_BASE_NAME".bin"
-#endif
 
 #define RWNX_FCU_FW_NAME                "fcuram.bin"
 #if (defined(CONFIG_DPD) && !defined(CONFIG_FORCE_DPD_CALIB))
