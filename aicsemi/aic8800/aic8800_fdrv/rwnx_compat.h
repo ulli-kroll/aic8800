@@ -187,11 +187,6 @@ enum ieee80211_radiotap_he_mu_bits {
 
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
-#define cfg80211_cqm_rssi_notify(dev, event, level, gfp) \
-	cfg80211_cqm_rssi_notify(dev, event, gfp)
-#endif
-
 #define SURVEY_TIME(s) s->time
 #define SURVEY_TIME_BUSY(s) s->time_busy
 
@@ -199,15 +194,6 @@ enum ieee80211_radiotap_he_mu_bits {
 
 #ifndef REGULATORY_IGNORE_STALE_KICKOFF
 #define REGULATORY_IGNORE_STALE_KICKOFF 0
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
-enum {
-	IEEE80211_HE_MCS_SUPPORT_0_7    = 0,
-	IEEE80211_HE_MCS_SUPPORT_0_9    = 1,
-	IEEE80211_HE_MCS_SUPPORT_0_11   = 2,
-	IEEE80211_HE_MCS_NOT_SUPPORTED  = 3,
-};
 #endif
 
 /* MAC80211 */
@@ -248,11 +234,6 @@ enum {
 #define RX_BW_160MHZ(s) (s->bw = RATE_INFO_BW_160)
 #define RX_NSS(s) s->nss
 
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
-#define ieee80211_cqm_rssi_notify(vif, event, level, gfp) \
-	ieee80211_cqm_rssi_notify(vif, event, gfp)
 #endif
 
 #ifndef CONFIG_VENDOR_RWNX_AMSDUS_TX
