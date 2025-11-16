@@ -101,7 +101,6 @@ extern char country_code[];
 	}                                                           \
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)
 #define RWNX_HE_CAPABILITIES                                    \
 {                                                               \
 	.has_he = false,                                            \
@@ -134,37 +133,6 @@ extern char country_code[];
 	},                                                          \
 	.ppe_thres = {0x08, 0x1c, 0x07},                            \
 }
-#else
-#define RWNX_HE_CAPABILITIES                                    \
-{                                                               \
-	.has_he = false,                                            \
-	.he_cap_elem = {                                            \
-		.mac_cap_info[0] = 0,                                   \
-		.mac_cap_info[1] = 0,                                   \
-		.mac_cap_info[2] = 0,                                   \
-		.mac_cap_info[3] = 0,                                   \
-		.mac_cap_info[4] = 0,                                   \
-		.phy_cap_info[0] = 0,                                   \
-		.phy_cap_info[1] = 0,                                   \
-		.phy_cap_info[2] = 0,                                   \
-		.phy_cap_info[3] = 0,                                   \
-		.phy_cap_info[4] = 0,                                   \
-		.phy_cap_info[5] = 0,                                   \
-		.phy_cap_info[6] = 0,                                   \
-		.phy_cap_info[7] = 0,                                   \
-		.phy_cap_info[8] = 0,                                   \
-	},                                                          \
-	.he_mcs_nss_supp = {                                        \
-		.rx_mcs_80 = cpu_to_le16(0xfffa),                       \
-		.tx_mcs_80 = cpu_to_le16(0xfffa),                       \
-		.rx_mcs_160 = cpu_to_le16(0xffff),                      \
-		.tx_mcs_160 = cpu_to_le16(0xffff),                      \
-		.rx_mcs_80p80 = cpu_to_le16(0xffff),                    \
-		.tx_mcs_80p80 = cpu_to_le16(0xffff),                    \
-	},                                                          \
-	.ppe_thres = {0x08, 0x1c, 0x07},                            \
-}
-#endif
 
 #define RATE(_bitrate, _hw_rate, _flags) {      \
 	.bitrate    = (_bitrate),                   \

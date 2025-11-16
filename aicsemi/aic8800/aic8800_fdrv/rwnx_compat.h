@@ -42,10 +42,6 @@
 #endif
 
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
-#define IEEE80211_HE_MAC_CAP3_MAX_AMPDU_LEN_EXP_MASK IEEE80211_HE_MAC_CAP3_MAX_A_AMPDU_LEN_EXP_MASK
-#endif
-
 #define CCFS0(vht) vht->center_freq_seg0_idx
 #define CCFS1(vht) vht->center_freq_seg1_idx
 

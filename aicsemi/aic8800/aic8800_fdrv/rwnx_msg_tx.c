@@ -2469,13 +2469,6 @@ int rwnx_send_me_set_control_port_req(struct rwnx_hw *rwnx_hw, bool opened, u8 s
 	return rwnx_send_msg(rwnx_hw, req, 1, ME_SET_CONTROL_PORT_CFM, NULL);
 }
 
-#if ((1) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0))
-struct ieee80211_he_cap_elem_4_19 {
-	u8 mac_cap_info[6];
-	u8 phy_cap_info[11];
-} __packed;
-#endif
-
 int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *params,
 						 const u8 *mac, u8 inst_nbr, struct me_sta_add_cfm *cfm)
 {
@@ -2533,11 +2526,7 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
 	AICWFDBG(LOGDEBUG,"rx map %x  rx high %x tx map %x tx high %x \n",req->vht_cap.rx_mcs_map,req->vht_cap.rx_highest,req->vht_cap.tx_mcs_map,req->vht_cap.tx_highest);
 
 	if (link_sta_params->he_capa) {
-		#if LINUX_VERSION_CODE <  KERNEL_VERSION(4, 20, 0)
-			const struct ieee80211_he_cap_elem_4_19 *he_capa = (const struct ieee80211_he_cap_elem_4_19 *) link_sta_params->he_capa;
-		#else
 		const struct ieee80211_he_cap_elem *he_capa = link_sta_params->he_capa;
-		#endif
 		struct ieee80211_he_mcs_nss_supp *mcs_nss_supp =
 								(struct ieee80211_he_mcs_nss_supp *)(he_capa + 1);
 
