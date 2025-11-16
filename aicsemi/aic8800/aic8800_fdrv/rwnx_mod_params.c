@@ -600,7 +600,6 @@ static int rwnx_check_fw_hw_feature(struct rwnx_hw *rwnx_hw,
     }
 #endif /* CONFIG_RWNX_RADAR */
 
-#ifndef CONFIG_RWNX_SDM
     switch (__MDM_PHYCFG_FROM_VERS(phy_feat)) {
         case MDM_PHY_CONFIG_TRIDENT:
         case MDM_PHY_CONFIG_ELMA:
@@ -617,7 +616,6 @@ static int rwnx_check_fw_hw_feature(struct rwnx_hw *rwnx_hw,
             WARN_ON(1);
             break;
     }
-#endif /* CONFIG_RWNX_SDM */
 
     if (rwnx_hw->mod_params->nss < 1 || rwnx_hw->mod_params->nss > 2)
         rwnx_hw->mod_params->nss = 1;
@@ -1671,7 +1669,6 @@ static void rwnx_set_wiphy_params(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 #if 0
 static void rwnx_set_rf_params(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 {
-#ifndef CONFIG_RWNX_SDM
 	#ifdef USE_5G
     struct ieee80211_supported_band *band_5GHz = wiphy->bands[NL80211_BAND_5GHZ];
 	#endif
@@ -1735,7 +1732,6 @@ static void rwnx_set_rf_params(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
             WARN_ON(1);
             break;
     }
-#endif /* CONFIG_RWNX_SDM */
 }
 #endif
 

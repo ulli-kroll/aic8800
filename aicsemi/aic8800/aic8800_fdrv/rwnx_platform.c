@@ -1210,7 +1210,6 @@ static int rwnx_plat_ihex_fw_upload(struct rwnx_plat *rwnx_plat, u8* fw_addr,
 }
 #endif /* CONFIG_RWNX_TL4 */
 
-#ifndef CONFIG_RWNX_SDM
 /**
  * rwnx_plat_get_rf() - Retrun the RF used in the platform
  *
@@ -1292,7 +1291,6 @@ static void rwnx_plat_start_agcfsm(struct rwnx_plat *rwnx_plat, int agc_reg,
     /* Restart state machine: xxAGCCNTL0[AGCFSMRESET]=0 */
     RWNX_REG_WRITE(agcctl & ~BIT(12), rwnx_plat, RWNX_ADDR_SYSTEM, agc_reg);
 }
-#endif
 
 /**
  * rwnx_plat_fcu_load() - Load FCU (Fith Chain Unit) ucode
@@ -1304,7 +1302,6 @@ static void rwnx_plat_start_agcfsm(struct rwnx_plat *rwnx_plat, int agc_reg,
 static int rwnx_plat_fcu_load(struct rwnx_hw *rwnx_hw)
 {
     int ret=0;
-#ifndef CONFIG_RWNX_SDM
     struct rwnx_plat *rwnx_plat = rwnx_hw->plat;
     u32 agcctl, memclk;
 
@@ -1339,7 +1336,6 @@ static int rwnx_plat_fcu_load(struct rwnx_hw *rwnx_hw)
 
     rwnx_plat_start_agcfsm(rwnx_plat, FCU_RWNXFCAGCCNTL_ADDR, agcctl, memclk, 0,
                            MDM_MEMCLKCTRL0_ADDR);
-#endif
 
     return ret;
 }
@@ -1352,7 +1348,6 @@ static int rwnx_plat_fcu_load(struct rwnx_hw *rwnx_hw)
  *
  * c.f Modem UM (AGC/CCA initialization)
  */
-#ifndef CONFIG_RWNX_SDM
 static u8 rwnx_get_agc_load_version(struct rwnx_plat *rwnx_plat, u32 rf, u32 *clkctrladdr)
 {
     u8 agc_load_ver = 0;
@@ -1379,7 +1374,6 @@ static u8 rwnx_get_agc_load_version(struct rwnx_plat *rwnx_plat, u32 rf, u32 *cl
 
     return agc_load_ver;
 }
-#endif /* CONFIG_RWNX_SDM */
 
 /**
  * rwnx_plat_agc_load() - Load AGC ucode
@@ -1390,7 +1384,6 @@ static u8 rwnx_get_agc_load_version(struct rwnx_plat *rwnx_plat, u32 rf, u32 *cl
 static int rwnx_plat_agc_load(struct rwnx_plat *rwnx_plat)
 {
     int ret = 0;
-#ifndef CONFIG_RWNX_SDM
     u32 agc = 0, agcctl, memclk;
     u32 clkctrladdr;
     u32 rf = rwnx_plat_get_rf(rwnx_plat);
@@ -1435,7 +1428,6 @@ static int rwnx_plat_agc_load(struct rwnx_plat *rwnx_plat)
 
     rwnx_plat_start_agcfsm(rwnx_plat, agc, agcctl, memclk, agc_ver, clkctrladdr);
 
-#endif
     return ret;
 }
 
@@ -1447,7 +1439,6 @@ static int rwnx_plat_agc_load(struct rwnx_plat *rwnx_plat)
  */
 static int rwnx_ldpc_load(struct rwnx_hw *rwnx_hw)
 {
-#ifndef CONFIG_RWNX_SDM
     struct rwnx_plat *rwnx_plat = rwnx_hw->plat;
     u32 rf = rwnx_plat_get_rf(rwnx_plat);
     u32 phy_feat = RWNX_REG_READ(rwnx_plat, RWNX_ADDR_SYSTEM, MDM_HDMCONFIG_ADDR);
@@ -1469,7 +1460,6 @@ static int rwnx_ldpc_load(struct rwnx_hw *rwnx_hw)
   disable_ldpc:
     rwnx_hw->mod_params->ldpc_on = false;
 
-#endif /* CONFIG_RWNX_SDM */
     return 0;
 }
 
@@ -1534,7 +1524,6 @@ static int rwnx_plat_fmac_load(struct rwnx_hw *rwnx_hw)
  */
 static void rwnx_plat_mpif_sel(struct rwnx_plat *rwnx_plat)
 {
-#ifndef CONFIG_RWNX_SDM
     u32 regval;
     u32 type;
 
@@ -1548,7 +1537,6 @@ static void rwnx_plat_mpif_sel(struct rwnx_plat *rwnx_plat)
         /* A old FPGA A is used, so configure the FPGA B to use the old MPIF */
         RWNX_REG_WRITE(0x3, rwnx_plat, RWNX_ADDR_SYSTEM, FPGAB_MPIF_SEL_ADDR);
     }
-#endif
 }
 #endif
 #if (defined(CONFIG_DPD) && !defined(CONFIG_FORCE_DPD_CALIB))
