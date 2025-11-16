@@ -4233,17 +4233,6 @@ done:
     return err;
 }
 
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 4, 0)
-static void btusb_destruct(struct hci_dev *hdev)
-{
-    struct btusb_data *data = GET_DRV_DATA(hdev);
-
-    AICBT_DBG("%s: name %s", __func__, hdev->name);
-
-    kfree(data);
-}
-#endif
-
 static void btusb_notify(struct hci_dev *hdev, unsigned int evt)
 {
     struct btusb_data *data = GET_DRV_DATA(hdev);
@@ -5139,13 +5128,7 @@ static int btusb_probe(struct usb_interface *intf, const struct usb_device_id *i
 #endif
 #endif //(CONFIG_BLUEDROIF == 0)
 
-#if LINUX_VERSION_CODE > KERNEL_VERSION(3, 4, 0)
     hci_set_drvdata(hdev, data);
-#else
-    hdev->driver_data = data;
-    hdev->destruct = btusb_destruct;
-    hdev->owner = THIS_MODULE;
-#endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 1)
     if (!reset_on_close){
@@ -5280,9 +5263,6 @@ static void btusb_disconnect(struct usb_interface *intf)
         usb_driver_release_interface(&btusb_driver, data->isoc);
 
 #if !CONFIG_BLUEDROID
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 4, 0)
-    __hci_dev_put(hdev);
-#endif
 #endif
 
     hci_free_dev(hdev);

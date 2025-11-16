@@ -128,11 +128,7 @@ typedef struct AIC_sco_card {
 #define HDEV_BUS        hdev->bus
 #define USB_RPM            1
 
-#if LINUX_VERSION_CODE > KERNEL_VERSION(3, 4, 0)
 #define GET_DRV_DATA(x)        hci_get_drvdata(x)
-#else
-#define GET_DRV_DATA(x)        x->driver_data
-#endif
 
 #define SCO_NUM    hdev->conn_hash.sco_num
 
@@ -522,12 +518,6 @@ struct hci_dev {
 
     struct hci_dev_stats    stat;
 
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 4, 0)
-    atomic_t        refcnt;
-    struct module           *owner;
-    void                    *driver_data;
-#endif
-
     atomic_t        promisc;
 
     struct device        *parent;
@@ -539,9 +529,6 @@ struct hci_dev {
     int (*close)(struct hci_dev *hdev);
     int (*flush)(struct hci_dev *hdev);
     int (*send)(struct sk_buff *skb);
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 4, 0)
-    void (*destruct)(struct hci_dev *hdev);
-#endif
 #if LINUX_VERSION_CODE > KERNEL_VERSION(3, 7, 1)
     __u16               voice_setting;
 #endif
@@ -549,20 +536,6 @@ struct hci_dev {
     int (*ioctl)(struct hci_dev *hdev, unsigned int cmd, unsigned long arg);
 	u8 *align_data;
 };
-
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 4, 0)
-static inline struct hci_dev *__hci_dev_hold(struct hci_dev *d)
-{
-    atomic_inc(&d->refcnt);
-    return d;
-}
-
-static inline void __hci_dev_put(struct hci_dev *d)
-{
-    if (atomic_dec_and_test(&d->refcnt))
-        d->destruct(d);
-}
-#endif
 
 static inline void *hci_get_drvdata(struct hci_dev *hdev)
 {
