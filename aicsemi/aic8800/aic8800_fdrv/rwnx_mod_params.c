@@ -704,11 +704,7 @@ static void rwnx_set_vht_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 			band_2GHz->vht_cap.cap |= IEEE80211_VHT_CAP_RXLDPC;
 		if (rwnx_hw->mod_params->bfmee) {
 			band_2GHz->vht_cap.cap |= IEEE80211_VHT_CAP_SU_BEAMFORMEE_CAPABLE;
-        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
 			band_2GHz->vht_cap.cap |= 3 << IEEE80211_VHT_CAP_BEAMFORMEE_STS_SHIFT;
-        #else
-			band_2GHz->vht_cap.cap |= 3 << 13;
-        #endif
 		}
 		if((rwnx_hw->usbdev->chipid == PRODUCT_ID_AIC8800D81X2 ||
 		rwnx_hw->usbdev->chipid == PRODUCT_ID_AIC8800D89X2) &&
@@ -721,11 +717,7 @@ static void rwnx_set_vht_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 		if (rwnx_hw->mod_params->bfmer) {
 			band_2GHz->vht_cap.cap |= IEEE80211_VHT_CAP_SU_BEAMFORMER_CAPABLE;
 			/* Set number of sounding dimensions */
-        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
 			band_2GHz->vht_cap.cap |= (nss - 1) << IEEE80211_VHT_CAP_SOUNDING_DIMENSIONS_SHIFT;
-        #else
-			band_2GHz->vht_cap.cap |= (nss - 1) << 16;
-        #endif
 		}
 		if (rwnx_hw->mod_params->murx)
 			band_2GHz->vht_cap.cap |= IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE;
@@ -800,11 +792,7 @@ static void rwnx_set_vht_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 	        band_5GHz->vht_cap.cap |= IEEE80211_VHT_CAP_RXLDPC;
 	    if (rwnx_hw->mod_params->bfmee) {
 	        band_5GHz->vht_cap.cap |= IEEE80211_VHT_CAP_SU_BEAMFORMEE_CAPABLE;
-	        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
 	        band_5GHz->vht_cap.cap |= 3 << IEEE80211_VHT_CAP_BEAMFORMEE_STS_SHIFT;
-	        #else
-	        band_5GHz->vht_cap.cap |= 3 << 13;
-	        #endif
 	    }
 
 		if((rwnx_hw->usbdev->chipid == PRODUCT_ID_AIC8800D81X2 ||
@@ -819,11 +807,7 @@ static void rwnx_set_vht_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 	    if (rwnx_hw->mod_params->bfmer) {
 	        band_5GHz->vht_cap.cap |= IEEE80211_VHT_CAP_SU_BEAMFORMER_CAPABLE;
 	        /* Set number of sounding dimensions */
-	        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
 	        band_5GHz->vht_cap.cap |= (nss - 1) << IEEE80211_VHT_CAP_SOUNDING_DIMENSIONS_SHIFT;
-	        #else
-	        band_5GHz->vht_cap.cap |= (nss - 1) << 16;
-	        #endif
 	    }
 	    if (rwnx_hw->mod_params->murx)
 	        band_5GHz->vht_cap.cap |= IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE;
@@ -1267,7 +1251,7 @@ static void rwnx_set_wiphy_params(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 
     if (rwnx_hw->mod_params->custregd) {
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 0, 0)) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 0, 0)) && (1)
         // Apply custom regulatory. Note that for recent kernel versions we use instead the
         // REGULATORY_WIPHY_SELF_MANAGED flag, along with the regulatory_set_wiphy_regd()
         // function, that needs to be called after wiphy registration
@@ -1282,12 +1266,6 @@ static void rwnx_set_wiphy_params(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
         wiphy->regulatory_flags |= REGULATORY_IGNORE_STALE_KICKOFF;
 #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0) */
         wiphy_apply_custom_regulatory(wiphy, regdomain);
-#elif (LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0))
-        memcpy(country_code, default_ccode, sizeof(default_ccode));
-		regdomain = getRegdomainFromRwnxDB(wiphy, default_ccode);
-		printk(KERN_CRIT"%s: Registering custom regulatory\n", __func__);
-		wiphy->flags |= WIPHY_FLAG_CUSTOM_REGULATORY;
-		wiphy_apply_custom_regulatory(wiphy, regdomain);
 #endif
         // Check if custom channel set shall be enabled. In such case only monitor mode is
         // supported

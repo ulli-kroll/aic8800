@@ -10,8 +10,6 @@
 #include <net/netlink.h>
 #include "rwnx_version_gen.h"
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
-
 static struct wifi_ring_buffer_status ring_buffer[] = {
 	{
 		.name            = "aicwf_ring_buffer0",
@@ -35,8 +33,6 @@ enum apf_attributes {
         APF_ATTRIBUTE_PROGRAM_LEN,
         APF_ATTRIBUTE_MAX
 };
-
-#endif
 
 int aic_dev_start_mkeep_alive(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
 			u8 mkeep_alive_id, u8 *ip_pkt, u16 ip_pkt_len, u8 *src_mac, u8 *dst_mac, u32 period_msec)
@@ -84,7 +80,6 @@ int aic_dev_stop_mkeep_alive(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
 	return res;
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
 static int aicwf_vendor_start_mkeep_alive(struct wiphy *wiphy, struct wireless_dev *wdev,
 	const void *data, int len)
 {
@@ -734,7 +729,6 @@ static int aicwf_vendor_sub_cmd_set_mac(struct wiphy *wiphy, struct wireless_dev
 
 	return ret;
 }
-#endif
 
 static const struct nla_policy
 aicwf_cfg80211_mkeep_alive_policy[MKEEP_ALIVE_ATTRIBUTE_MAX+1] = {
@@ -788,8 +782,6 @@ static int aicwf_dump_interface(struct wiphy *wiphy,
 	return 0;
 }
 #endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
 
 const struct wiphy_vendor_command aicwf_vendor_cmd[] = {
 	{
@@ -1054,20 +1046,15 @@ const struct wiphy_vendor_command aicwf_vendor_cmd[] = {
 #endif
     },
 };
-#endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
 static const struct nl80211_vendor_cmd_info aicwf_vendor_events[] = {
 };
-#endif
 
 int aicwf_vendor_init(struct wiphy *wiphy)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
 	wiphy->vendor_commands = aicwf_vendor_cmd;
 	wiphy->n_vendor_commands = ARRAY_SIZE(aicwf_vendor_cmd);
 	wiphy->vendor_events = aicwf_vendor_events;
 	wiphy->n_vendor_events = ARRAY_SIZE(aicwf_vendor_events);
-#endif
 	return 0;
 }
