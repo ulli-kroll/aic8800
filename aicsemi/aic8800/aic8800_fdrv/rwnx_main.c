@@ -4685,15 +4685,11 @@ rwnx_cfg80211_tdls_mgmt(struct wiphy *wiphy,
 	u8 dialog_token,
 	u16 status_code,
 	u32 peer_capability,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0)
 	bool initiator,
-#endif
 	const u8 *buf,
 	size_t len)
 {
-    #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
     bool initiator = false;
-    #endif
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
     struct rwnx_vif *rwnx_vif = netdev_priv(dev);
     int ret = 0;
