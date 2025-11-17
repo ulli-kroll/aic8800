@@ -3904,17 +3904,6 @@ static int rwnx_cfg80211_stop_ap(struct wiphy *wiphy, struct net_device *dev)
  * Also called internaly with chandef set to NULL simply to retrieve the channel
  * configured at firmware level.
  */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-static inline bool
-cfg80211_chandef_identical(const struct cfg80211_chan_def *chandef1,
-			   const struct cfg80211_chan_def *chandef2)
-{
-	return (chandef1->chan == chandef2->chan &&
-		chandef1->width == chandef2->width &&
-		chandef1->center_freq1 == chandef2->center_freq1 &&
-		chandef1->center_freq2 == chandef2->center_freq2);
-}
-#endif
 
 static int rwnx_cfg80211_set_monitor_channel(struct wiphy *wiphy,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION (6, 13, 0)
@@ -4054,18 +4043,13 @@ static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, int radio_idx, u3
  *	(as advertised by the nl80211 feature flag.)
  */
 static int rwnx_cfg80211_set_tx_power(struct wiphy *wiphy,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
  struct wireless_dev *wdev,
-#endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
                                       enum nl80211_tx_power_setting type, int mbm)
 #else
                                       int radio_idx, enum nl80211_tx_power_setting type, int mbm)
 #endif
 {
-    #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-    struct wireless_dev *wdev = NULL;
-    #endif
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
     struct rwnx_vif *vif;
     s8 pwr;
@@ -4167,9 +4151,6 @@ static int
 rwnx_cfg80211_remain_on_channel_(struct wiphy *wiphy,
                                 struct wireless_dev *wdev,
                                 struct ieee80211_channel *chan,
-                            #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-                                enum nl80211_channel_type channel_type,
-                            #endif
                                 unsigned int duration, u64 *cookie, bool mgmt_roc_flag)
 {
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
@@ -4297,17 +4278,11 @@ static int
 rwnx_cfg80211_remain_on_channel(struct wiphy *wiphy,
                                 struct wireless_dev *wdev,
                                 struct ieee80211_channel *chan,
-                            #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-                                enum nl80211_channel_type channel_type,
-                            #endif
                                 unsigned int duration, u64 *cookie)
 {
 	return rwnx_cfg80211_remain_on_channel_(wiphy,
                                 wdev,
                                 chan,
-                            #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-                                channel_type,
-                            #endif
                                 duration, cookie, false);
 }
 
@@ -4535,16 +4510,8 @@ static int rwnx_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 		AICWFDBG(LOGINFO, "mgmt rx remain on chan\n");
 
         /* Start a ROC procedure for 30ms */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
         error = rwnx_cfg80211_remain_on_channel_(wiphy, wdev, channel,
                                                 30, &cookie, true);
-#elif (LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)) && (0)
-        error = rwnx_cfg80211_remain_on_channel_(wiphy, wdev, channel, NL80211_CHAN_NO_HT,
-                                                30, &cookie, true);
-#else
-        error = rwnx_cfg80211_remain_on_channel_(wiphy, dev, channel, NL80211_CHAN_NO_HT,
-                                                30, &cookie, true);
-#endif
 
         if (error) {
 			AICWFDBG(LOGERROR, "mgmt rx chan err\n");

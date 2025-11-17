@@ -18,10 +18,6 @@
 #include "rwnx_txq.h"
 #include "hal_desc.h"
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-#define IEEE80211_NUM_TIDS              16
-#endif
-
 #define RWNX_HWQ_BK                     0
 #define RWNX_HWQ_BE                     1
 #define RWNX_HWQ_VI                     2
