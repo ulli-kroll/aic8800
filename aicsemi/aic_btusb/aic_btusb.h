@@ -838,9 +838,6 @@ enum aic_endpoit {
     ISOC_EP = 4
 };
 
-/* #define HCI_VERSION_CODE KERNEL_VERSION(3, 14, 41) */
-#define HCI_VERSION_CODE LINUX_VERSION_CODE
-
 int aic_load_firmware(u8 ** fw_buf, const char *name, struct device *device);
 int aicbt_patch_table_free(struct aicbt_patch_table **head);
 int download_patch(firmware_info *fw_info, int cached);

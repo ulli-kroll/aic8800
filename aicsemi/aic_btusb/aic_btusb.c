@@ -104,7 +104,7 @@ struct btusb_data {
     spinlock_t txlock;
 	
 #if (CONFIG_BLUEDROID == 0)
-#if HCI_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
 		spinlock_t rxlock;
 		struct sk_buff *evt_skb;
 		struct sk_buff *acl_skb;
@@ -126,7 +126,7 @@ struct btusb_data {
     uint16_t sco_handle;
 
 #if (CONFIG_BLUEDROID == 0)
-#if HCI_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
     int (*recv_bulk) (struct btusb_data * data, void *buffer, int count);
 #endif
 #endif
@@ -3169,7 +3169,7 @@ void check_sco_event(struct urb *urb)
 }
 
 #if (CONFIG_BLUEDROID == 0)
-#if HCI_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
 static inline void btusb_free_frags(struct btusb_data *data)
 {
     unsigned long flags;
@@ -3377,7 +3377,7 @@ static void btusb_intr_complete(struct urb *urb)
     if (urb->status == 0) {
         hdev->stat.byte_rx += urb->actual_length;
 
-#if (CONFIG_BLUEDROID) || (HCI_VERSION_CODE < KERNEL_VERSION(3, 18, 0))
+#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0))
 		if (hci_recv_fragment(hdev, HCI_EVENT_PKT,
 						urb->transfer_buffer,
 						urb->actual_length) < 0) {
@@ -3485,7 +3485,7 @@ static void btusb_bulk_complete(struct urb *urb)
     if (urb->status == 0) {
         hdev->stat.byte_rx += urb->actual_length;
 
-#if (CONFIG_BLUEDROID) || (HCI_VERSION_CODE < KERNEL_VERSION(3, 18, 0))
+#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0))
 		if (hci_recv_fragment(hdev, HCI_ACLDATA_PKT,
 			  urb->transfer_buffer,
 			  urb->actual_length) < 0) {
@@ -3605,7 +3605,7 @@ static void btusb_isoc_complete(struct urb *urb)
 
             hdev->stat.byte_rx += length;
             if(length){
-#if (CONFIG_BLUEDROID) || (HCI_VERSION_CODE < KERNEL_VERSION(3, 18, 0))
+#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0))
 				if (hci_recv_fragment(hdev, HCI_SCODATA_PKT,
 					  urb->transfer_buffer + offset,
 					  length) < 0) {
@@ -3873,7 +3873,7 @@ static void btusb_stop_traffic(struct btusb_data *data)
 static int btusb_close(struct hci_dev *hdev)
 {
     struct btusb_data *data = GET_DRV_DATA(hdev);
-#if (CONFIG_BLUEDROID) || (HCI_VERSION_CODE < KERNEL_VERSION(4, 1, 0))
+#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0))
     int i;
 #endif
 	int err;
@@ -3888,7 +3888,7 @@ static int btusb_close(struct hci_dev *hdev)
         return 0;
 	}
 
-#if (CONFIG_BLUEDROID) || (HCI_VERSION_CODE < KERNEL_VERSION(4, 1, 0))
+#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0))
 	for (i = 0; i < NUM_REASSEMBLY; i++) {
 		if (hdev->reassembly[i]) {
 			AICBT_DBG("%s: free ressembly[%d]", __func__, i);
@@ -4083,7 +4083,7 @@ static void playback_work(struct work_struct *work)
 
 #endif
 
-#if (CONFIG_BLUEDROID) || (HCI_VERSION_CODE < KERNEL_VERSION(3, 13, 0))
+#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(3, 13, 0))
 int btusb_send_frame(struct sk_buff *skb)
 {
     struct hci_dev *hdev = (struct hci_dev *) skb->dev;
@@ -4109,7 +4109,7 @@ int btusb_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
         return -EBUSY;
 
 #if (CONFIG_BLUEDROID == 0)
-#if HCI_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)
 	skb->dev = (void *)hdev;
 #endif
 #endif
@@ -5069,7 +5069,7 @@ static int btusb_probe(struct usb_interface *intf, const struct usb_device_id *i
     init_usb_anchor(&data->deferred);
 
 #if (CONFIG_BLUEDROID == 0)
-#if HCI_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
 		spin_lock_init(&data->rxlock);
 		data->recv_bulk = btusb_recv_bulk;
 #endif
