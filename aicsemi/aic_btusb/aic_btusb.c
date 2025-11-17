@@ -5121,12 +5121,10 @@ static int btusb_probe(struct usb_interface *intf, const struct usb_device_id *i
 
      dev_set_drvdata(&hdev->dev, data);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 1)
     if (!reset_on_close){
         /* set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks); */
         AICBT_DBG("%s: Set HCI_QUIRK_RESET_ON_CLOSE", __func__);
     }
-#endif
 
     /* Interface numbers are hardcoded in the specification */
     data->isoc = usb_ifnum_to_if(data->udev, 1);
