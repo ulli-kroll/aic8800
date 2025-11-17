@@ -8226,11 +8226,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
 #if defined CONFIG_GPIO_WAKEUP || defined CONFIG_WOWLAN
 		/* Set WoWLAN flags */
 		printk("%s Wowlan support\r\n", __func__);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)
 		wiphy->wowlan = &aic_wowlan_support;
-#else
-		wiphy->wowlan.flags = aic_wowlan_support.flags;
-#endif
 #endif
 
     wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL |

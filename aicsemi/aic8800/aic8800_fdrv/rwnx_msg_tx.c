@@ -3379,9 +3379,7 @@ int rwnx_send_mesh_start_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif,
 
     req->user_mpm = setup->user_mpm;
     req->is_auth = setup->is_authenticated;
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)
     req->auth_id = setup->auth_id;
-    #endif
     req->ie_len = setup->ie_len;
 
     if (setup->ie_len) {
@@ -3413,11 +3411,9 @@ int rwnx_send_mesh_start_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif,
          * of 1Mbps, and multiplied by 2 so that 5.5 becomes 11 */
         rate = (rate << 1) / 10;
 
-        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0) // TODO: check basic rates
         if (setup->basic_rates & CO_BIT(i)) {
             rate |= 0x80;
         }
-        #endif
 
         req->basic_rates.array[i] = (u8)rate;
         req->basic_rates.length++;
