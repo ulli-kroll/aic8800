@@ -102,7 +102,7 @@ struct btusb_data {
     struct usb_anchor deferred;
     int tx_in_flight;
     spinlock_t txlock;
-	
+
 #if (CONFIG_BLUEDROID == 0)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
 		spinlock_t rxlock;
@@ -144,9 +144,7 @@ struct btusb_data {
     AIC_sco_card_t  *pSCOSnd;
 #endif
 };
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 1)
 static bool reset_on_close = 0;
-#endif
 
 #ifdef CONFIG_SCO_OVER_HCI
 struct snd_sco_cap_timer {
@@ -186,20 +184,13 @@ static inline void set_dlfw_state_value(uint16_t change_value)
 
 static void aic_free( struct btusb_data *data)
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 1)
-    kfree(data);
-#endif
     return;
 }
 
 static struct btusb_data *aic_alloc(struct usb_interface *intf)
 {
     struct btusb_data *data;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 1)
-    data = kzalloc(sizeof(*data), GFP_KERNEL);
-#else
     data = devm_kzalloc(&intf->dev, sizeof(*data), GFP_KERNEL);
-#endif
     return data;
 }
 
@@ -5430,9 +5421,7 @@ static struct usb_driver btusb_driver = {
 #endif
     .id_table    = btusb_table,
     .supports_autosuspend = 1,
-#if LINUX_VERSION_CODE > KERNEL_VERSION(3, 7, 1)
     .disable_hub_initiated_lpm = 1,
-#endif
 };
 
 static int __init btusb_init(void)
