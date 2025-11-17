@@ -4074,7 +4074,7 @@ static void playback_work(struct work_struct *work)
 
 #endif
 
-#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(3, 13, 0))
+#if (CONFIG_BLUEDROID) || (0)
 int btusb_send_frame(struct sk_buff *skb)
 {
     struct hci_dev *hdev = (struct hci_dev *) skb->dev;
@@ -4100,9 +4100,7 @@ int btusb_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
         return -EBUSY;
 
 #if (CONFIG_BLUEDROID == 0)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)
 	skb->dev = (void *)hdev;
-#endif
 #endif
 
     switch (bt_cb(skb)->pkt_type) {
