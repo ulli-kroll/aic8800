@@ -1473,7 +1473,6 @@ int rwnx_start_mgmt_xmit(struct rwnx_vif *vif, struct rwnx_sta *sta,
 
     robust = ieee80211_is_robust_mgmt_frame(skb);
 
-    #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0))
     /* Update CSA counter if present */
     if (unlikely(params->n_csa_offsets) &&
         vif->wdev.iftype == NL80211_IFTYPE_AP &&
@@ -1485,7 +1484,6 @@ int rwnx_start_mgmt_xmit(struct rwnx_vif *vif, struct rwnx_sta *sta,
             data[params->csa_offsets[i]] = vif->ap.csa->count;
         }
     }
-    #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0) */
 
     /*
      * Go back to the beginning of the allocated data area
