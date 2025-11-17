@@ -128,8 +128,6 @@ typedef struct AIC_sco_card {
 #define HDEV_BUS        hdev->bus
 #define USB_RPM            1
 
-#define GET_DRV_DATA(x)        hci_get_drvdata(x)
-
 #define SCO_NUM    hdev->conn_hash.sco_num
 
 
