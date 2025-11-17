@@ -2653,11 +2653,9 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
     if (params->sta_flags_set & BIT(NL80211_STA_FLAG_TDLS_PEER)) {
         //struct rwnx_vif *rwnx_vif = rwnx_hw->vif_table[inst_nbr];
         req->tdls_sta = true;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
         if ((params->ext_capab[3] & WLAN_EXT_CAPA4_TDLS_CHAN_SWITCH) &&
             !rwnx_vif->tdls_chsw_prohibited)
             req->tdls_chsw_allowed = true;
-#endif
         if (rwnx_vif->tdls_status == TDLS_SETUP_RSP_TX)
             req->tdls_sta_initiator = true;
     }
@@ -2839,10 +2837,8 @@ int rwnx_send_sm_connect_req(struct rwnx_hw *rwnx_hw,
     if (use_pairwise_key(&sme->crypto))
         flags |= WPA_WPA2_IN_USE;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
     if (sme->mfp == NL80211_MFP_REQUIRED)
         flags |= MFP_IN_USE;
-#endif
     if (rwnx_vif->sta.ap)
         flags |= REASSOCIATION;
 
@@ -3373,10 +3369,8 @@ int rwnx_send_mesh_start_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif,
     }
 
     req->vif_index = vif->vif_index;
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
     req->bcn_int = setup->beacon_interval;
     req->dtim_period = setup->dtim_period;
-#endif
     req->mesh_id_len = setup->mesh_id_len;
 
     for (i = 0; i < setup->mesh_id_len; i++) {
@@ -3432,19 +3426,15 @@ int rwnx_send_mesh_start_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif,
     }
 
     /* Provide channel information */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
     req->chan.band = setup->chandef.chan->band;
     req->chan.freq = setup->chandef.chan->center_freq;
-#endif
 
     req->chan.flags = 0;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
     req->chan.tx_power = chan_to_fw_pwr(setup->chandef.chan->max_power);
     req->center_freq1 = setup->chandef.center_freq1;
     req->center_freq2 = setup->chandef.center_freq2;
     req->ch_width = bw2chnl[setup->chandef.width];
-#endif
 
     /* Send the MESH_START_REQ message to UMAC FW */
     status = rwnx_send_msg(rwnx_hw, req, 1, MESH_START_CFM, cfm);
@@ -3528,9 +3518,7 @@ int rwnx_send_mesh_update_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif,
     if (supp_mask & CO_BIT(NL80211_MESHCONF_POWER_MODE))
     {
         req->flags |= CO_BIT(MESH_UPDATE_FLAGS_LOCAL_PSM_BIT);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
         req->local_ps_mode = p_mconf->power_mode;
-#endif
     }
 
     /* Send the MESH_UPDATE_REQ message to UMAC FW */

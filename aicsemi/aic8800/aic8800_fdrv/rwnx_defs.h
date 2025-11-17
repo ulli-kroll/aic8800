@@ -78,23 +78,6 @@
 #define IEEE80211_HE_PHY_CAP3_RX_HE_MU_PPDU_FROM_NON_AP_STA IEEE80211_HE_PHY_CAP3_RX_PARTIAL_BW_SU_IN_20MHZ_MU
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0)
-#define NL80211_MESHCONF_POWER_MODE 26
-
-/*
- * TDLS capabililites to be enabled in the 5th byte of the
- * @WLAN_EID_EXT_CAPABILITY information element
- */
-#define WLAN_EXT_CAPA5_TDLS_ENABLED	BIT(5)
-#define WLAN_EXT_CAPA5_TDLS_PROHIBITED	BIT(6)
-
-#define WLAN_EXT_CAPA8_OPMODE_NOTIF	BIT(6)
-
-/* TDLS specific payload type in the LLC/SNAP header */
-#define WLAN_TDLS_SNAP_RFTYPE	0x2
-
-#endif
-
 /**
  * struct rwnx_bcn - Information of the beacon in used (AP mode)
  *
