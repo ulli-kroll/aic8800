@@ -3377,9 +3377,7 @@ int rwnx_send_mesh_start_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif,
         req->mesh_id[i] = *(setup->mesh_id + i);
     }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0)
     req->user_mpm = setup->user_mpm;
-#endif
     req->is_auth = setup->is_authenticated;
     #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)
     req->auth_id = setup->auth_id;
