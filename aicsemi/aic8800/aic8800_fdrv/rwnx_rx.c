@@ -966,11 +966,7 @@ static void rwnx_rx_add_rtap_hdr(struct rwnx_hw* rwnx_hw,
         *pos = (rate_idx << 4) | vht_nss;
         pos += 4;
         if (fec_coding)
-            #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0)
-            *pos |= 0x01;
-            #else
             *pos |= IEEE80211_RADIOTAP_CODING_LDPC_USER0;
-            #endif
         pos++;
         // group ID
         pos++;
