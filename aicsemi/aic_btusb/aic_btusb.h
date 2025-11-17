@@ -535,11 +535,6 @@ struct hci_dev {
 	u8 *align_data;
 };
 
-static inline void *hci_get_drvdata(struct hci_dev *hdev)
-{
-    return dev_get_drvdata(&hdev->dev);
-}
-
 static inline void hci_set_drvdata(struct hci_dev *hdev, void *data)
 {
     dev_set_drvdata(&hdev->dev, data);

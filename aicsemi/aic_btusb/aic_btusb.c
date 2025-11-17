@@ -829,7 +829,7 @@ static bool aic_copy_capture_data_to_alsa(struct btusb_data *data, uint8_t* p_da
 
 static void hci_send_to_alsa_ringbuffer(struct hci_dev *hdev, struct sk_buff *skb)
 {
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     AIC_sco_card_t  *pSCOSnd = data->pSCOSnd;
     uint8_t* p_data;
     int sco_length = skb->len - HCI_SCO_HDR_SIZE;
@@ -1203,7 +1203,7 @@ static int btchr_open(struct inode *inode_p, struct file  *file_p)
         AICBT_DBG("%s: Failed to get hci dev[NULL]", __func__);
         return -ENODEV;
     }
-    data = hci_get_drvdata(hdev);
+    data = dev_get_drvdata(&hdev->dev);
 
     atomic_inc(&hdev->promisc);
     /*
@@ -1310,7 +1310,7 @@ void btchr_external_write(char* buff, int len){
 		return;
 	}
     /* Never trust on btusb_data, as bt device may be hotplugged out */
-    data = hci_get_drvdata(hdev);
+    data = dev_get_drvdata(&hdev->dev);
     if (!data) {
         AICBT_WARN("%s: Failed to get bt usb driver data[Null]", __func__);
         return;
@@ -1358,7 +1358,7 @@ static ssize_t btchr_write(struct file *file_p,
     }
 
     /* Never trust on btusb_data, as bt device may be hotplugged out */
-    data = hci_get_drvdata(hdev);
+    data = dev_get_drvdata(&hdev->dev);
     if (!data) {
         AICBT_WARN("%s: Failed to get bt usb driver data[Null]", __func__);
         return count;
@@ -1409,7 +1409,7 @@ static unsigned int btchr_poll(struct file *file_p, poll_table *wait)
     }
 
     /* Never trust on btusb_data, as bt device may be hotplugged out */
-    data = hci_get_drvdata(hdev);
+    data = dev_get_drvdata(&hdev->dev);
     if (!data) {
         /*
          * When bt device is hotplugged out, btusb_data will
@@ -1447,7 +1447,7 @@ static long btchr_ioctl(struct file *file_p,unsigned int cmd, unsigned long arg)
         set_dlfw_state_value(0);
         return 0;
     }
-    data = hci_get_drvdata(hdev);
+    data = dev_get_drvdata(&hdev->dev);
     fw_info = data->fw_info;
 
     AICBT_INFO(" btchr_ioctl DOWN_FW_CFG with Cmd:%d",cmd);
@@ -3126,7 +3126,7 @@ void check_sco_event(struct urb *urb)
     u8 air_mode = 0;
     struct hci_dev *hdev = urb->context;
 #ifdef CONFIG_SCO_OVER_HCI
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     AIC_sco_card_t  *pSCOSnd = data->pSCOSnd;
 #endif
 
@@ -3364,7 +3364,7 @@ static int btusb_recv_isoc(struct btusb_data *data, void *buffer, int count)
 static void btusb_intr_complete(struct urb *urb)
 {
     struct hci_dev *hdev = urb->context;
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     int err;
 
     AICBT_DBG("%s: urb %p status %d count %d ", __func__,
@@ -3423,7 +3423,7 @@ static void btusb_intr_complete(struct urb *urb)
 
 static int btusb_submit_intr_urb(struct hci_dev *hdev, gfp_t mem_flags)
 {
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     struct urb *urb;
     unsigned char *buf;
     unsigned int pipe;
@@ -3472,7 +3472,7 @@ static int btusb_submit_intr_urb(struct hci_dev *hdev, gfp_t mem_flags)
 static void btusb_bulk_complete(struct urb *urb)
 {
     struct hci_dev *hdev = urb->context;
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     int err;
 
     AICBT_DBG("%s: urb %p status %d count %d",
@@ -3529,7 +3529,7 @@ static void btusb_bulk_complete(struct urb *urb)
 
 static int btusb_submit_bulk_urb(struct hci_dev *hdev, gfp_t mem_flags)
 {
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     struct urb *urb;
     unsigned char *buf;
     unsigned int pipe;
@@ -3576,7 +3576,7 @@ static int btusb_submit_bulk_urb(struct hci_dev *hdev, gfp_t mem_flags)
 static void btusb_isoc_complete(struct urb *urb)
 {
     struct hci_dev *hdev = urb->context;
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     int i, err;
 	unsigned int total_length = 0;
 
@@ -3676,7 +3676,7 @@ static inline void fill_isoc_descriptor(struct urb *urb, int len, int mtu)
 
 static int btusb_submit_isoc_urb(struct hci_dev *hdev, gfp_t mem_flags)
 {
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     struct urb *urb;
     unsigned char *buf;
     unsigned int pipe;
@@ -3741,7 +3741,7 @@ static void btusb_tx_complete(struct urb *urb)
 {
     struct sk_buff *skb = urb->context;
     struct hci_dev *hdev = (struct hci_dev *) skb->dev;
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
 
     if (!test_bit(HCI_RUNNING, &hdev->flags))
         goto done;
@@ -3807,7 +3807,7 @@ static int btusb_shutdown(struct hci_dev *hdev)
 
 static int btusb_open(struct hci_dev *hdev)
 {
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     int err = 0;
 
     AICBT_INFO("%s: Start", __func__);
@@ -3872,7 +3872,7 @@ static void btusb_stop_traffic(struct btusb_data *data)
 
 static int btusb_close(struct hci_dev *hdev)
 {
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
 #if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0))
     int i;
 #endif
@@ -3921,7 +3921,7 @@ failed:
 
 static int btusb_flush(struct hci_dev *hdev)
 {
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
 
     AICBT_DBG("%s", __func__);
 
@@ -3938,7 +3938,7 @@ static int snd_send_sco_frame(struct sk_buff *skb)
 {
     struct hci_dev *hdev = (struct hci_dev *) skb->dev;
 
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     //struct usb_ctrlrequest *dr;
     struct urb *urb;
     unsigned int pipe;
@@ -4048,7 +4048,7 @@ static void btusb_isoc_snd_tx_complete(struct urb *urb)
 {
     struct sk_buff *skb = urb->context;
     struct hci_dev *hdev = (struct hci_dev *) skb->dev;
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     AIC_sco_card_t  *pSCOSnd = data->pSCOSnd;
 
     AICBT_DBG("%s: status %d count %d",
@@ -4093,7 +4093,7 @@ int btusb_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 #endif
     //struct hci_dev *hdev = (struct hci_dev *) skb->dev;
 
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     struct usb_ctrlrequest *dr;
     struct urb *urb;
     unsigned int pipe;
@@ -4235,7 +4235,7 @@ done:
 
 static void btusb_notify(struct hci_dev *hdev, unsigned int evt)
 {
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
 
     AICBT_DBG("%s: name %s, evt %d", __func__, hdev->name, evt);
 
@@ -4247,7 +4247,7 @@ static void btusb_notify(struct hci_dev *hdev, unsigned int evt)
 
 static inline int set_isoc_interface(struct hci_dev *hdev, int altsetting)
 {
-    struct btusb_data *data = hci_get_drvdata(hdev);
+    struct btusb_data *data = dev_get_drvdata(&hdev->dev);
     struct usb_interface *intf = data->isoc;
     struct usb_endpoint_descriptor *ep_desc;
     int i, err;
