@@ -104,12 +104,10 @@ struct btusb_data {
     spinlock_t txlock;
 
 #if (CONFIG_BLUEDROID == 0)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
 		spinlock_t rxlock;
 		struct sk_buff *evt_skb;
 		struct sk_buff *acl_skb;
 		struct sk_buff *sco_skb;
-#endif
 #endif
 
     struct usb_endpoint_descriptor *intr_ep;
@@ -126,9 +124,7 @@ struct btusb_data {
     uint16_t sco_handle;
 
 #if (CONFIG_BLUEDROID == 0)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
     int (*recv_bulk) (struct btusb_data * data, void *buffer, int count);
-#endif
 #endif
 
 //#ifdef CONFIG_HAS_EARLYSUSPEND
@@ -3160,7 +3156,6 @@ void check_sco_event(struct urb *urb)
 }
 
 #if (CONFIG_BLUEDROID == 0)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
 static inline void btusb_free_frags(struct btusb_data *data)
 {
     unsigned long flags;
@@ -3348,7 +3343,6 @@ static int btusb_recv_isoc(struct btusb_data *data, void *buffer, int count)
 
     return err;
 }
-#endif
 #endif // (CONFIG_BLUEDROID == 0)
 
 
@@ -3368,7 +3362,7 @@ static void btusb_intr_complete(struct urb *urb)
     if (urb->status == 0) {
         hdev->stat.byte_rx += urb->actual_length;
 
-#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0))
+#if (CONFIG_BLUEDROID)
 		if (hci_recv_fragment(hdev, HCI_EVENT_PKT,
 						urb->transfer_buffer,
 						urb->actual_length) < 0) {
@@ -3476,7 +3470,7 @@ static void btusb_bulk_complete(struct urb *urb)
     if (urb->status == 0) {
         hdev->stat.byte_rx += urb->actual_length;
 
-#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0))
+#if (CONFIG_BLUEDROID)
 		if (hci_recv_fragment(hdev, HCI_ACLDATA_PKT,
 			  urb->transfer_buffer,
 			  urb->actual_length) < 0) {
@@ -3596,7 +3590,7 @@ static void btusb_isoc_complete(struct urb *urb)
 
             hdev->stat.byte_rx += length;
             if(length){
-#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0))
+#if (CONFIG_BLUEDROID)
 				if (hci_recv_fragment(hdev, HCI_SCODATA_PKT,
 					  urb->transfer_buffer + offset,
 					  length) < 0) {
@@ -5058,10 +5052,8 @@ static int btusb_probe(struct usb_interface *intf, const struct usb_device_id *i
     init_usb_anchor(&data->deferred);
 
 #if (CONFIG_BLUEDROID == 0)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
 		spin_lock_init(&data->rxlock);
 		data->recv_bulk = btusb_recv_bulk;
-#endif
 #endif
 
 

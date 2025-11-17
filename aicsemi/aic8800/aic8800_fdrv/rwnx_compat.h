@@ -248,11 +248,6 @@ enum ieee80211_radiotap_he_mu_bits {
 #endif
 
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0)) && (1)
-#define cfg80211_rx_mgmt(wdev, freq, rssi, buf, len, flags)             \
-    cfg80211_rx_mgmt(wdev, freq, rssi, buf, len, flags, GFP_ATOMIC)
-#endif
-
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 enum {
     IEEE80211_HE_MCS_SUPPORT_0_7    = 0,

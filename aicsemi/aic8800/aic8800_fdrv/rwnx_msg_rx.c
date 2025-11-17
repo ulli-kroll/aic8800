@@ -687,9 +687,7 @@ static inline int rwnx_rx_scanu_result_ind(struct rwnx_hw *rwnx_hw,
         capability = le16_to_cpu(mgmt->u.probe_resp.capab_info);
         /* framework use system bootup time */
         bss = cfg80211_inform_bss(rwnx_hw->wiphy, chan,
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0))
             CFG80211_BSS_FTYPE_UNKNOWN,
-#endif
             mgmt->bssid, tsf, capability, beacon_interval,
             ie, ielen, ind->rssi * 100, GFP_ATOMIC);
 
