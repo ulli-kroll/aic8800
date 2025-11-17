@@ -376,12 +376,10 @@ static struct ieee80211_iface_limit rwnx_limits[] = {
     { .max = 1,
 #endif
       .types = BIT(NL80211_IFTYPE_P2P_CLIENT) | BIT(NL80211_IFTYPE_P2P_GO)},
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0)
 #ifndef CONFIG_USE_P2P0
     { .max = 1,
       .types = BIT(NL80211_IFTYPE_P2P_DEVICE),
     }
-#endif
 #endif
 };
 
@@ -458,13 +456,11 @@ rwnx_default_mgmt_stypes[NUM_NL80211_IFTYPES] = {
                BIT(IEEE80211_STYPE_DEAUTH >> 4) |
                BIT(IEEE80211_STYPE_ACTION >> 4)),
     },
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0)
     [NL80211_IFTYPE_P2P_DEVICE] = {
         .tx = 0xffff,
         .rx = (BIT(IEEE80211_STYPE_ACTION >> 4) |
                BIT(IEEE80211_STYPE_PROBE_REQ >> 4)),
     },
-#endif
     [NL80211_IFTYPE_MESH_POINT] = {
         .tx = 0xffff,
         .rx = (BIT(IEEE80211_STYPE_ACTION >> 4) |
@@ -8260,10 +8256,8 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
     BIT(NL80211_IFTYPE_AP_VLAN)     |
     BIT(NL80211_IFTYPE_P2P_CLIENT)  |
     BIT(NL80211_IFTYPE_P2P_GO)      |
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0)
     #ifndef CONFIG_USE_P2P0
     BIT(NL80211_IFTYPE_P2P_DEVICE)  |
-    #endif
     #endif
     BIT(NL80211_IFTYPE_MONITOR);
 
