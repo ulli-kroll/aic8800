@@ -3036,10 +3036,8 @@ static int rwnx_cfg80211_sched_scan_start(struct wiphy *wiphy,
     scan_request->flags = request->flags;
     scan_request->wiphy = wiphy;
     scan_request->scan_start = request->scan_start;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,19,0)
     memcpy(scan_request->mac_addr, request->mac_addr, ETH_ALEN);
     memcpy(scan_request->mac_addr_mask, request->mac_addr_mask, ETH_ALEN);
-#endif
     rwnx_hw->sched_scan_req = request;
     scan_request->wdev = &rwnx_vif->wdev;
     AICWFDBG(LOGDEBUG, "%s scan_request->n_channels:%d \r\n", __func__, scan_request->n_channels);
@@ -3245,30 +3243,23 @@ static int rwnx_cfg80211_add_station(struct wiphy *wiphy,
  */
 static int rwnx_cfg80211_del_station_compat(struct wiphy *wiphy,
                                             struct net_device *dev,
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 19, 0))
-		const u8 *mac
-#else
 		struct station_del_parameters *params
-#endif
 )
 {
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
     struct rwnx_vif *rwnx_vif = netdev_priv(dev);
     struct rwnx_sta *cur, *tmp;
     int error = 0, found = 0;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
     const u8 *mac = NULL;
-#endif
 #ifdef AICWF_RX_REORDER
     struct reord_ctrl_info *reord_info, *reord_tmp;
     u8 *macaddr;
     struct aicwf_rx_priv *rx_priv;
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
     if (params)
         mac = params->mac;
-#endif
+
     AICWFDBG(LOGDEBUG ,"%s: %pM\n", __func__, mac);
 
 	do {
@@ -4820,7 +4811,6 @@ rwnx_cfg80211_tdls_oper(struct wiphy *wiphy,
 }
 #endif
 #if 0
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
 /*
  * @tdls_channel_switch: enable TDLS channel switch
  */
@@ -4860,7 +4850,6 @@ rwnx_cfg80211_tdls_channel_switch(struct wiphy *wiphy,
         return -EALREADY;
     }
 }
-#endif
 #if 0
 /*
  * @tdls_cancel_channel_switch: disable TDLS channel switch
@@ -5354,7 +5343,6 @@ static int rwnx_cfg80211_dump_mpath(struct wiphy *wiphy, struct net_device *dev,
     return 0;
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
 /**
  * @get_mpp: get a mesh proxy path for the given parameters
  */
@@ -5435,7 +5423,6 @@ static int rwnx_cfg80211_dump_mpp(struct wiphy *wiphy, struct net_device *dev,
 
     return 0;
 }
-#endif /* version >= 3.19 */
 
 /**
  * @get_mesh_config: Get the current mesh configuration
@@ -5654,10 +5641,8 @@ static struct cfg80211_ops rwnx_cfg80211_ops = {
     .update_ft_ies = rwnx_cfg80211_update_ft_ies,
     .set_cqm_rssi_config = rwnx_cfg80211_set_cqm_rssi_config,
     .channel_switch = rwnx_cfg80211_channel_switch,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
     //.tdls_channel_switch = rwnx_cfg80211_tdls_channel_switch,
     //.tdls_cancel_channel_switch = rwnx_cfg80211_tdls_cancel_channel_switch,
-#endif
     //.tdls_mgmt = rwnx_cfg80211_tdls_mgmt,
     //.tdls_oper = rwnx_cfg80211_tdls_oper,
     .change_bss = rwnx_cfg80211_change_bss,
@@ -5737,10 +5722,8 @@ static void rwnx_enable_mesh(struct rwnx_hw *rwnx_hw)
     rwnx_cfg80211_ops.change_mpath = rwnx_cfg80211_change_mpath;
     rwnx_cfg80211_ops.get_mpath = rwnx_cfg80211_get_mpath;
     rwnx_cfg80211_ops.dump_mpath = rwnx_cfg80211_dump_mpath;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
     rwnx_cfg80211_ops.get_mpp = rwnx_cfg80211_get_mpp;
     rwnx_cfg80211_ops.dump_mpp = rwnx_cfg80211_dump_mpp;
-#endif
     rwnx_cfg80211_ops.get_mesh_config = rwnx_cfg80211_get_mesh_config;
     rwnx_cfg80211_ops.update_mesh_config = rwnx_cfg80211_update_mesh_config;
     rwnx_cfg80211_ops.join_mesh = rwnx_cfg80211_join_mesh;
