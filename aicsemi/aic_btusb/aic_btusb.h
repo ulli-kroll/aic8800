@@ -535,11 +535,6 @@ struct hci_dev {
 	u8 *align_data;
 };
 
-static inline void hci_set_drvdata(struct hci_dev *hdev, void *data)
-{
-    dev_set_drvdata(&hdev->dev, data);
-}
-
 #define SET_HCIDEV_DEV(hdev, pdev) ((hdev)->parent = (pdev))
 /* AicSemi - Integrate from hci_core.h end */
 

@@ -5128,7 +5128,7 @@ static int btusb_probe(struct usb_interface *intf, const struct usb_device_id *i
 #endif
 #endif //(CONFIG_BLUEDROIF == 0)
 
-    hci_set_drvdata(hdev, data);
+     dev_set_drvdata(&hdev->dev, data);
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 1)
     if (!reset_on_close){
