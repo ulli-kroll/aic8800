@@ -78,17 +78,6 @@
 #define IEEE80211_HE_PHY_CAP3_RX_HE_MU_PPDU_FROM_NON_AP_STA IEEE80211_HE_PHY_CAP3_RX_PARTIAL_BW_SU_IN_20MHZ_MU
 #endif
 
-
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
-struct ieee80211_vht_operation {
-        u8 vht_op_info_chwidth;
-        u8 vht_op_info_chan_center_freq_seg1_idx;
-        u8 vht_op_info_chan_center_freq_seg2_idx;
-        __le16 vht_basic_mcs_set;
-} __packed;
-#endif
-
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0)
 #define NL80211_IFTYPE_P2P_DEVICE 10
 #define IEEE80211_RADIOTAP_AMPDU_STATUS 20
@@ -735,10 +724,6 @@ struct rwnx_hw {
 	struct sta_tx_flowctrl sta_flowctrl[NX_REMOTE_STA_MAX];
 #if 0
 	bool he_flag;
-#endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
-    struct mac_chan_op ap_chan;
-    struct ieee80211_channel set_chan;
 #endif
 };
 

@@ -622,13 +622,8 @@ static void rwnx_rx_mgmt(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
         ft_event.ric_ies_len = 0;
         cfg80211_ft_event(rwnx_vif->ndev, &ft_event);
     } else {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
         cfg80211_rx_mgmt(&rwnx_vif->wdev, hw_rxhdr->phy_info.phy_prim20_freq,
                          rxvect->rssi1, skb->data, skb->len, 0);
-#else
-        cfg80211_rx_mgmt(rwnx_vif->ndev, hw_rxhdr->phy_info.phy_prim20_freq,
-                         rxvect->rssi1, skb->data, skb->len, 0);
-#endif
     }
 }
 
