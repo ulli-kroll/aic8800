@@ -1545,38 +1545,6 @@ static int rwnx_close(struct net_device *dev)
     return 0;
 }
 
-
-#define IOCTL_HOSTAPD   (SIOCIWFIRSTPRIV+28)
-#define IOCTL_WPAS      (SIOCIWFIRSTPRIV+30)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
-static int rwnx_do_ioctl(struct net_device *net, struct ifreq *req, void __user *data, int cmd)
-#else
-static int rwnx_do_ioctl(struct net_device *net, struct ifreq *req, int cmd)
-#endif
-{
-    int ret = 0;
-    ///TODO: add ioctl command handler later
-    switch(cmd)
-    {
-        case IOCTL_HOSTAPD:
-            AICWFDBG(LOGINFO, "IOCTL_HOSTAPD\n");
-            break;
-        case IOCTL_WPAS:
-            AICWFDBG(LOGINFO, "IOCTL_WPAS\n");
-            break;
-        case SIOCDEVPRIVATE:
-            AICWFDBG(LOGINFO, "IOCTL SIOCDEVPRIVATE\n");
-            break;
-        case (SIOCDEVPRIVATE+1):
-            AICWFDBG(LOGINFO, "IOCTL PRIVATE\n");
-            ret = android_priv_cmd(net, req, cmd);
-	    break;
-        default:
-            ret = -EOPNOTSUPP;
-    }
-    return ret;
-}
-
 /**
  * struct net_device_stats* (*ndo_get_stats)(struct net_device *dev);
  *	Called when a user wants to get the network device usage
