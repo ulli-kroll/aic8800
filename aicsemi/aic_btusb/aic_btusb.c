@@ -4521,30 +4521,18 @@ int bt_reboot_notify(struct notifier_block *notifier, ulong pm_event, void *unus
 
 
 #ifdef CONFIG_SCO_OVER_HCI
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-void aic_snd_capture_timeout(ulong data)
-#else
 void aic_snd_capture_timeout(struct timer_list *t)
-#endif
 {
 	uint8_t null_data[255];
 	struct btusb_data *usb_data;
 	
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-    usb_data = (struct btusb_data *)data;
-#else
     usb_data = &snd_cap_timer.snd_usb_data;
-#endif
     aic_copy_capture_data_to_alsa(usb_data, null_data, snd_cap_timer.snd_sco_length/2);
 	//printk("%s enter\r\n", __func__);
     mod_timer(&snd_cap_timer.cap_timer,jiffies + msecs_to_jiffies(3));
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-void aic_snd_play_timeout(ulong data)
-#else
 void aic_snd_play_timeout(struct timer_list *t)
-#endif
 {
 	AIC_sco_card_t *pSCOSnd;
 	struct snd_pcm_runtime *runtime;
@@ -4553,11 +4541,7 @@ void aic_snd_play_timeout(struct timer_list *t)
 	struct btusb_data *usb_data;
 	int sco_packet_bytes;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-    usb_data = (struct btusb_data *)data;
-#else
     usb_data = &snd_cap_timer.snd_usb_data;
-#endif
 	pSCOSnd = usb_data->pSCOSnd;
 
 	if(test_bit(USB_PLAYBACK_RUNNING, &pSCOSnd->states)) {
@@ -4614,14 +4598,8 @@ static int snd_sco_capture_pcm_open(struct snd_pcm_substream * substream)
     memcpy(&substream->runtime->hw, &snd_card_sco_capture_default, sizeof(struct snd_pcm_hardware));
 	pSCOSnd->capture.buffer_pos = 0;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-	init_timer(&snd_cap_timer.cap_timer);
-	snd_cap_timer.cap_timer.data = (unsigned long)pSCOSnd->usb_data;
-	snd_cap_timer.cap_timer.function = aic_snd_capture_timeout;
-#else
 	timer_setup(&snd_cap_timer.cap_timer, aic_snd_capture_timeout, 0);
 	snd_cap_timer.snd_usb_data = *(pSCOSnd->usb_data);
-#endif
 
     if(check_controller_support_msbc(pSCOSnd->dev)) {
         substream->runtime->hw.rates |= SNDRV_PCM_RATE_16000;
@@ -4762,14 +4740,8 @@ static int snd_sco_playback_pcm_open(struct snd_pcm_substream * substream)
     AIC_sco_card_t *pSCOSnd = substream->private_data;
     int err = 0;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-	init_timer(&snd_cap_timer.play_timer);
-	snd_cap_timer.play_timer.data = (unsigned long)pSCOSnd->usb_data;
-	snd_cap_timer.play_timer.function = aic_snd_play_timeout;
-#else
 	timer_setup(&snd_cap_timer.play_timer, aic_snd_play_timeout, 0);
 	snd_cap_timer.snd_usb_data = *(pSCOSnd->usb_data);
-#endif
 	pSCOSnd->playback.buffer_pos = 0;
 
     AICBT_INFO("%s, rate : %d", __FUNCTION__, substream->runtime->rate);

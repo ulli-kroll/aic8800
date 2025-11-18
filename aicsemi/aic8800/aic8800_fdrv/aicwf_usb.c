@@ -34,10 +34,8 @@ extern atomic_t aicwf_deinit_atomic;
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0))
 #include "uapi/linux/sched/types.h"
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
-#include "linux/sched/types.h"
 #else
-#include "linux/sched/rt.h"
+#include "linux/sched/types.h"
 #endif
 
 int bustx_thread_prio = 1;
