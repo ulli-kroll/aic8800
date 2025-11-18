@@ -2244,10 +2244,6 @@ int rwnx_send_set_filter(struct rwnx_hw *rwnx_hw, uint32_t filter)
         return -ENOMEM;
 
     /* Set parameters for the MM_SET_FILTER_REQ message */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
-    if (filter & FIF_PROMISC_IN_BSS)
-        rx_filter |= NXMAC_ACCEPT_UNICAST_BIT;
-#endif
     if (filter & FIF_ALLMULTI)
         rx_filter |= NXMAC_ACCEPT_MULTICAST_BIT;
 
