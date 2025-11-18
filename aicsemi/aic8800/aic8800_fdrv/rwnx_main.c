@@ -2924,11 +2924,7 @@ static int rwnx_cfg80211_disconnect(struct wiphy *wiphy, struct net_device *dev,
 
 static int rwnx_cfg80211_sched_scan_stop(struct wiphy *wiphy,
 					   struct net_device *ndev
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 					   ,u64 reqid)
-#else
-                        )
-#endif
 {
 
 	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
@@ -8237,13 +8233,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
 		rwnx_hw->pwrloss_lvl = 0;
 		rwnx_hw->sta_rssi_idx = 0;
 		rwnx_hw->read_rssi_vif = vif;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-		init_timer(&rwnx_hw->pwrloss_timer);
-		rwnx_hw->pwrloss_timer.data = (ulong) vif;
-		rwnx_hw->pwrloss_timer.function = aicwf_pwrloss_timer;
-#else
 		timer_setup(&rwnx_hw->pwrloss_timer, aicwf_pwrloss_timer, 0);
-#endif
 		INIT_WORK(&rwnx_hw->pwrloss_work, aicwf_pwrloss_worker);
 		mod_timer(&rwnx_hw->pwrloss_timer, jiffies + msecs_to_jiffies(RSSI_GET_INTERVAL));
 #endif

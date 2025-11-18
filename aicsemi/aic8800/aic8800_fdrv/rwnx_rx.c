@@ -1183,13 +1183,7 @@ struct reord_ctrl_info *reord_init_sta(struct aicwf_rx_priv* rx_priv, const u8 *
         preorder_ctrl->rx_priv= rx_priv;
         INIT_LIST_HEAD(&preorder_ctrl->reord_list);
         spin_lock_init(&preorder_ctrl->reord_list_lock);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
-        init_timer(&preorder_ctrl->reord_timer);
-        preorder_ctrl->reord_timer.data = (ulong) preorder_ctrl;
-        preorder_ctrl->reord_timer.function = reord_timeout_handler;
-#else
         timer_setup(&preorder_ctrl->reord_timer, reord_timeout_handler, 0);
-#endif
         INIT_WORK(&preorder_ctrl->reord_timer_work, reord_timeout_worker);
     }
 
@@ -1493,20 +1487,12 @@ int reorder_timeout = REORDER_UPDATE_TIME;
 module_param(reorder_timeout, int, 0660);
 
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
-void reord_timeout_handler (ulong data)
-#else
 void reord_timeout_handler (struct timer_list *t)
-#endif
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
-	struct reord_ctrl *preorder_ctrl = (struct reord_ctrl *)data;
-#else
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 	struct reord_ctrl *preorder_ctrl = timer_container_of(preorder_ctrl, t, reord_timer);
 #else
 	struct reord_ctrl *preorder_ctrl = from_timer(preorder_ctrl, t, reord_timer);
-#endif
 #endif
 
 	AICWFDBG(LOGTRACE, "%s Enter \r\n", __func__);
