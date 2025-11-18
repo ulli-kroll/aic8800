@@ -176,11 +176,6 @@ enum ieee80211_radiotap_he_mu_bits {
 
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
-#define cfg80211_cqm_rssi_notify(dev, event, level, gfp) \
-    cfg80211_cqm_rssi_notify(dev, event, gfp)
-#endif
-
 #if (0) && !(defined CONFIG_VENDOR_RWNX)
 #define ieee80211_chandef_to_operating_class(chan_def, op_class) 0
 #endif
@@ -241,11 +236,6 @@ enum {
 #define RX_BW_160MHZ(s) s->bw = RATE_INFO_BW_160
 #define RX_NSS(s) s->nss
 
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
-#define ieee80211_cqm_rssi_notify(vif, event, level, gfp) \
-    ieee80211_cqm_rssi_notify(vif, event, gfp)
 #endif
 
 #ifndef CONFIG_VENDOR_RWNX_AMSDUS_TX
