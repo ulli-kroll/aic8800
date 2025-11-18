@@ -3772,7 +3772,6 @@ done:
 }
 
 #if (CONFIG_BLUEDROID == 0)
-#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 0, 9)
 static int btusb_shutdown(struct hci_dev *hdev)
 {
 	struct sk_buff *skb;
@@ -3787,7 +3786,6 @@ static int btusb_shutdown(struct hci_dev *hdev)
 
     return 0;
 }
-#endif
 #endif //(CONFIG_BLUEDROID == 0)
 
 static int btusb_open(struct hci_dev *hdev)
@@ -5104,9 +5102,7 @@ static int btusb_probe(struct usb_interface *intf, const struct usb_device_id *i
     hdev->send     = btusb_send_frame;
     hdev->notify   = btusb_notify;
 #if (CONFIG_BLUEDROID == 0)
-#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 0, 9)
     hdev->shutdown = btusb_shutdown;
-#endif
 #endif //(CONFIG_BLUEDROIF == 0)
 
      dev_set_drvdata(&hdev->dev, data);
