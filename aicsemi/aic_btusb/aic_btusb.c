@@ -3856,7 +3856,7 @@ static void btusb_stop_traffic(struct btusb_data *data)
 static int btusb_close(struct hci_dev *hdev)
 {
     struct btusb_data *data = dev_get_drvdata(&hdev->dev);
-#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0))
+#if (CONFIG_BLUEDROID)
     int i;
 #endif
 	int err;
@@ -3871,7 +3871,7 @@ static int btusb_close(struct hci_dev *hdev)
         return 0;
 	}
 
-#if (CONFIG_BLUEDROID) || (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0))
+#if (CONFIG_BLUEDROID)
 	for (i = 0; i < NUM_REASSEMBLY; i++) {
 		if (hdev->reassembly[i]) {
 			AICBT_DBG("%s: free ressembly[%d]", __func__, i);

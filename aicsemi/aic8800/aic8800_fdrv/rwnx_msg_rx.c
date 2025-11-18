@@ -1001,13 +1001,8 @@ void rwnx_cfg80211_unlink_bss(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif
 	bss = cfg80211_get_bss(wiphy, NULL/*notify_channel*/,
 		rwnx_vif->sta.bssid, rwnx_vif->sta.ssid,
 		rwnx_vif->sta.ssid_len,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0)
 		IEEE80211_BSS_TYPE_ESS,
 		IEEE80211_PRIVACY(true));//temp set true
-#else
-		WLAN_CAPABILITY_ESS,
-		WLAN_CAPABILITY_ESS);
-#endif
 
 	if (bss) {
 		cfg80211_unlink_bss(wiphy, bss);
