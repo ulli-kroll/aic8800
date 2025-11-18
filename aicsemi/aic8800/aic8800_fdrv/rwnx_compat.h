@@ -210,19 +210,8 @@ enum ieee80211_radiotap_he_mu_bits {
 #define ieee80211_chandef_to_operating_class(chan_def, op_class) 0
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 0, 0)
-#define SURVEY_INFO_TIME          SURVEY_INFO_CHANNEL_TIME
-#define SURVEY_INFO_TIME_BUSY     SURVEY_INFO_CHANNEL_TIME_BUSY
-#define SURVEY_INFO_TIME_EXT_BUSY SURVEY_INFO_CHANNEL_TIME_EXT_BUSY
-#define SURVEY_INFO_TIME_RX       SURVEY_INFO_CHANNEL_TIME_RX
-#define SURVEY_INFO_TIME_TX       SURVEY_INFO_CHANNEL_TIME_TX
-
-#define SURVEY_TIME(s) s->channel_time
-#define SURVEY_TIME_BUSY(s) s->channel_time_busy
-#else
 #define SURVEY_TIME(s) s->time
 #define SURVEY_TIME_BUSY(s) s->time_busy
-#endif
 
 #define STA_TDLS_INITIATOR(sta) sta->tdls_initiator
 
