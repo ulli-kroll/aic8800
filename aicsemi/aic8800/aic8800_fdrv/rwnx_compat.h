@@ -212,10 +212,7 @@ enum {
 #endif /* CONFIG_VENDOR_RWNX_AMSDUS_TX */
 
 /* NET */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
-#define rwnx_select_queue(dev, skb, sb_dev) \
-    rwnx_select_queue(dev, skb, void *accel_priv, select_queue_fallback_t fallback)
-#elif LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
 #define rwnx_select_queue(dev, skb, sb_dev) \
     rwnx_select_queue(dev, skb, sb_dev, select_queue_fallback_t fallback)
 #else
