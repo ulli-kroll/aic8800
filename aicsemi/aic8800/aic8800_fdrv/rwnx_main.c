@@ -1632,11 +1632,6 @@ static int rwnx_set_mac_address(struct net_device *dev, void *addr)
 static const struct net_device_ops rwnx_netdev_ops = {
     .ndo_open               = rwnx_open,
     .ndo_stop               = rwnx_close,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
-    .ndo_siocdevprivate     = rwnx_do_ioctl,
-#else
-    .ndo_do_ioctl           = rwnx_do_ioctl,
-#endif
     .ndo_start_xmit         = rwnx_start_xmit,
     .ndo_get_stats          = rwnx_get_stats,
 #ifndef CONFIG_ONE_TXQ
@@ -1652,11 +1647,6 @@ static const struct net_device_ops rwnx_netdev_ops = {
 static const struct net_device_ops rwnx_netdev_monitor_ops = {
     .ndo_open               = rwnx_open,
     .ndo_stop               = rwnx_close,
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
-    .ndo_siocdevprivate     = rwnx_do_ioctl,
-    #else
-    .ndo_do_ioctl           = rwnx_do_ioctl,
-    #endif
     #ifdef CONFIG_RWNX_MON_XMIT
     .ndo_start_xmit         = rwnx_start_monitor_if_xmit,
     .ndo_select_queue       = rwnx_select_queue,
