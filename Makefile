@@ -167,7 +167,6 @@ aic8800_fdrv-y += \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_tdls.o \
 	aicsemi/aic8800/aic8800_fdrv/regdb.o \
 	aicsemi/aic8800/aic8800_fdrv/md5.o \
-	aicsemi/aic8800/aic8800_fdrv/aic_vendor.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_compat_8800dc.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_compat_8800d80.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_compat_8800d80x2.o
