@@ -1414,15 +1414,11 @@ static int rwnx_close(struct net_device *dev)
     /* Abort scan request on the vif */
     if (rwnx_hw->scan_request &&
         rwnx_hw->scan_request->wdev == &rwnx_vif->wdev) {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
         struct cfg80211_scan_info info = {
             .aborted = true,
         };
 
         cfg80211_scan_done(rwnx_hw->scan_request, &info);
-#else
-        cfg80211_scan_done(rwnx_hw->scan_request, true);
-#endif
         rwnx_hw->scan_request = NULL;
 		ret = rwnx_send_scanu_cancel_req(rwnx_hw, NULL);
 		mdelay(35);//make sure firmware take affect
@@ -2356,14 +2352,10 @@ static int rwnx_cfg80211_change_iface(struct wiphy *wiphy,
 	    if (vif->rwnx_hw->scan_request &&
 	        vif->rwnx_hw->scan_request->wdev == &vif->wdev) {
 #if 0
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
 	        struct cfg80211_scan_info info = {
 	            .aborted = true,
 	        };
 	        cfg80211_scan_done(vif->rwnx_hw->scan_request, &info);
-#else
-	        cfg80211_scan_done(vif->rwnx_hw->scan_request, true);
-#endif
 	        if ((ret = rwnx_send_scanu_cancel_req(vif->rwnx_hw, NULL))) {
 				AICWFDBG(LOGERROR, "scanu_cancel fail\n");
 	            return ret;
@@ -2461,15 +2453,11 @@ static void rwnx_cfgp2p_stop_p2p_device(struct wiphy *wiphy, struct wireless_dev
 	/* Abort scan request on the vif */
 	if (rwnx_hw->scan_request &&
 		rwnx_hw->scan_request->wdev == &rwnx_vif->wdev) {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
 		struct cfg80211_scan_info info = {
 			.aborted = true,
 		};
 
 		cfg80211_scan_done(rwnx_hw->scan_request, &info);
-#else
-		cfg80211_scan_done(rwnx_hw->scan_request, true);
-#endif
 		rwnx_hw->scan_request = NULL;
 		ret = rwnx_send_scanu_cancel_req(rwnx_hw, NULL);
 		if (ret){

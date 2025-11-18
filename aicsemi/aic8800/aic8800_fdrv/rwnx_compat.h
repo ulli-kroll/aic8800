@@ -278,9 +278,4 @@ enum {
 #define sk_pacing_shift_update(sk, shift)
 #endif
 
-/* TIME */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 8, 0)
-#define time64_to_tm(t, o, tm) time_to_tm((time_t)t, o, tm)
-#endif
-
 #endif /* _RWNX_COMPAT_H_ */
