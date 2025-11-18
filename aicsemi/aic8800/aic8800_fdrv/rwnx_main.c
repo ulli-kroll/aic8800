@@ -7876,7 +7876,6 @@ void aic_ipc_setting(struct rwnx_vif *rwnx_vif){
 
 
 extern void *aicwf_prealloc_txq_alloc(size_t size);
-extern int aicwf_vendor_init(struct wiphy *wiphy);
 #ifdef CONFIG_POWER_LIMIT
 extern char default_ccode[];
 #endif
@@ -8202,8 +8201,6 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
         rwnx_limits[0].types = BIT(NL80211_IFTYPE_MONITOR);
         rwnx_limits_dfs[0].types = BIT(NL80211_IFTYPE_MONITOR);
     }
-
-    aicwf_vendor_init(wiphy);
 
     if ((ret = wiphy_register(wiphy))) {
         wiphy_err(wiphy, "Could not register wiphy device\n");
