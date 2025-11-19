@@ -845,7 +845,7 @@ int rwnx_txq_queue_skb(struct sk_buff *skb, struct rwnx_txq *txq,
         skb_queue_tail(&txq->sk_list, skb);
     } else {
         if (txq->last_retry_skb)
-            rwnx_skb_append(txq->last_retry_skb, skb, &txq->sk_list);
+            skb_append(txq->last_retry_skb, skb, &txq->sk_list);
         else
             skb_queue_head(&txq->sk_list, skb);
 
