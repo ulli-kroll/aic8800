@@ -119,9 +119,6 @@ static void rwnx_txq_init(struct rwnx_txq *txq, int idx, u8 status,
         txq->pkt_pushed[i] = 0;
     txq->push_limit = 0;
     txq->tid = tid;
-#ifdef CONFIG_MAC80211_TXQ
-    txq->nb_ready_mac80211 = 0;
-#endif
 #ifdef CONFIG_RWNX_FULLMAC
     txq->ps_id = LEGACY_PS_ID;
     if (idx < nx_first_vif_txq_idx) {
@@ -461,11 +458,6 @@ void rwnx_txq_del_from_hw_list(struct rwnx_txq *txq)
  */
 static inline bool rwnx_txq_skb_ready(struct rwnx_txq *txq)
 {
-#ifdef CONFIG_MAC80211_TXQ
-    if (txq->nb_ready_mac80211 != NOT_MAC80211_TXQ)
-        return ((txq->nb_ready_mac80211 > 0) || !skb_queue_empty(&txq->sk_list));
-    else
-#endif
     return !skb_queue_empty(&txq->sk_list);
 }
 
@@ -1015,55 +1007,6 @@ static inline void skb_queue_extract(struct sk_buff_head *list,
     head->prev = last;
 }
 
-
-#ifdef CONFIG_MAC80211_TXQ
-/**
- * rwnx_txq_mac80211_dequeue - Dequeue buffer from mac80211 txq and
- *                             add them to push list
- *
- * @rwnx_hw: Main driver data
- * @sk_list: List of buffer to push (initialized without lock)
- * @txq: TXQ to dequeue buffers from
- * @max: Max number of buffer to dequeue
- *
- * Dequeue buffer from mac80211 txq, prepare them for transmission and chain them
- * to the list of buffer to push.
- *
- * @return true if no more buffer are queued in mac80211 txq and false otherwise.
- */
-static bool rwnx_txq_mac80211_dequeue(struct rwnx_hw *rwnx_hw,
-                                      struct sk_buff_head *sk_list,
-                                      struct rwnx_txq *txq, int max)
-{
-    struct ieee80211_txq *mac_txq;
-    struct sk_buff *skb;
-    unsigned long mac_txq_len;
-
-    if (txq->nb_ready_mac80211 == NOT_MAC80211_TXQ)
-        return true;
-
-    mac_txq = container_of((void *)txq, struct ieee80211_txq, drv_priv);
-
-    for (; max > 0; max--) {
-        skb = rwnx_tx_dequeue_prep(rwnx_hw, mac_txq);
-        if (skb == NULL)
-            return true;
-
-        __skb_queue_tail(sk_list, skb);
-    }
-
-    /* re-read mac80211 txq current length.
-       It is mainly for debug purpose to trace dropped packet. There is no
-       problems to have nb_ready_mac80211 != actual mac80211 txq length */
-    ieee80211_txq_get_depth(mac_txq, &mac_txq_len, NULL);
-    if (txq->nb_ready_mac80211 > mac_txq_len)
-        trace_txq_drop(txq, txq->nb_ready_mac80211 - mac_txq_len);
-    txq->nb_ready_mac80211 = mac_txq_len;
-
-    return (txq->nb_ready_mac80211 == 0);
-}
-#endif
-
 /**
  * rwnx_txq_get_skb_to_push - Get list of buffer to push for one txq
  *
@@ -1099,13 +1042,8 @@ bool rwnx_txq_get_skb_to_push(struct rwnx_hw *rwnx_hw, struct rwnx_hwq *hwq,
 
     if (credits >= nb_ready) {
         skb_queue_splice_init(&txq->sk_list, sk_list_push);
-#ifdef CONFIG_MAC80211_TXQ
-        res = rwnx_txq_mac80211_dequeue(rwnx_hw, sk_list_push, txq, credits - nb_ready);
-        credits = skb_queue_len(sk_list_push);
-#else
         res = true;
         credits = nb_ready;
-#endif
     } else {
         skb_queue_extract(&txq->sk_list, sk_list_push, credits);
 
