@@ -1377,9 +1377,7 @@ static int rwnx_plat_patch_load(struct rwnx_hw *rwnx_hw)
 
     if(rwnx_hw->usbdev->chipid == PRODUCT_ID_AIC8800DC ||
         rwnx_hw->usbdev->chipid == PRODUCT_ID_AIC8800DW){
-#ifndef ANDROID_PLATFORM
         sprintf(aic_fw_path, "%s/%s", aic_fw_path, "aic8800DC");
-#endif
         AICWFDBG(LOGINFO, "testmode=%d\n", testmode);
         if (chip_sub_id == 0) {
             if (testmode == FW_NORMAL_MODE) {
