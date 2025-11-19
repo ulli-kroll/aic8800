@@ -1028,7 +1028,7 @@ static void rwnx_csa_finish(struct work_struct *ws)
         spin_unlock_bh(&rwnx_hw->cb_lock);
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0))
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0);
-#elif (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION3)
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0, 0);
 #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0);
