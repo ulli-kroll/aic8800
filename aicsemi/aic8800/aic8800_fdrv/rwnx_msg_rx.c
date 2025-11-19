@@ -919,8 +919,8 @@ static inline int rwnx_rx_sm_connect_ind(struct rwnx_hw *rwnx_hw,
         }else{
             struct cfg80211_roam_info info;
             memset(&info, 0, sizeof(info));
-            
-#if LINUX_VERSION_CODE < HIGH_KERNEL_VERSION
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 0, 0)
 			if (rwnx_vif->ch_index < NX_CHAN_CTXT_CNT)
     			info.channel = rwnx_hw->chanctx_table[rwnx_vif->ch_index].chan_def.chan;
 			info.bssid = (const u8 *)ind->bssid.array;
@@ -929,7 +929,7 @@ static inline int rwnx_rx_sm_connect_ind(struct rwnx_hw *rwnx_hw,
 			if (rwnx_vif->ch_index < NX_CHAN_CTXT_CNT)
     			info.links[0].channel = rwnx_hw->chanctx_table[rwnx_vif->ch_index].chan_def.chan;
 			info.links[0].bssid = (const u8 *)ind->bssid.array;;
-#endif//LINUX_VERSION_CODE < HIGH_KERNEL_VERSION    
+#endif//LINUX_VERSION_CODE < KERNEL_VERSION(6, 0, 0)
 
             info.req_ie = req_ie;
             info.req_ie_len = ind->assoc_req_ie_len;

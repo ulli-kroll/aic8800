@@ -1030,7 +1030,7 @@ static void rwnx_csa_finish(struct work_struct *ws)
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0);
 #elif (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION3)
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0, 0);
-#elif (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION)
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0);
 #else
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef);
@@ -2997,7 +2997,7 @@ static int rwnx_cfg80211_add_station(struct wiphy *wiphy,
             sta->vif_idx = rwnx_vif->vif_index;
             sta->vlan_idx = sta->vif_idx;
             sta->qos = (params->sta_flags_set & BIT(NL80211_STA_FLAG_WME)) != 0;
-#if LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
             sta->ht = params->link_sta_params.ht_capa ? 1 : 0;
             sta->vht = params->link_sta_params.vht_capa ? 1 : 0;
 #else
@@ -3395,7 +3395,7 @@ static int rwnx_cfg80211_change_station(struct wiphy *wiphy, struct net_device *
                     sta->vif_idx = rwnx_vif->vif_index;
                     sta->vlan_idx = sta->vif_idx;
                     sta->qos = (params->sta_flags_set & BIT(NL80211_STA_FLAG_WME)) != 0;
-#if LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
                 sta->ht = params->link_sta_params.ht_capa ? 1 : 0;
                 sta->vht = params->link_sta_params.vht_capa ? 1 : 0;
 #else
@@ -3662,7 +3662,7 @@ static int rwnx_cfg80211_change_beacon(struct wiphy *wiphy, struct net_device *d
 /**
  * * @stop_ap: Stop being an AP, including stopping beaconing.
  */
-#if (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
 static int rwnx_cfg80211_stop_ap(struct wiphy *wiphy, struct net_device *dev, unsigned int link_id)
 #else
 static int rwnx_cfg80211_stop_ap(struct wiphy *wiphy, struct net_device *dev)
@@ -4197,7 +4197,7 @@ static int rwnx_cfg80211_dump_survey(struct wiphy *wiphy, struct net_device *net
  */
 static int rwnx_cfg80211_get_channel(struct wiphy *wiphy,
                                                     struct wireless_dev *wdev,
-#if LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
                                                     unsigned int link_id,
 #endif
                                                     struct cfg80211_chan_def *chandef)
