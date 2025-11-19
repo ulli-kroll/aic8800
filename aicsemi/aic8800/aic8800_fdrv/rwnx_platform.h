@@ -20,9 +20,7 @@
 #define RWNX_PHY_CONFIG_KARST_NAME      "rwnx_karst.ini"
 #define RWNX_AGC_FW_NAME                "agcram.bin"
 #define RWNX_LDPC_RAM_NAME              "ldpcram.bin"
-#ifdef CONFIG_RWNX_FULLMAC
 #define RWNX_MAC_FW_BASE_NAME           "fmacfw"
-#endif /* CONFIG_RWNX_FULLMAC */
 
 #ifdef CONFIG_RWNX_TL4
 #define RWNX_MAC_FW_NAME RWNX_MAC_FW_BASE_NAME".hex"

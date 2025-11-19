@@ -23,7 +23,6 @@
 #include "rwnx_tx.h"
 
 #ifdef CONFIG_DEBUG_FS
-#ifdef CONFIG_RWNX_FULLMAC
 static ssize_t rwnx_dbgfs_stats_read(struct file *file,
                                      char __user *user_buf,
                                      size_t count, loff_t *ppos)
@@ -139,7 +138,6 @@ static ssize_t rwnx_dbgfs_stats_read(struct file *file,
 
     return read;
 }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 static ssize_t rwnx_dbgfs_stats_write(struct file *file,
                                       const char __user *user_buf,
@@ -163,25 +161,15 @@ DEBUGFS_READ_WRITE_FILE_OPS(stats);
 #define TXQ_STA_PREF "tid|"
 #define TXQ_STA_PREF_FMT "%3d|"
 
-#ifdef CONFIG_RWNX_FULLMAC
 #define TXQ_VIF_PREF "type|"
 #define TXQ_VIF_PREF_FMT "%4s|"
-#else
-#define TXQ_VIF_PREF "AC|"
-#define TXQ_VIF_PREF_FMT "%2s|"
-#endif /* CONFIG_RWNX_FULLMAC */
 
 #define TXQ_HDR "idx| status|credit|ready|retry"
 #define TXQ_HDR_FMT "%3d|%s%s%s%s%s%s%s|%6d|%5d|%5d"
 
 #ifdef CONFIG_RWNX_AMSDUS_TX
-#ifdef CONFIG_RWNX_FULLMAC
 #define TXQ_HDR_SUFF "|amsdu"
 #define TXQ_HDR_SUFF_FMT "|%5d"
-#else
-#define TXQ_HDR_SUFF "|amsdu-ht|amdsu-vht"
-#define TXQ_HDR_SUFF_FMT "|%8d|%9d"
-#endif /* CONFIG_RWNX_FULLMAC */
 #else
 #define TXQ_HDR_SUFF ""
 #define TXQ_HDR_SUF_FMT ""
@@ -189,35 +177,21 @@ DEBUGFS_READ_WRITE_FILE_OPS(stats);
 
 #define TXQ_HDR_MAX_LEN (sizeof(TXQ_STA_PREF) + sizeof(TXQ_HDR) + sizeof(TXQ_HDR_SUFF) + 1)
 
-#ifdef CONFIG_RWNX_FULLMAC
 #define PS_HDR  "Legacy PS: ready=%d, sp=%d / UAPSD: ready=%d, sp=%d"
 #define PS_HDR_LEGACY "Legacy PS: ready=%d, sp=%d"
 #define PS_HDR_UAPSD  "UAPSD: ready=%d, sp=%d"
 #define PS_HDR_MAX_LEN  sizeof("Legacy PS: ready=xxx, sp=xxx / UAPSD: ready=xxx, sp=xxx\n")
-#else
-#define PS_HDR ""
-#define PS_HDR_MAX_LEN 0
-#endif /* CONFIG_RWNX_FULLMAC */
 
 #define STA_HDR "** STA %d (%pM)\n"
 #define STA_HDR_MAX_LEN (sizeof("- STA xx (xx:xx:xx:xx:xx:xx)\n") + PS_HDR_MAX_LEN)
 
-#ifdef CONFIG_RWNX_FULLMAC
 #define VIF_HDR "* VIF [%d] %s\n"
 #define VIF_HDR_MAX_LEN (sizeof(VIF_HDR) + IFNAMSIZ)
-#else
-#define VIF_HDR "* VIF [%d]\n"
-#define VIF_HDR_MAX_LEN sizeof(VIF_HDR)
-#endif
 
 
 #ifdef CONFIG_RWNX_AMSDUS_TX
 
-#ifdef CONFIG_RWNX_FULLMAC
 #define VIF_SEP "---------------------------------------\n"
-#else
-#define VIF_SEP "----------------------------------------------------\n"
-#endif /* CONFIG_RWNX_FULLMAC */
 
 #else /* ! CONFIG_RWNX_AMSDUS_TX */
 #define VIF_SEP "---------------------------------\n"
@@ -261,11 +235,7 @@ static int rwnx_dbgfs_txq(char *buf, size_t size, struct rwnx_txq *txq, int type
 #ifdef CONFIG_RWNX_AMSDUS_TX
     if (type == STA_TXQ) {
         res = scnprintf(&buf[idx], size, TXQ_HDR_SUFF_FMT,
-#ifdef CONFIG_RWNX_FULLMAC
                         txq->amsdu_len
-#else
-                        txq->amsdu_ht_len_cap, txq->amsdu_vht_len_cap
-#endif /* CONFIG_RWNX_FULLMAC */
                         );
         idx += res;
         size -= res;
@@ -287,14 +257,11 @@ static int rwnx_dbgfs_txq_sta(char *buf, size_t size, struct rwnx_sta *rwnx_sta,
 
     res = scnprintf(&buf[idx], size, "\n" STA_HDR,
                     rwnx_sta->sta_idx,
-#ifdef CONFIG_RWNX_FULLMAC
                     rwnx_sta->mac_addr
-#endif /* CONFIG_RWNX_FULLMAC */
-                    );
+                   );
     idx += res;
     size -= res;
 
-#ifdef CONFIG_RWNX_FULLMAC
     if (rwnx_sta->ps.active) {
         if (rwnx_sta->uapsd_tids &&
             (rwnx_sta->uapsd_tids == ((1 << NX_NB_TXQ_PER_STA) - 1)))
@@ -318,7 +285,6 @@ static int rwnx_dbgfs_txq_sta(char *buf, size_t size, struct rwnx_sta *rwnx_sta,
         idx += res;
         size -= res;
     }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 
     res = scnprintf(&buf[idx], size, TXQ_STA_PREF TXQ_HDR TXQ_HDR_SUFF "\n");
@@ -342,23 +308,12 @@ static int rwnx_dbgfs_txq_vif(char *buf, size_t size, struct rwnx_vif *rwnx_vif,
     struct rwnx_txq *txq;
     struct rwnx_sta *rwnx_sta;
 
-#ifdef CONFIG_RWNX_FULLMAC
     res = scnprintf(&buf[idx], size, VIF_HDR, rwnx_vif->vif_index, rwnx_vif->ndev->name);
     idx += res;
     size -= res;
     if (!rwnx_vif->up || rwnx_vif->ndev == NULL)
         return idx;
 
-#else
-    int ac;
-    char ac_name[2] = {'0', '\0'};
-
-    res = scnprintf(&buf[idx], size, VIF_HDR, rwnx_vif->vif_index);
-    idx += res;
-    size -= res;
-#endif /* CONFIG_RWNX_FULLMAC */
-
-#ifdef CONFIG_RWNX_FULLMAC
     if (RWNX_VIF_TYPE(rwnx_vif) ==  NL80211_IFTYPE_AP ||
         RWNX_VIF_TYPE(rwnx_vif) ==  NL80211_IFTYPE_P2P_GO ||
         RWNX_VIF_TYPE(rwnx_vif) ==  NL80211_IFTYPE_MESH_POINT) {
@@ -400,24 +355,6 @@ static int rwnx_dbgfs_txq_vif(char *buf, size_t size, struct rwnx_vif *rwnx_vif,
         }
     }
 
-#else
-    res = scnprintf(&buf[idx], size, TXQ_VIF_PREF TXQ_HDR "\n");
-    idx += res;
-    size -= res;
-
-    foreach_vif_txq(rwnx_vif, txq, ac) {
-        ac_name[0]++;
-        res = rwnx_dbgfs_txq(&buf[idx], size, txq, VIF_TXQ, 0, ac_name);
-        idx += res;
-        size -= res;
-    }
-
-    list_for_each_entry(rwnx_sta, &rwnx_vif->stations, list) {
-        res = rwnx_dbgfs_txq_sta(&buf[idx], size, rwnx_sta, rwnx_hw);
-        idx += res;
-        size -= res;
-    }
-#endif /* CONFIG_RWNX_FULLMAC */
     return idx;
 }
 
@@ -478,9 +415,7 @@ static ssize_t rwnx_dbgfs_acsinfo_read(struct file *file,
                                            size_t count, loff_t *ppos)
 {
     struct rwnx_hw *priv = file->private_data;
-    #ifdef CONFIG_RWNX_FULLMAC
     struct wiphy *wiphy = priv->wiphy;
-    #endif //CONFIG_RWNX_FULLMAC
     //char buf[(SCAN_CHANNEL_MAX + 1) * 43];
     char *buf = NULL;
     ssize_t size = 0;
@@ -739,9 +674,7 @@ static ssize_t rwnx_dbgfs_oppps_write(struct file *file,
     if (sscanf(buf, "ctw=%d", &ctw) > 0) {
         /* Check if at least one VIF is configured as P2P GO */
         list_for_each_entry(rw_vif, &rw_hw->vifs, list) {
-#ifdef CONFIG_RWNX_FULLMAC
             if (RWNX_VIF_TYPE(rw_vif) == NL80211_IFTYPE_P2P_GO) {
-#endif /* CONFIG_RWNX_FULLMAC */
                 struct mm_set_p2p_oppps_cfm cfm;
 
                 /* Forward request to the embedded and wait for confirmation */
@@ -776,9 +709,7 @@ static ssize_t rwnx_dbgfs_noa_write(struct file *file,
                &noa_count, &interval, &duration, &dyn_noa) > 0) {
         /* Check if at least one VIF is configured as P2P GO */
         list_for_each_entry(rw_vif, &rw_hw->vifs, list) {
-#ifdef CONFIG_RWNX_FULLMAC
             if (RWNX_VIF_TYPE(rw_vif) == NL80211_IFTYPE_P2P_GO) {
-#endif /* CONFIG_RWNX_FULLMAC */
                 struct mm_set_p2p_noa_cfm cfm;
 
                 /* Forward request to the embedded and wait for confirmation */
@@ -1818,8 +1749,6 @@ static ssize_t rwnx_dbgfs_dbg_level_write(struct file *file,
 DEBUGFS_READ_WRITE_FILE_OPS(dbg_level);
 
 
-#ifdef CONFIG_RWNX_FULLMAC
-
 #define LINE_MAX_SZ 150
 
 struct st {
@@ -2444,9 +2373,6 @@ static ssize_t rwnx_dbgfs_last_rx_write(struct file *file,
 
 DEBUGFS_READ_WRITE_FILE_OPS(last_rx);
 
-#endif /* CONFIG_RWNX_FULLMAC */
-
-#ifdef CONFIG_RWNX_FULLMAC
 static void rwnx_rc_stat_work(struct work_struct *ws)
 {
     struct rwnx_debugfs *rwnx_debugfs = container_of(ws, struct rwnx_debugfs,
@@ -2610,14 +2536,11 @@ void rwnx_dbgfs_unregister_rc_stat(struct rwnx_hw *rwnx_hw, struct rwnx_sta *sta
 {
     _rwnx_dbgfs_rc_stat_write(&rwnx_hw->debugfs, sta->sta_idx);
 }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 int rwnx_dbgfs_register(struct rwnx_hw *rwnx_hw, const char *name)
 {
-#ifdef CONFIG_RWNX_FULLMAC
     struct dentry *phyd = rwnx_hw->wiphy->debugfsdir;
     struct dentry *dir_rc;
-#endif /* CONFIG_RWNX_FULLMAC */
     struct rwnx_debugfs *rwnx_debugfs = &rwnx_hw->debugfs;
     struct dentry *dir_drv, *dir_diags;
 
@@ -2630,7 +2553,6 @@ int rwnx_dbgfs_register(struct rwnx_hw *rwnx_hw, const char *name)
     if (!(dir_diags = debugfs_create_dir("diags", dir_drv)))
         goto err;
 
-#ifdef CONFIG_RWNX_FULLMAC
     if (!(dir_rc = debugfs_create_dir("rc", dir_drv)))
         goto err;
     rwnx_debugfs->dir_rc = dir_rc;
@@ -2638,7 +2560,6 @@ int rwnx_dbgfs_register(struct rwnx_hw *rwnx_hw, const char *name)
     INIT_LIST_HEAD(&rwnx_debugfs->rc_config_save);
     rwnx_debugfs->rc_write = rwnx_debugfs->rc_read = 0;
     memset(rwnx_debugfs->rc_sta, 0xFF, sizeof(rwnx_debugfs->rc_sta));
-#endif
 
     DEBUGFS_ADD_U32(tcp_pacing_shift, dir_drv, &rwnx_hw->tcp_pacing_shift,
                     S_IWUSR | S_IRUSR);
@@ -2711,16 +2632,12 @@ err:
 void rwnx_dbgfs_unregister(struct rwnx_hw *rwnx_hw)
 {
     struct rwnx_debugfs *rwnx_debugfs = &rwnx_hw->debugfs;
-#ifdef CONFIG_RWNX_FULLMAC
         struct rwnx_rc_config_save *cfg, *next;
-#endif
 
-#ifdef CONFIG_RWNX_FULLMAC
     list_for_each_entry_safe(cfg, next, &rwnx_debugfs->rc_config_save, list) {
         list_del(&cfg->list);
         kfree(cfg);
     }
-#endif /* CONFIG_RWNX_FULLMAC */
 
     if (rwnx_hw->fwlog_en)
         rwnx_fw_log_deinit(&rwnx_hw->debugfs.fw_log);
@@ -2729,9 +2646,7 @@ void rwnx_dbgfs_unregister(struct rwnx_hw *rwnx_hw)
         return;
 
     rwnx_debugfs->unregistering = true;
-#ifdef CONFIG_RWNX_FULLMAC
     flush_work(&rwnx_debugfs->rc_stat_work);
-#endif
     debugfs_remove_recursive(rwnx_hw->debugfs.dir);
     rwnx_hw->debugfs.dir = NULL;
 }

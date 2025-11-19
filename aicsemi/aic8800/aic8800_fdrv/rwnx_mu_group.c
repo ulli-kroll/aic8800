@@ -585,11 +585,7 @@ void rwnx_mu_group_sta_select(struct rwnx_hw *rwnx_hw)
         if (RWNX_VIF_TYPE(vif) != NL80211_IFTYPE_AP)
             continue;
 
-#ifdef CONFIG_RWNX_FULLMAC
         head = &vif->ap.sta_list;
-#else
-        head = &vif->stations;
-#endif /* CONFIG_RWNX_FULLMAC */
 
         memset(nb_users, 0, sizeof(nb_users));
         memset(traffic, 0, sizeof(traffic));

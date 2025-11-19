@@ -16,7 +16,6 @@
 
 #include <net/mac80211.h>
 
-#ifdef CONFIG_RWNX_FULLMAC
 /**
  * Fullmac TXQ configuration:
  *  - STA: 1 TXQ per TID (limited to 8)
@@ -99,8 +98,6 @@
 #define RWNX_NDEV_FLOW_CTRL_STOP    64
 /* restart netdev queue when number of queued buffers is lower than this */
 #define RWNX_NDEV_FLOW_CTRL_RESTART 64
-
-#endif /*  CONFIG_RWNX_FULLMAC */
 
 #define TXQ_INACTIVE 0xffff
 #if (NX_NB_TXQ >= TXQ_INACTIVE)
@@ -219,7 +216,6 @@ struct rwnx_txq {
     int nb_retry;
     u8 push_limit;
     u8 tid;
-#ifdef CONFIG_RWNX_FULLMAC
     struct rwnx_sta *sta;
     u8 ps_id;
     u16 ndev_idx;
@@ -228,7 +224,6 @@ struct rwnx_txq {
     struct rwnx_sw_txhdr *amsdu;
     u16 amsdu_len;
 #endif /* CONFIG_RWNX_AMSDUS_TX */
-#endif /* CONFIG_RWNX_FULLMAC */
 #ifdef CONFIG_RWNX_MUMIMO_TX
     u8 mumimo_info;
 #endif
@@ -271,13 +266,11 @@ static inline bool rwnx_txq_is_scheduled(struct rwnx_txq *txq)
  * @tid: int updated with the TXQ tid at each iteration
  * @rwnx_hw: main driver data
  */
-#if defined(CONFIG_RWNX_FULLMAC) /* CONFIG_RWNX_FULLMAC */
 #define foreach_sta_txq(sta, txq, tid, rwnx_hw)                          \
     for (tid = 0, txq = rwnx_txq_sta_get(sta, 0, rwnx_hw);               \
          tid < (is_multicast_sta(sta->sta_idx) ? 1 : NX_NB_TXQ_PER_STA); \
          tid++, txq++)
 
-#endif
 
 /**
  * foreach_sta_txq_prio - Macro to iterate over all TXQ of a STA in
@@ -291,12 +284,10 @@ static inline bool rwnx_txq_is_scheduled(struct rwnx_txq *txq)
  *
  * Note: For fullmac txq for mgmt frame is skipped
  */
-#ifdef CONFIG_RWNX_FULLMAC
 #define foreach_sta_txq_prio(sta, txq, tid, i, rwnx_hw)                          \
     for (i = 0, tid = nx_tid_prio[0], txq = rwnx_txq_sta_get(sta, tid, rwnx_hw); \
          i < NX_NB_TID_PER_STA;                                                  \
          i++, tid = nx_tid_prio[i], txq = rwnx_txq_sta_get(sta, tid, rwnx_hw))
-#endif
 
 /**
  * foreach_vif_txq - Macro to iterate over all TXQ of a VIF (in AC order)
@@ -310,11 +301,10 @@ static inline bool rwnx_txq_is_scheduled(struct rwnx_txq *txq)
          ac < NX_NB_TXQ_PER_VIF;                                        \
          ac++, txq++)
 
-#ifdef CONFIG_RWNX_FULLMAC
 struct rwnx_txq *rwnx_txq_sta_get(struct rwnx_sta *sta, u8 tid,
                                   struct rwnx_hw * rwnx_hw);
 struct rwnx_txq *rwnx_txq_vif_get(struct rwnx_vif *vif, u8 type);
-#endif /* CONFIG_RWNX_FULLMAC */
+
 
 /**
  * rwnx_txq_vif_get_status - return status bits related to the vif
@@ -333,7 +323,6 @@ void rwnx_txq_vif_deinit(struct rwnx_hw * rwnx_hw, struct rwnx_vif *vif);
 void rwnx_txq_sta_init(struct rwnx_hw * rwnx_hw, struct rwnx_sta *rwnx_sta,
                        u8 status);
 void rwnx_txq_sta_deinit(struct rwnx_hw * rwnx_hw, struct rwnx_sta *rwnx_sta);
-#ifdef CONFIG_RWNX_FULLMAC
 void rwnx_txq_unk_vif_init(struct rwnx_vif *rwnx_vif);
 void rwnx_txq_unk_vif_deinit(struct rwnx_vif *vif);
 void rwnx_txq_offchan_init(struct rwnx_vif *rwnx_vif);
@@ -344,7 +333,6 @@ void rwnx_txq_tdls_sta_start(struct rwnx_vif *rwnx_vif, u16 reason,
                              struct rwnx_hw *rwnx_hw);
 void rwnx_txq_tdls_sta_stop(struct rwnx_vif *rwnx_vif, u16 reason,
                             struct rwnx_hw *rwnx_hw);
-#endif
 
 
 void rwnx_txq_add_to_hw_list(struct rwnx_txq *txq);
@@ -356,7 +344,6 @@ void rwnx_txq_vif_start(struct rwnx_vif *vif, u16 reason,
 void rwnx_txq_vif_stop(struct rwnx_vif *vif, u16 reason,
                        struct rwnx_hw *rwnx_hw);
 
-#ifdef CONFIG_RWNX_FULLMAC
 void rwnx_txq_sta_start(struct rwnx_sta *sta, u16 reason,
                         struct rwnx_hw *rwnx_hw);
 void rwnx_txq_sta_stop(struct rwnx_sta *sta, u16 reason,
@@ -365,7 +352,6 @@ void rwnx_txq_offchan_start(struct rwnx_hw *rwnx_hw);
 void rwnx_txq_sta_switch_vif(struct rwnx_sta *sta, struct rwnx_vif *old_vif,
                              struct rwnx_vif *new_vif);
 
-#endif /* CONFIG_RWNX_FULLMAC */
 
 int rwnx_txq_queue_skb(struct sk_buff *skb, struct rwnx_txq *txq,
                        struct rwnx_hw *rwnx_hw,  bool retry);

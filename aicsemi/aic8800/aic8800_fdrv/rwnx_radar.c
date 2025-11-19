@@ -1289,12 +1289,10 @@ static u16 rwnx_radar_get_center_freq(struct rwnx_hw *rwnx_hw, u8 chain)
         return rwnx_hw->phy.sec_chan.center_freq1;
 
     if (chain == RWNX_RADAR_RIU) {
-#ifdef CONFIG_RWNX_FULLMAC
         if (!rwnx_chanctx_valid(rwnx_hw, rwnx_hw->cur_chanctx)) {
             WARN(1, "Radar pulse without channel information");
         } else
             return rwnx_hw->chanctx_table[rwnx_hw->cur_chanctx].chan_def.center_freq1;
-#endif /* CONFIG_RWNX_FULLMAC */
     }
 
     return 0;
@@ -1302,7 +1300,6 @@ static u16 rwnx_radar_get_center_freq(struct rwnx_hw *rwnx_hw, u8 chain)
 
 static void rwnx_radar_detected(struct rwnx_hw *rwnx_hw)
 {
-#ifdef CONFIG_RWNX_FULLMAC
     struct cfg80211_chan_def chan_def;
 
     RWNX_DBG(RWNX_FN_ENTRY_STR);
@@ -1322,7 +1319,6 @@ static void rwnx_radar_detected(struct rwnx_hw *rwnx_hw)
     rwnx_radar_cancel_cac(&rwnx_hw->radar);
     cfg80211_radar_event(rwnx_hw->wiphy, &chan_def, GFP_KERNEL);
 
-#endif /* CONFIG_RWNX_FULLMAC */
 }
 
 static void rwnx_radar_process_pulse(struct work_struct *ws)
@@ -1462,7 +1458,6 @@ static void rwnx_radar_process_pulse(struct work_struct *ws)
     }
 }
 
-#ifdef CONFIG_RWNX_FULLMAC
 static void rwnx_radar_cac_work(struct work_struct *ws)
 {
     struct delayed_work *dw = container_of(ws, struct delayed_work, work);
@@ -1490,7 +1485,6 @@ static void rwnx_radar_cac_work(struct work_struct *ws)
 
     radar->cac_vif = NULL;
 }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 
 void rwnx_radar_reset_rmem(struct rwnx_radar *radar)
@@ -1543,10 +1537,8 @@ bool rwnx_radar_detection_init(struct rwnx_radar *radar)
     }
 
     INIT_WORK(&radar->detection_work, rwnx_radar_process_pulse);
-#ifdef CONFIG_RWNX_FULLMAC
     INIT_DELAYED_WORK(&radar->cac_work, rwnx_radar_cac_work);
     radar->cac_vif = NULL;
-#endif /* CONFIG_RWNX_FULLMAC */
     return true;
 }
 
@@ -1596,7 +1588,6 @@ bool rwnx_radar_detection_is_enable(struct rwnx_radar *radar, u8 chain)
     return radar->dpd[chain]->enabled != RWNX_RADAR_DETECT_DISABLE;
 }
 
-#ifdef CONFIG_RWNX_FULLMAC
 void rwnx_radar_start_cac(struct rwnx_radar *radar, u32 cac_time_ms,
                           struct rwnx_vif *vif)
 {
@@ -1651,7 +1642,6 @@ void rwnx_radar_detection_enable_on_cur_channel(struct rwnx_hw *rwnx_hw)
                                     RWNX_RADAR_RIU);
     }
 }
-#endif /* CONFIG_RWNX_FULLMAC */
 
 /*****************************************************************************
  * Debug functions

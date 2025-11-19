@@ -153,7 +153,6 @@ struct rwnx_debugfs {
 
     struct rwnx_fw_log fw_log;
 
-#ifdef CONFIG_RWNX_FULLMAC
     struct work_struct rc_stat_work;
     uint8_t rc_sta[NX_REMOTE_STA_MAX];
     uint8_t rc_write;
@@ -162,10 +161,7 @@ struct rwnx_debugfs {
     struct dentry *dir_sta[NX_REMOTE_STA_MAX];
     int rc_config[NX_REMOTE_STA_MAX];
     struct list_head rc_config_save;
-#endif
 };
-
-#ifdef CONFIG_RWNX_FULLMAC
 
 // Max duration in msecs to save rate config for a sta after disconnection
 #define RC_CONFIG_DUR 600000
@@ -176,14 +172,11 @@ struct rwnx_rc_config_save {
     int rate;
     u8 mac_addr[ETH_ALEN];
 };
-#endif
 
 int rwnx_dbgfs_register(struct rwnx_hw *rwnx_hw, const char *name);
 void rwnx_dbgfs_unregister(struct rwnx_hw *rwnx_hw);
-#ifdef CONFIG_RWNX_FULLMAC
 void rwnx_dbgfs_register_rc_stat(struct rwnx_hw *rwnx_hw, struct rwnx_sta *sta);
 void rwnx_dbgfs_unregister_rc_stat(struct rwnx_hw *rwnx_hw, struct rwnx_sta *sta);
-#endif
 #else
 
 struct rwnx_debugfs {
@@ -191,10 +184,8 @@ struct rwnx_debugfs {
 
 static inline int rwnx_dbgfs_register(struct rwnx_hw *rwnx_hw, const char *name) { return 0; }
 static inline void rwnx_dbgfs_unregister(struct rwnx_hw *rwnx_hw) {}
-#ifdef CONFIG_RWNX_FULLMAC
 static inline void rwnx_dbgfs_register_rc_stat(struct rwnx_hw *rwnx_hw, struct rwnx_sta *sta)  {}
 static inline void rwnx_dbgfs_unregister_rc_stat(struct rwnx_hw *rwnx_hw, struct rwnx_sta *sta)  {}
-#endif
 #endif /* CONFIG_RWNX_DEBUGFS */
 
 

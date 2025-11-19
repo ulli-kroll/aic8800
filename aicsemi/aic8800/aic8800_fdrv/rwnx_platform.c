@@ -1650,9 +1650,7 @@ static void rwnx_term_restore_config(struct rwnx_plat *rwnx_plat,
 static int rwnx_check_fw_compatibility(struct rwnx_hw *rwnx_hw)
 {
     struct ipc_shared_env_tag *shared = rwnx_hw->ipc_env->shared;
-    #ifdef CONFIG_RWNX_FULLMAC
     struct wiphy *wiphy = rwnx_hw->wiphy;
-    #endif //CONFIG_RWNX_FULLMAC
     #ifdef CONFIG_RWNX_OLD_IPC
     int ipc_shared_version = 10;
     #else //CONFIG_RWNX_OLD_IPC
@@ -1683,7 +1681,6 @@ static int rwnx_check_fw_compatibility(struct rwnx_hw *rwnx_hw)
         res = -1;
     }
 
-    #ifdef CONFIG_RWNX_FULLMAC
     if(shared->comp_info.rxdesc_cnt != IPC_RXDESC_CNT)
     {
         wiphy_err(wiphy, "Different number of shared descriptors available for Data RX handling "\
@@ -1691,7 +1688,6 @@ static int rwnx_check_fw_compatibility(struct rwnx_hw *rwnx_hw)
                   shared->comp_info.rxdesc_cnt);
         res = -1;
     }
-    #endif /* CONFIG_RWNX_FULLMAC */
 
     if(shared->comp_info.rxbuf_cnt != IPC_RXBUF_CNT)
     {
@@ -3457,7 +3453,6 @@ int rwnx_platform_init(struct rwnx_plat *rwnx_plat, void **platform_data)
     rwnx_plat->wait_disconnect_cb = false;
     g_rwnx_plat = rwnx_plat;
 
-#if defined CONFIG_RWNX_FULLMAC
     AICWFDBG(LOGINFO, "%s rwnx_cfg80211_init enter \r\n", __func__);
     ret = rwnx_cfg80211_init(rwnx_plat, platform_data);
     AICWFDBG(LOGINFO, "%s rwnx_cfg80211_init exit \r\n", __func__);
@@ -3477,7 +3472,6 @@ int rwnx_platform_init(struct rwnx_plat *rwnx_plat, void **platform_data)
 #endif
 
     return ret;
-#endif
 }
 
 /**
@@ -3491,9 +3485,7 @@ void rwnx_platform_deinit(struct rwnx_hw *rwnx_hw)
 {
     RWNX_DBG(RWNX_FN_ENTRY_STR);
 
-#if defined CONFIG_RWNX_FULLMAC
     rwnx_cfg80211_deinit(rwnx_hw);
-#endif
 }
 
 /**

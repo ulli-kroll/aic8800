@@ -55,12 +55,8 @@ enum
     TASK_RXU,
     /// RM task
     TASK_RM,
-#if defined CONFIG_RWNX_FULLMAC
     // This is used to define the last task that is running on the EMB processor
     TASK_LAST_EMB = TASK_RM,
-#else
-#error "Need to define SOFTMAC or FULLMAC"
-#endif
     // nX API task
     TASK_API,
     TASK_MAX,

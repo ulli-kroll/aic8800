@@ -84,7 +84,6 @@ int rwnx_bfmer_report_add(struct rwnx_hw *rwnx_hw, struct rwnx_sta *rwnx_sta,
  */
 void rwnx_bfmer_report_del(struct rwnx_hw *rwnx_hw, struct rwnx_sta *rwnx_sta);
 
-#ifdef CONFIG_RWNX_FULLMAC
 /**
  ******************************************************************************
  * @brief Parse a Rx VHT-MCS map in order to deduce the maximum number of
@@ -95,6 +94,5 @@ void rwnx_bfmer_report_del(struct rwnx_hw *rwnx_hw, struct rwnx_sta *rwnx_sta);
  ******************************************************************************
  */
 u8 rwnx_bfmer_get_rx_nss(const struct ieee80211_vht_cap *vht_capa);
-#endif /* CONFIG_RWNX_FULLMAC */
 
 #endif /* _RWNX_BFMER_H_ */
