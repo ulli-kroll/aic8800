@@ -12,7 +12,6 @@
 #include "rwnx_tx.h"
 #include "ipc_host.h"
 #include "rwnx_events.h"
-#include "rwnx_gki.h"
 
 /******************************************************************************
  * Utils functions

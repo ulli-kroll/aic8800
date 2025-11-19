@@ -107,7 +107,6 @@ CONFIG_PREALLOC_TXQ ?= y
 CONFIG_DPD = y
 CONFIG_FORCE_DPD_CALIB = y
 CONFIG_LOFT_CALIB = n
-CONFIG_GKI = n
 CONFIG_SCHED_SCAN = n
 CONFIG_TEMP_COMP = n
 CONFIG_POWER_LIMIT = n
@@ -208,9 +207,6 @@ aic8800_fdrv-$(CONFIG_USB_SUPPORT)     += \
 	aicsemi/aic8800/aic8800_fdrv/usb_host.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_txrxif.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_usb.o
-
-aic8800_fdrv-$(CONFIG_GKI) += \
-	aicsemi/aic8800/aic8800_fdrv/rwnx_gki.o
 
 aic_load_fw-y := \
 	aicsemi/aic8800/aic_load_fw/aic_bluetooth_main.o \
@@ -343,7 +339,6 @@ ccflags-$(CONFIG_PREALLOC_TXQ) += -DCONFIG_PREALLOC_TXQ
 ccflags-$(CONFIG_DPD) += -DCONFIG_DPD
 ccflags-$(CONFIG_FORCE_DPD_CALIB) += -DCONFIG_FORCE_DPD_CALIB -DCONFIG_DPD
 ccflags-$(CONFIG_LOFT_CALIB) += -DCONFIG_LOFT_CALIB
-ccflags-$(CONFIG_GKI) += -DCONFIG_GKI
 ccflags-$(CONFIG_SCHED_SCAN) += -DCONFIG_SCHED_SCAN
 ccflags-$(CONFIG_FILTER_TCP_ACK) += -DCONFIG_FILTER_TCP_ACK
 ccflags-$(CONFIG_TEMP_COMP) += -DCONFIG_TEMP_COMP
