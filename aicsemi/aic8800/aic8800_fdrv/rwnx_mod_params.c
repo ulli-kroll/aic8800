@@ -1361,7 +1361,7 @@ void rwnx_custregd(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 // registration (in rwnx_set_wiphy_params()), so nothing has to be done here
 
     /* From kernel 6.5.0, this bit is removed and will be reused later */
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 39) || LINUX_VERSION_CODE > KERNEL_VERSION(6, 2, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0)) && (LINUX_VERSION_CODE > KERNEL_VERSION(6, 2, 0))
     wiphy->regulatory_flags |= REGULATORY_IGNORE_STALE_KICKOFF;
 #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0) */
     wiphy->regulatory_flags |= REGULATORY_WIPHY_SELF_MANAGED;
