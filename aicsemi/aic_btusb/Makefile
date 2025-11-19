@@ -22,11 +22,6 @@ ccflags-$(CONFIG_USE_FW_REQUEST) += -DCONFIG_USE_FW_REQUEST
 CONFIG_PLATFORM_UBUNTU ?= y
 
 
-# MTK linux platform use bluedroid
-CONFIG_PLATFORM_MTK_LINUX ?= n
-
-
-
 ifeq ($(CONFIG_PLATFORM_UBUNTU), y)
 ccflags-$(CONFIG_PLATFORM_UBUNTU) += -DCONFIG_PLATFORM_UBUNTU
 KDIR  := /lib/modules/$(shell uname -r)/build
@@ -36,10 +31,6 @@ MODDESTDIR := /lib/modules/$(KVER)/kernel/drivers/net/wireless/aic8800
 SUBARCH = $(shell uname -m | sed -e s/i.86/i386/ -e s/armv.l/arm/ -e s/aarch64/arm64/)
 ARCH ?= $(SUBARCH)
 CROSS_COMPILE :=
-endif
-
-ifeq ($(CONFIG_PLATFORM_MTK_LINUX), y)
-        ccflags-$(CONFIG_PLATFORM_MTK_LINUX) += -DCONFIG_PLATFORM_MTK_LINUX
 endif
 
 all: modules
