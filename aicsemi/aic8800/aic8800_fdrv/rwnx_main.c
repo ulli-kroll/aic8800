@@ -4681,9 +4681,7 @@ static int rwnx_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 static int rwnx_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
                                  struct ieee80211_channel *channel, bool offchan,
                                  unsigned int wait, const u8* buf, size_t len,
-                            #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 2, 0))
                                  bool no_cck,
-                            #endif
                             #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 3, 0))
                                  bool dont_wait_for_ack,
                             #endif
