@@ -26,9 +26,7 @@
 /* Generic */
 #include <linux/bitfield.h>
 
-#if LINUX_VERSION_CODE > KERNEL_VERSION(5, 15, 60)
 #define IEEE80211_MAX_AMPDU_BUF IEEE80211_MAX_AMPDU_BUF_HE
-#endif
 
 #define CCFS0(vht) vht->center_freq_seg0_idx
 #define CCFS1(vht) vht->center_freq_seg1_idx
