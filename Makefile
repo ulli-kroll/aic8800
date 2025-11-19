@@ -104,7 +104,6 @@ CONFIG_ONE_TXQ = n
 CONFIG_PER_STA_FC = n
 CONFIG_PREALLOC_RX_SKB ?= n
 CONFIG_PREALLOC_TXQ ?= y
-CONFIG_USE_WIRELESS_EXT = y
 CONFIG_DPD = y
 CONFIG_FORCE_DPD_CALIB = y
 CONFIG_LOFT_CALIB = n
@@ -122,10 +121,6 @@ CONFIG_BAND_STEERING = n
 
 #support D80X2 can write rf result to file
 CONFIG_WRITE_FILE_D80X2 = n
-
-ifneq ($(CONFIG_WIRELESS_EXT), y)
-CONFIG_USE_WIRELESS_EXT = n
-endif
 
 ifeq ($(CONFIG_EXT_FEM_8800DCDW), y)
 CONFIG_DPD = n
@@ -213,9 +208,6 @@ aic8800_fdrv-$(CONFIG_USB_SUPPORT)     += \
 	aicsemi/aic8800/aic8800_fdrv/usb_host.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_txrxif.o \
 	aicsemi/aic8800/aic8800_fdrv/aicwf_usb.o
-
-aic8800_fdrv-$(CONFIG_USE_WIRELESS_EXT) += \
-	aicsemi/aic8800/aic8800_fdrv/aicwf_wext_linux.o
 
 aic8800_fdrv-$(CONFIG_GKI) += \
 	aicsemi/aic8800/aic8800_fdrv/rwnx_gki.o
@@ -348,7 +340,6 @@ ccflags-$(CONFIG_ONE_TXQ)  += -DCONFIG_ONE_TXQ
 ccflags-$(CONFIG_PER_STA_FC)  += -DCONFIG_PER_STA_FC
 ccflags-$(CONFIG_PREALLOC_RX_SKB) += -DCONFIG_PREALLOC_RX_SKB
 ccflags-$(CONFIG_PREALLOC_TXQ) += -DCONFIG_PREALLOC_TXQ
-ccflags-$(CONFIG_USE_WIRELESS_EXT) += -DCONFIG_USE_WIRELESS_EXT
 ccflags-$(CONFIG_DPD) += -DCONFIG_DPD
 ccflags-$(CONFIG_FORCE_DPD_CALIB) += -DCONFIG_FORCE_DPD_CALIB -DCONFIG_DPD
 ccflags-$(CONFIG_LOFT_CALIB) += -DCONFIG_LOFT_CALIB

@@ -279,10 +279,6 @@ void rwnx_get_countrycode_channels(struct wiphy *wiphy,
 	int end_freq = 0;
 	int center_freq = 0;
 	char channel[4];
-#ifdef CONFIG_USE_WIRELESS_EXT
-	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
-	int support_freqs_counter = 0; 
-#endif
 
 	band_num = NUM_NL80211_BANDS;
 
@@ -301,27 +297,21 @@ void rwnx_get_countrycode_channels(struct wiphy *wiphy,
 				end_freq = regdomain->reg_rules[rule_index].freq_range.end_freq_khz/1000;
 				center_freq = sband->channels[channel_index].center_freq;
 				if((center_freq - 10) >= start_freq && (center_freq + 10) <= end_freq){
-#ifdef CONFIG_USE_WIRELESS_EXT
-					rwnx_hw->support_freqs[support_freqs_counter++] = center_freq;
-#endif
 					sprintf(channel, "%d",ieee80211_frequency_to_channel(center_freq));
-					
+
 					memcpy(ccode_channels + index_for_channel_list, channel, strlen(channel));
-					
+
 					index_for_channel_list += strlen(channel);
-					
+
 					memcpy(ccode_channels + index_for_channel_list, " ", 1);
-					
+
 					index_for_channel_list += 1;
 					break;
-					
+
 				}
 			}
 		}
 	}
-#ifdef CONFIG_USE_WIRELESS_EXT
-	rwnx_hw->support_freqs_number = support_freqs_counter;
-#endif
 	AICWFDBG(LOGINFO, "%s support channel:%s\r\n", __func__, ccode_channels);
 }
 

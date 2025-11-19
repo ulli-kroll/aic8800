@@ -3673,10 +3673,6 @@ int rwnx_send_sm_connect_req(struct rwnx_hw *rwnx_hw,
     if (rwnx_vif->wep_enabled) {
         rwnx_vif->last_auth_type = sme->auth_type;
     }
-#ifdef CONFIG_USE_WIRELESS_EXT
-	memset(rwnx_hw->wext_essid, 0, 33);
-	memcpy(rwnx_hw->wext_essid, sme->ssid, (int)sme->ssid_len);
-#endif
 
 	rwnx_vif->sta.ssid_len = (int)sme->ssid_len;
 	memset(rwnx_vif->sta.ssid, 0, rwnx_vif->sta.ssid_len + 1);

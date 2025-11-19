@@ -25,9 +25,6 @@
 #include "rwnx_events.h"
 #include "rwnx_compat.h"
 #include "aicwf_txrxif.h"
-#ifdef CONFIG_USE_WIRELESS_EXT
-#include "aicwf_wext_linux.h"
-#endif
 void rwnx_cfg80211_unlink_bss(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif);
 
 static int rwnx_freq_to_idx(struct rwnx_hw *rwnx_hw, int freq)
@@ -657,11 +654,7 @@ static inline int rwnx_rx_scanu_start_cfm(struct rwnx_hw *rwnx_hw,
 #ifdef CONFIG_SCHED_SCAN
         && !rwnx_hw->is_sched_scan
 #endif//CONFIG_SCHED_SCAN
-#ifdef CONFIG_USE_WIRELESS_EXT
-		&& !rwnx_hw->wext_scan) {
-#else
 		){
-#endif
 
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
@@ -672,16 +665,6 @@ static inline int rwnx_rx_scanu_start_cfm(struct rwnx_hw *rwnx_hw,
     } 
 
 
-#ifdef CONFIG_USE_WIRELESS_EXT
-	else if(rwnx_hw->wext_scan){
-    	rwnx_hw->wext_scan = 0;
-		AICWFDBG(LOGDEBUG, "%s rwnx_hw->wext_scan done!!\r\n", __func__);
-		if(rwnx_hw->scan_request){
-			vfree(rwnx_hw->scan_request);
-		}
-		complete(&rwnx_hw->wext_scan_com);
-	}
-#endif
 	else {
         AICWFDBG(LOGERROR, "%s rwnx_hw->scan_request is NULL!!\r\n", __func__);
     }
@@ -727,11 +710,6 @@ static inline int rwnx_rx_scanu_result_ind(struct rwnx_hw *rwnx_hw,
 	int ssid_len = 0;
 	int freq = 0;
 #endif
-
-#ifdef CONFIG_USE_WIRELESS_EXT
-	struct scanu_result_wext *scan_re_wext;
-#endif
-
 
     RWNX_DBG(RWNX_FN_ENTRY_STR);
 	
@@ -788,31 +766,6 @@ static inline int rwnx_rx_scanu_result_ind(struct rwnx_hw *rwnx_hw,
         //print scan result info end
 #endif
 
-#ifdef CONFIG_USE_WIRELESS_EXT
-		if(rwnx_hw->wext_scan){
-			list_for_each_entry(scan_re_wext, &rwnx_hw->wext_scanre_list, scanu_re_list) {
-				if (!memcmp(scan_re_wext->bss->bssid, bss->bssid, ETH_ALEN)) {
-					AICWFDBG(LOGDEBUG, "%s: BSSID already exists, no need to add again\r\n", __func__);
-					goto putbss;
-				}
-			}
-			scan_re_wext = (struct scanu_result_wext *)vmalloc(sizeof(struct scanu_result_wext));
-			scan_re_wext->ind = (struct scanu_result_ind *)vmalloc(sizeof(struct scanu_result_ind));
-			scan_re_wext->payload = (u32_l *)vmalloc(sizeof(u32_l) * ind->length);
-
-			memset(scan_re_wext->ind, 0, sizeof(struct scanu_result_ind));
-			memset(scan_re_wext->payload, 0, ind->length);
-			
-			memcpy(scan_re_wext->ind, ind, sizeof(struct scanu_result_ind));
-			memcpy(scan_re_wext->payload, ind->payload, ind->length);
-	
-			scan_re_wext->bss = bss;
-
-			INIT_LIST_HEAD(&scan_re_wext->scanu_re_list);
-			list_add_tail(&scan_re_wext->scanu_re_list, &rwnx_hw->wext_scanre_list);
-			return 0;
-		}
-#endif
 
     }
 putbss:
