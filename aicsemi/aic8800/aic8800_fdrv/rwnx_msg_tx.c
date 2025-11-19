@@ -2309,10 +2309,7 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
 	struct ieee80211_sta_ht_cap *ht_cap;
 	struct ieee80211_sta_vht_cap *vht_cap;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
     struct ieee80211_sta_he_cap const *he_cap;
-#else
-#endif
     //uint8_t *ht_mcs = (uint8_t *)&ht_cap->mcs;
     uint8_t *ht_mcs;
     int i;
@@ -2356,11 +2353,8 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
     	req->vht_cap.tx_mcs_map = cpu_to_le16(vht_cap->vht_mcs.tx_mcs_map);
     }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
     if (wiphy->bands[NL80211_BAND_2GHZ]->iftype_data != NULL) {
         he_cap = &wiphy->bands[NL80211_BAND_2GHZ]->iftype_data->he_cap;
-    #endif
 		req->he_supp = he_cap->has_he;
 
 		for (i = 0; i < ARRAY_SIZE(he_cap->he_cap_elem.mac_cap_info); i++) {
@@ -2381,10 +2375,6 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
 		req->he_ul_on = rwnx_hw->mod_params->he_ul_on;
 	}
 
-#else
-    req->he_supp = false;
-    req->he_ul_on = false;
-#endif
     req->ps_on = rwnx_hw->mod_params->ps_on;
     req->dpsm = rwnx_hw->mod_params->dpsm;
     req->tx_lft = rwnx_hw->mod_params->tx_lft;
@@ -2530,7 +2520,7 @@ int rwnx_send_me_set_control_port_req(struct rwnx_hw *rwnx_hw, bool opened, u8 s
     return rwnx_send_msg(rwnx_hw, req, 1, ME_SET_CONTROL_PORT_CFM, NULL);
 }
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0))
+#if (1 && LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0))
 struct ieee80211_he_cap_elem_4_19 {
 	u8 mac_cap_info[6];
 	u8 phy_cap_info[11];
@@ -2594,7 +2584,6 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
 
 	AICWFDBG(LOGDEBUG,"rx map %x  rx high %x tx map %x tx high %x \n",req->vht_cap.rx_mcs_map,req->vht_cap.rx_highest,req->vht_cap.tx_mcs_map,req->vht_cap.tx_highest);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	if (link_sta_params->he_capa) {
 	#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
 		const struct ieee80211_he_cap_elem_4_19 *he_capa = (const struct ieee80211_he_cap_elem_4_19 *) link_sta_params->he_capa;
@@ -2618,8 +2607,6 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
         req->he_cap.mcs_supp.rx_mcs_80p80 = mcs_nss_supp->rx_mcs_80p80;
         req->he_cap.mcs_supp.tx_mcs_80p80 = mcs_nss_supp->tx_mcs_80p80;
     }
-#else
-#endif
 
 	AICWFDBG(LOGDEBUG,"rwnx sta add he mcs/nss rx mcs 80 0x%04x \n",le16_to_cpu(req->he_cap.mcs_supp.rx_mcs_80));
 	AICWFDBG(LOGDEBUG,"rwnx sta add he mcs/nss tx mcs 80 0x%04x \n",le16_to_cpu(req->he_cap.mcs_supp.tx_mcs_80));
