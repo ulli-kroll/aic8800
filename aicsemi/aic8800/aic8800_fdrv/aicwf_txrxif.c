@@ -119,20 +119,15 @@ int aicwf_bus_init(uint bus_hdrlen, struct device *dev)
 
 #if 1
 	//waiting for rx/tx thread init finish
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0)
 	while(bus_if->busrx_thread->__state != TASK_INTERRUPTIBLE ||
 		bus_if->bustx_thread->__state != TASK_INTERRUPTIBLE)
-#else
-	while(bus_if->busrx_thread->state != TASK_INTERRUPTIBLE ||
-		bus_if->bustx_thread->state != TASK_INTERRUPTIBLE)
-#endif
 	{
 		AICWFDBG(LOGINFO, "%s waiting for rx/tx thread init finish \r\n", __func__);
 		msleep(100);
 	}
 	//waiting for rx/tx thread Initialization finish
 #endif
-	
+
 #ifdef CONFIG_USB_MSG_IN_EP
 	if(bus_if->bus_priv.usb->msg_in_pipe)
 	{
