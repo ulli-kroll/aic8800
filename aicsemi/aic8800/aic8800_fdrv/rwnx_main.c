@@ -1026,11 +1026,7 @@ static void rwnx_csa_finish(struct work_struct *ws)
         } else
             rwnx_txq_vif_stop(vif, RWNX_TXQ_STOP_CHAN, rwnx_hw);
         spin_unlock_bh(&rwnx_hw->cb_lock);
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0))
 		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0);
-#else
-		cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0, 0);
-#endif
         wiphy_unlock(rwnx_hw->wiphy);
     }
     rwnx_del_csa(vif);
@@ -4436,11 +4432,7 @@ int rwnx_cfg80211_channel_switch(struct wiphy *wiphy,
         goto end;
     } else {
         INIT_WORK(&csa->work, rwnx_csa_finish);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0)
 	cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false);
-#else
-	cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false, 0);
-#endif
 
     }
 
