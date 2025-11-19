@@ -63,13 +63,8 @@
 #endif /* CONFIG_VENDOR_RWNX_AMSDUS_TX */
 
 /* NET */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
-#define rwnx_select_queue(dev, skb, sb_dev) \
-    rwnx_select_queue(dev, skb, sb_dev, select_queue_fallback_t fallback)
-#else
 #define rwnx_select_queue(dev, skb, sb_dev) \
     rwnx_select_queue(dev, skb, sb_dev)
-#endif
 
 #if (0) && !(defined CONFIG_VENDOR_RWNX)
 #define sk_pacing_shift_update(sk, shift)
