@@ -70,28 +70,24 @@ static int __init init_extenal_ioctl(void){
 
 	printk("%s enter\r\n", __func__);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
 		ioctl_char_class = class_create(IOCTL_CHAR_DEVICE_NAME);
-#else
-		ioctl_char_class = class_create(THIS_MODULE, IOCTL_CHAR_DEVICE_NAME);
-#endif
 		if (IS_ERR(ioctl_char_class)) {
 			printk("Failed to create ioctl char class");
 		}
-	
+
 		res = alloc_chrdev_region(&ioctl_devid, 0, 1, IOCTL_CHAR_DEVICE_NAME);
 		if (res < 0) {
 			printk("Failed to allocate ioctl char device");
 			goto err_alloc;
 		}
-	
+
 		dev = device_create(ioctl_char_class, NULL, ioctl_devid, NULL, IOCTL_CHAR_DEVICE_NAME);
 		if (IS_ERR(dev)) {
 			printk("Failed to create ioctl char device");
 			res = PTR_ERR(dev);
 			goto err_create;
 		}
-	
+
 		cdev_init(&ioctl_char_dev, &ioctl_chrdev_ops);
 		res = cdev_add(&ioctl_char_dev, ioctl_devid, 1);
 		if (res < 0) {
@@ -100,7 +96,7 @@ static int __init init_extenal_ioctl(void){
 		}
 
 		return res;
-	
+
 err_add:
 		device_destroy(ioctl_char_class, ioctl_devid);
 err_create:
