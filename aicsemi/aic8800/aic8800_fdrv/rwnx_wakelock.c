@@ -30,11 +30,7 @@ void rwnx_wakeup_deinit(struct wakeup_source *ws)
 struct wakeup_source *rwnx_wakeup_register(struct device *dev, const char *name)
 {
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
 	return wakeup_source_register(dev, name);
-#else
-
-#endif//LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
 }
 
 void rwnx_wakeup_unregister(struct wakeup_source *ws)

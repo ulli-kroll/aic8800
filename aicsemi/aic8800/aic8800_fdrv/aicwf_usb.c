@@ -32,11 +32,7 @@ extern atomic_t aicwf_deinit_atomic;
 
 #ifdef CONFIG_TXRX_THREAD_PRIO
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0))
 #include "uapi/linux/sched/types.h"
-#else
-#include "linux/sched/types.h"
-#endif
 
 int bustx_thread_prio = 1;
 module_param(bustx_thread_prio, int, 0);
