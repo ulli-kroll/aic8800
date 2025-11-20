@@ -3827,9 +3827,6 @@ static int rwnx_cfg80211_start_ap(struct wiphy *wiphy, struct net_device *dev,
             rwnx_vif->ap.bcmc_index = apm_start_cfm.bcmc_idx;
             rwnx_vif->ap.flags = 0;
 	    rwnx_vif->ap.csa = NULL;
-            #if (defined CONFIG_VHT_FOR_OLD_KERNEL)
-            rwnx_vif->ap.aic_index = 0;
-            #endif
 #ifdef CONFIG_BAND_STEERING
 			rwnx_vif->ap.band = (enum band_type)((settings->chandef).chan)->band;
 			rwnx_vif->ap.freq = ((settings->chandef).chan)->center_freq;

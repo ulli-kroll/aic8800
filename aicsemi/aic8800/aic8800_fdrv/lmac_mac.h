@@ -462,7 +462,7 @@ enum mac_connection_flags
 	REASSOCIATION = BIT(5),
 };
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
 struct ieee80211_vht_mcs_info {
 	__le16 rx_mcs_map;
 	__le16 rx_highest;

@@ -103,17 +103,7 @@
 #define IEEE80211_HE_PHY_CAP3_RX_HE_MU_PPDU_FROM_NON_AP_STA 0x40
 #endif
 
-#if defined(CONFIG_VHT_FOR_OLD_KERNEL)
-enum nl80211_ac {
-        NL80211_AC_VO,
-        NL80211_AC_VI,
-        NL80211_AC_BE,
-        NL80211_AC_BK,
-        NL80211_NUM_ACS
-};
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
 struct ieee80211_vht_operation {
         u8 vht_op_info_chwidth;
         u8 vht_op_info_chan_center_freq_seg1_idx;
@@ -127,7 +117,7 @@ struct ieee80211_vht_operation {
 #define IEEE80211_RADIOTAP_AMPDU_STATUS 20
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
 #define IEEE80211_RADIOTAP_VHT                                  21
 #define IEEE80211_RADIOTAP_VHT_KNOWN_GI                         0x0004
 #define IEEE80211_RADIOTAP_VHT_KNOWN_BANDWIDTH                  0x0040
@@ -438,9 +428,6 @@ struct rwnx_vif {
             struct list_head sta_list; /* List of STA connected to the AP */
             struct rwnx_bcn bcn;       /* beacon */
             u8 bcmc_index;             /* Index of the BCMC sta to use */
-            #if (defined CONFIG_VHT_FOR_OLD_KERNEL)
-			u8 aic_index;
-            #endif
             struct rwnx_csa *csa;
 
             struct list_head mpath_list; /* List of Mesh Paths used on this interface */
@@ -532,22 +519,6 @@ struct rwnx_sta_stats {
     u32 tx_ack_fail_stat;
     u32 last_chan_tx_busy_time;
 };
-
-#if (defined CONFIG_VHT_FOR_OLD_KERNEL)
-struct aic_sta {
-    u8 sta_idx;            /* Identifier of the station */
-	bool he;               /* Flag indicating if the station supports HE */
-    bool vht;               /* Flag indicating if the station supports VHT */
-
-	struct ieee80211_he_cap_elem he_cap_elem;
-	struct ieee80211_he_mcs_nss_supp he_mcs_nss_supp;
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0) || defined(CONFIG_VHT_FOR_OLD_KERNEL)
-	__le32 vht_cap_info;
-	struct ieee80211_vht_mcs_info supp_mcs;
-#endif
-};
-#endif
 
 /*
  * Structure used to save information relative to the managed stations.
@@ -834,7 +805,7 @@ struct rwnx_hw {
     struct workqueue_struct *apmStaloss_wq;
     u8 apm_vif_idx;
     u8 sta_mac_addr[6];
-    
+
     struct wakeup_source *ws_rx;
     struct wakeup_source *ws_irqrx;
     struct wakeup_source *ws_tx;
@@ -842,7 +813,7 @@ struct rwnx_hw {
 
 #ifdef CONFIG_SCHED_SCAN
         bool is_sched_scan;
-#endif//CONFIG_SCHED_SCAN 
+#endif//CONFIG_SCHED_SCAN
 
 	struct sta_tx_flowctrl sta_flowctrl[NX_REMOTE_STA_MAX];
 #if 0
@@ -852,11 +823,6 @@ struct rwnx_hw {
     struct mac_chan_op ap_chan;
     struct ieee80211_channel set_chan;
 #endif
-#ifdef CONFIG_VHT_FOR_OLD_KERNEL
-    struct ieee80211_sta_vht_cap vht_cap_2G;
-    struct ieee80211_sta_vht_cap vht_cap_5G;
-#endif
-
 #ifdef CONFIG_BAND_STEERING
 	u8_l iface_idx;
 	struct tmp_feature_sta feature_table[NX_REMOTE_STA_MAX + NX_VIRT_DEV_MAX];
