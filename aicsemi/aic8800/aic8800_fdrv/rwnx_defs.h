@@ -438,7 +438,7 @@ struct rwnx_vif {
             struct list_head sta_list; /* List of STA connected to the AP */
             struct rwnx_bcn bcn;       /* beacon */
             u8 bcmc_index;             /* Index of the BCMC sta to use */
-            #if (defined CONFIG_HE_FOR_OLD_KERNEL) || (defined CONFIG_VHT_FOR_OLD_KERNEL)
+            #if (defined CONFIG_VHT_FOR_OLD_KERNEL)
 			u8 aic_index;
             #endif
             struct rwnx_csa *csa;
@@ -533,7 +533,7 @@ struct rwnx_sta_stats {
     u32 last_chan_tx_busy_time;
 };
 
-#if (defined CONFIG_HE_FOR_OLD_KERNEL) || (defined CONFIG_VHT_FOR_OLD_KERNEL)
+#if (defined CONFIG_VHT_FOR_OLD_KERNEL)
 struct aic_sta {
     u8 sta_idx;            /* Identifier of the station */
 	bool he;               /* Flag indicating if the station supports HE */
@@ -743,9 +743,6 @@ struct rwnx_hw {
     struct list_head vifs;
     struct rwnx_vif *vif_table[NX_VIRT_DEV_MAX + NX_REMOTE_STA_MAX]; /* indexed with fw id */
     struct rwnx_sta sta_table[NX_REMOTE_STA_MAX + NX_VIRT_DEV_MAX];
-    #ifdef CONFIG_HE_FOR_OLD_KERNEL
-	struct aic_sta aic_table[NX_REMOTE_STA_MAX + NX_VIRT_DEV_MAX];
-    #endif
     struct rwnx_survey_info survey[SCAN_CHANNEL_MAX];
     struct cfg80211_scan_request *scan_request;
 #ifdef CONFIG_SCHED_SCAN

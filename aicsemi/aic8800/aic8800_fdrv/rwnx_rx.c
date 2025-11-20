@@ -581,41 +581,6 @@ static bool rwnx_rx_data_skb(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
     return forward;
 }
 
-#ifdef CONFIG_HE_FOR_OLD_KERNEL
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0))
-const u8 *cfg80211_find_ie_match(u8 eid, const u8 *ies, int len,
-				 const u8 *match, int match_len,
-				 int match_offset)
-{
-	const struct element *elem;
-
-	/* match_offset can't be smaller than 2, unless match_len is
-	 * zero, in which case match_offset must be zero as well.
-	 */
-	if (WARN_ON((match_len && match_offset < 2) ||
-		    (!match_len && match_offset)))
-		return NULL;
-
-	for_each_element_id(elem, eid, ies, len) {
-		if (elem->datalen >= match_offset - 2 + match_len &&
-		    !memcmp(elem->data + match_offset - 2, match, match_len))
-			return (void *)elem;
-	}
-
-	return NULL;
-}
-#endif
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0))
-
-static inline const u8 *cfg80211_find_ext_ie(u8 ext_eid, const u8* ies, int len)
-{
-        return cfg80211_find_ie_match(WLAN_EID_EXTENSION, ies, len,
-                                                        &ext_eid, 1, 2);
-}
-#endif
-
-#endif
-
 #ifdef CONFIG_BAND_STEERING
 static void handle_op_class_band(struct tmp_feature_sta *f_sta, const u8 *ie, int ie_len)
 {
@@ -707,10 +672,6 @@ static void rwnx_rx_mgmt(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
 {
     struct ieee80211_mgmt *mgmt = (struct ieee80211_mgmt *)skb->data;
     struct rx_vector_1 *rxvect = &hw_rxhdr->hwvect.rx_vect1;
-#ifdef CONFIG_HE_FOR_OLD_KERNEL
-	struct ieee80211_he_cap_elem *he;
-	struct ieee80211_he_mcs_nss_supp *he_mcs;
-#endif
 
 	//printk("rwnx_rx_mgmt\n");
 	if(skb->data[0]!=0x80 && skb->data[0] != 0x40)
@@ -757,7 +718,7 @@ static void rwnx_rx_mgmt(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
 	}
 #endif
 
-#if (defined CONFIG_HE_FOR_OLD_KERNEL) || (defined CONFIG_VHT_FOR_OLD_KERNEL)
+#if (defined CONFIG_VHT_FOR_OLD_KERNEL)
 	struct aic_sta *sta = &rwnx_hw->aic_table[rwnx_vif->ap.aic_index];
 	const u8* ie;
 	u32 len;
@@ -766,24 +727,6 @@ static void rwnx_rx_mgmt(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
         printk("ASSOC_REQ: sta_idx %d MAC %pM\n", rwnx_vif->ap.aic_index, mgmt->sa);
         sta->sta_idx = rwnx_vif->ap.aic_index;
         len = skb->len - (mgmt->u.assoc_req.variable - skb->data);
-
-        #ifdef CONFIG_HE_FOR_OLD_KERNEL
-        ie = cfg80211_find_ext_ie(WLAN_EID_EXT_HE_CAPABILITY, mgmt->u.assoc_req.variable, len);
-        if (ie && ie[1] >= sizeof(*he) + 1) {
-            printk("assoc_req: find he\n");
-			he = (struct ieee80211_he_cap_elem *)(ie+3);
-			he_mcs = (struct ieee80211_he_mcs_nss_supp *)((u8 *)he + sizeof(*he));
-			memcpy(&sta->he_cap_elem,ie+3,sizeof(struct ieee80211_he_cap_elem));
-
-			sta->he_mcs_nss_supp.rx_mcs_80 = he_mcs->rx_mcs_80;
-			sta->he_mcs_nss_supp.tx_mcs_80 = he_mcs->tx_mcs_80;
-            sta->he = true;
-        }
-        else {
-            printk("assoc_req: no find he\n");
-            sta->he = false;
-        }
-        #endif
 
         #ifdef CONFIG_VHT_FOR_OLD_KERNEL
         struct ieee80211_vht_cap *vht;

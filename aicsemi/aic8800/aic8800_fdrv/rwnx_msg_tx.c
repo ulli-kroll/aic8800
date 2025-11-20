@@ -2985,9 +2985,6 @@ int rwnx_send_set_filter(struct rwnx_hw *rwnx_hw, uint32_t filter)
 /******************************************************************************
  *    Control messages handling functions (FULLMAC only)
  *****************************************************************************/
-#ifdef CONFIG_HE_FOR_OLD_KERNEL
-extern struct ieee80211_sband_iftype_data rwnx_he_capa;
-#endif
 #ifdef CONFIG_VHT_FOR_OLD_KERNEL
 static struct ieee80211_sta_vht_cap* rwnx_vht_capa;
 #endif
@@ -3011,9 +3008,6 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
     struct ieee80211_sta_he_cap const *he_cap;
 #else
-    #ifdef CONFIG_HE_FOR_OLD_KERNEL
-    struct ieee80211_sta_he_cap const *he_cap;
-    #endif
 #endif
     //uint8_t *ht_mcs = (uint8_t *)&ht_cap->mcs;
     uint8_t *ht_mcs;
@@ -3069,14 +3063,10 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
     }
     #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0) || defined(CONFIG_HE_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
     #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
     if (wiphy->bands[NL80211_BAND_2GHZ]->iftype_data != NULL) {
         he_cap = &wiphy->bands[NL80211_BAND_2GHZ]->iftype_data->he_cap;
-    #endif
-    #if defined(CONFIG_HE_FOR_OLD_KERNEL)
-    if (1) {
-        he_cap = &rwnx_he_capa.he_cap;
     #endif
 
 		req->he_supp = he_cap->has_he;
@@ -3269,7 +3259,7 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
 
     int i;
     struct rwnx_vif *rwnx_vif = rwnx_hw->vif_table[inst_nbr];
-    #if (defined CONFIG_HE_FOR_OLD_KERNEL) || (defined CONFIG_VHT_FOR_OLD_KERNEL)
+    #if (defined CONFIG_VHT_FOR_OLD_KERNEL)
     struct aic_sta *sta = &rwnx_hw->aic_table[rwnx_vif->ap.aic_index];
     printk("assoc_req idx %d, he: %d, vht: %d\n ", rwnx_vif->ap.aic_index, sta->he, sta->vht);
     if (rwnx_vif->ap.aic_index < NX_REMOTE_STA_MAX + NX_VIRT_DEV_MAX)
@@ -3367,26 +3357,6 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
         req->he_cap.mcs_supp.tx_mcs_80p80 = mcs_nss_supp->tx_mcs_80p80;
     }
 #else
-	#ifdef CONFIG_HE_FOR_OLD_KERNEL
-	if (sta->he) {
-		const struct ieee80211_he_cap_elem *he_capa = &rwnx_he_capa.he_cap.he_cap_elem;
-		struct ieee80211_he_mcs_nss_supp *mcs_nss_supp =
-								(struct ieee80211_he_mcs_nss_supp *)(he_capa + 1);
-		req->flags |= STA_HE_CAPA;
-		for (i = 0; i < ARRAY_SIZE(he_capa->mac_cap_info); i++) {
-			req->he_cap.mac_cap_info[i] = sta->he_cap_elem.mac_cap_info[i];//he_capa->mac_cap_info[i];
-		}
-		for (i = 0; i < ARRAY_SIZE(he_capa->phy_cap_info); i++) {
-			req->he_cap.phy_cap_info[i] = sta->he_cap_elem.phy_cap_info[i];//he_capa->phy_cap_info[i];
-		}
-		req->he_cap.mcs_supp.rx_mcs_80 = sta->he_mcs_nss_supp.rx_mcs_80;//mcs_nss_supp->rx_mcs_80;
-		req->he_cap.mcs_supp.tx_mcs_80 = sta->he_mcs_nss_supp.tx_mcs_80;//mcs_nss_supp->tx_mcs_80;
-		req->he_cap.mcs_supp.rx_mcs_160 = mcs_nss_supp->rx_mcs_160;
-		req->he_cap.mcs_supp.tx_mcs_160 = mcs_nss_supp->tx_mcs_160;
-		req->he_cap.mcs_supp.rx_mcs_80p80 = mcs_nss_supp->rx_mcs_80p80;
-		req->he_cap.mcs_supp.tx_mcs_80p80 = mcs_nss_supp->tx_mcs_80p80;
-    }
-	#endif
 #endif
 
 	AICWFDBG(LOGDEBUG,"rwnx sta add he mcs/nss rx mcs 80 0x%04x \n",le16_to_cpu(req->he_cap.mcs_supp.rx_mcs_80));
