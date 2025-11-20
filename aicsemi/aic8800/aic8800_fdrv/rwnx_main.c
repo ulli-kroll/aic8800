@@ -4944,7 +4944,7 @@ int rwnx_cfg80211_channel_switch(struct wiphy *wiphy,
         INIT_WORK(&csa->work, rwnx_csa_finish);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0)
 	cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false);
-#elif LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION4
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
 	cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false, 0);
 #elif LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)
         cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false);
