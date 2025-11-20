@@ -2637,11 +2637,7 @@ static struct usb_driver aicwf_usbdrvr = {
     .suspend = aicwf_usb_suspend,
     .resume = aicwf_usb_resume,
     .reset_resume = aicwf_usb_reset_resume,
-#ifdef ANDROID_PLATFORM
-    .supports_autosuspend = 1,
-#else
     .supports_autosuspend = 0,
-#endif
     .disable_hub_initiated_lpm = 1,
 };
 
