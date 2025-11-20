@@ -60,7 +60,6 @@
 #define MAC_ADDR_LEN 6
 
 //because android kernel 5.15 uses kernel 6.0 or 6.1 kernel api
-#define HIGH_KERNEL_VERSION2 KERNEL_VERSION(6, 1, 0)
 #define HIGH_KERNEL_VERSION3 KERNEL_VERSION(6, 3, 0)
 #define HIGH_KERNEL_VERSION4 KERNEL_VERSION(6, 3, 0)
 
