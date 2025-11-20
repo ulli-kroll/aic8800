@@ -2970,7 +2970,7 @@ static int rwnx_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 #endif
 	sme->key_idx, false, NULL, &key_params);
     }
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0) || defined(CONFIG_WPA3_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
     else if ((sme->auth_type == NL80211_AUTHTYPE_SAE) &&
              !(sme->flags & CONNECT_REQ_EXTERNAL_AUTH_SUPPORT)) {
         netdev_err(dev, "Doesn't support SAE without external authentication\n");
@@ -3163,7 +3163,7 @@ static int rwnx_cfg80211_sched_scan_start(struct wiphy *wiphy,
 #endif //CONFIG_SCHED_SCAN
 
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0) || defined(CONFIG_WPA3_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
 /**
  * @external_auth: indicates result of offloaded authentication processing from
  *     user space
@@ -6140,7 +6140,7 @@ static struct cfg80211_ops rwnx_cfg80211_ops = {
     //.tdls_mgmt = rwnx_cfg80211_tdls_mgmt,
     //.tdls_oper = rwnx_cfg80211_tdls_oper,
     .change_bss = rwnx_cfg80211_change_bss,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0) || defined(CONFIG_WPA3_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
     .external_auth = rwnx_cfg80211_external_auth,
 #endif
 #ifdef CONFIG_SCHED_SCAN
@@ -8663,7 +8663,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
         #endif
         0;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0) || defined(CONFIG_WPA3_FOR_OLD_KERNEL)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
     wiphy->features |= NL80211_FEATURE_SAE;
 #endif
 
