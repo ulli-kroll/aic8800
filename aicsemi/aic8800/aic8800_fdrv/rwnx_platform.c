@@ -37,12 +37,6 @@
 #endif
 
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0))
-static inline struct inode *file_inode(const struct file *f)
-{
-        return f->f_dentry->d_inode;
-}
-#endif /* (LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0)) */
 struct rwnx_plat *g_rwnx_plat = NULL;
 
 #define FW_PATH_MAX_LEN 200
@@ -452,12 +446,6 @@ powerlimit_info_t powerlimit_info = {0,};
 #endif
 
 #ifndef CONFIG_ROM_PATCH_EN
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0))
-static inline struct inode *file_inode(const struct file *f)
-{
-        return f->f_dentry->d_inode;
-}
-#endif /* (LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0)) */
 
 
 #endif/* !CONFIG_ROM_PATCH_EN */

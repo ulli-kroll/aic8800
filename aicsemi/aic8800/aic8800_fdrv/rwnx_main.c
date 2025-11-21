@@ -3823,13 +3823,8 @@ static int rwnx_cfg80211_start_ap(struct wiphy *wiphy, struct net_device *dev,
             sta->ps.active = false;
             rwnx_mu_group_sta_init(sta, NULL);
             spin_lock_bh(&rwnx_hw->cb_lock);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0)
-	    rwnx_chanctx_link(rwnx_vif, apm_start_cfm.ch_idx,
-                              NULL);
-#else
             rwnx_chanctx_link(rwnx_vif, apm_start_cfm.ch_idx,
                               &settings->chandef);
-#endif
             if (rwnx_hw->cur_chanctx != apm_start_cfm.ch_idx) {
                 txq_status = RWNX_TXQ_STOP_CHAN;
             }
@@ -8566,11 +8561,9 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
 
     rwnx_hw->ext_capa[0] = WLAN_EXT_CAPA1_EXT_CHANNEL_SWITCHING;
     rwnx_hw->ext_capa[7] = WLAN_EXT_CAPA8_OPMODE_NOTIF;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
     wiphy->extended_capabilities = rwnx_hw->ext_capa;
     wiphy->extended_capabilities_mask = rwnx_hw->ext_capa;
     wiphy->extended_capabilities_len = ARRAY_SIZE(rwnx_hw->ext_capa);
-#endif
 #ifdef CONFIG_SCHED_SCAN
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
     wiphy->max_sched_scan_reqs = 1;
