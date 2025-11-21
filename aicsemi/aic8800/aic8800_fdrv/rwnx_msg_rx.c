@@ -110,10 +110,7 @@ static inline int rwnx_rx_chan_switch_ind(struct rwnx_hw *rwnx_hw,
             /* If mgmt_roc is true, remain on channel has been started by ourself */
             if (!roc_elem->mgmt_roc) {
                 /* Inform the host that we have switch on the indicated off-channel */
-                #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
-                cfg80211_ready_on_channel(roc_elem->wdev->netdev, (u64)(rwnx_hw->roc_cookie_cnt),
-                                        roc_elem->chan, NL80211_CHAN_HT20, roc_elem->duration, GFP_ATOMIC);
-                #elif LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
+                #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
                 cfg80211_ready_on_channel(roc_elem->wdev, (u64)(rwnx_hw->roc_cookie_cnt),
                                         roc_elem->chan, NL80211_CHAN_HT20, roc_elem->duration, GFP_ATOMIC);
                 #else
@@ -213,7 +210,7 @@ static inline int rwnx_rx_remain_on_channel_exp_ind(struct rwnx_hw *rwnx_hw,
 
     rwnx_vif = container_of(roc_elem->wdev, struct rwnx_vif, wdev);
 
-	
+
 #ifdef CREATE_TRACE_POINTS
     /* For debug purpose (use ftrace kernel option) */
     trace_roc_exp(rwnx_vif->vif_index);
@@ -223,10 +220,7 @@ static inline int rwnx_rx_remain_on_channel_exp_ind(struct rwnx_hw *rwnx_hw,
     if (!roc_elem->mgmt_roc && roc_elem->on_chan) {
         /* Inform the host that off-channel period has expired */
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
-	cfg80211_remain_on_channel_expired(roc_elem->wdev->netdev, (u64)(rwnx_hw->roc_cookie_cnt),
-                                           roc_elem->chan, NL80211_CHAN_HT20, GFP_ATOMIC);
-#elif LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
 	cfg80211_remain_on_channel_expired(roc_elem->wdev, (u64)(rwnx_hw->roc_cookie_cnt),
                                            roc_elem->chan, NL80211_CHAN_HT20, GFP_ATOMIC);
 #else

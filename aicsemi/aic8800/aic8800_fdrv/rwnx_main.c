@@ -346,9 +346,7 @@ static struct ieee80211_supported_band rwnx_band_2GHz = {
     .bitrates   = rwnx_ratetable,
     .n_bitrates = ARRAY_SIZE(rwnx_ratetable),
     .ht_cap     = RWNX_HT_CAPABILITIES,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
     .vht_cap    = RWNX_VHT_CAPABILITIES,
-#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
     .iftype_data = &rwnx_he_capa,
     .n_iftype_data = 1,
@@ -362,9 +360,7 @@ static struct ieee80211_supported_band rwnx_band_5GHz = {
     .bitrates   = &rwnx_ratetable[4],
     .n_bitrates = ARRAY_SIZE(rwnx_ratetable) - 4,
     .ht_cap     = RWNX_HT_CAPABILITIES,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
     .vht_cap    = RWNX_VHT_CAPABILITIES,
-#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
     .iftype_data = &rwnx_he_capa,
     .n_iftype_data = 1,
@@ -2342,14 +2338,9 @@ static struct wireless_dev *rwnx_cfg80211_add_iface(struct wiphy *wiphy,
  */
 static int rwnx_cfg80211_del_iface(struct wiphy *wiphy, struct wireless_dev *wdev)
 {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0))
     struct net_device *dev = wdev->netdev;
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
     struct rwnx_vif *rwnx_vif = container_of(wdev, struct rwnx_vif, wdev);
-#else
-    struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
-    struct rwnx_vif *rwnx_vif = netdev_priv(dev);
-#endif
    // printk("del_iface: %p\n",wdev);
 
 	AICWFDBG(LOGINFO, "del_iface: %p, %x\n",wdev, wdev->address[5]);
@@ -2641,18 +2632,11 @@ int rwnx_send_check_p2p(struct cfg80211_scan_request *param){
  *	the scan/scan_done bracket too.
  */
 static int rwnx_cfg80211_scan(struct wiphy *wiphy,
-	#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
-	struct net_device *dev,
-	#endif
                               struct cfg80211_scan_request *request)
 {
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
     struct rwnx_vif *rwnx_vif = container_of(request->wdev, struct rwnx_vif,
                                             wdev);
-#else
-    struct rwnx_vif* rwnx_vif = netdev_priv(request->dev);
-#endif
     int error;
 
     RWNX_DBG(RWNX_FN_ENTRY_STR);
@@ -4304,11 +4288,7 @@ static int rwnx_cfg80211_set_txq_params(struct wiphy *wiphy, struct net_device *
 
 static int
 rwnx_cfg80211_remain_on_channel_(struct wiphy *wiphy,
-                            #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
                                 struct wireless_dev *wdev,
-                            #else
-                                struct net_device *dev,
-                            #endif
                                 struct ieee80211_channel *chan,
                             #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
                                 enum nl80211_channel_type channel_type,
@@ -4316,12 +4296,7 @@ rwnx_cfg80211_remain_on_channel_(struct wiphy *wiphy,
                                 unsigned int duration, u64 *cookie, bool mgmt_roc_flag)
 {
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
     struct rwnx_vif *rwnx_vif = container_of(wdev, struct rwnx_vif, wdev);
-#else
-    struct rwnx_vif *rwnx_vif = netdev_priv(dev);
-    struct wireless_dev *wdev = &rwnx_vif->wdev;
-#endif
     struct rwnx_roc_elem *roc_elem;
     struct mm_add_if_cfm add_if_cfm;
     struct mm_remain_on_channel_cfm roc_cfm;
@@ -4443,11 +4418,7 @@ rwnx_cfg80211_remain_on_channel_(struct wiphy *wiphy,
 
 static int
 rwnx_cfg80211_remain_on_channel(struct wiphy *wiphy,
-                            #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
                                 struct wireless_dev *wdev,
-                            #else
-                                struct net_device *dev,
-                            #endif
                                 struct ieee80211_channel *chan,
                             #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
                                 enum nl80211_channel_type channel_type,
@@ -4455,11 +4426,7 @@ rwnx_cfg80211_remain_on_channel(struct wiphy *wiphy,
                                 unsigned int duration, u64 *cookie)
 {
 	return rwnx_cfg80211_remain_on_channel_(wiphy,
-                            #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
                                 wdev,
-                            #else
-                                dev,
-                            #endif
                                 chan,
                             #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
                                 channel_type,
@@ -4473,20 +4440,12 @@ rwnx_cfg80211_remain_on_channel(struct wiphy *wiphy,
  *	the duration value.
  */
 static int rwnx_cfg80211_cancel_remain_on_channel(struct wiphy *wiphy,
-                                            #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
-                                                  struct net_device *dev,
-                                            #else
                                                   struct wireless_dev *wdev,
-                                            #endif
                                                   u64 cookie)
 {
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
 #ifdef CREATE_TRACE_POINTS
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
-    struct rwnx_vif *rwnx_vif = netdev_priv(dev);
-#else
     struct rwnx_vif *rwnx_vif = container_of(wdev, struct rwnx_vif, wdev);
-#endif
 #endif
     RWNX_DBG(RWNX_FN_ENTRY_STR);
 #ifdef CREATE_TRACE_POINTS
@@ -4575,7 +4534,6 @@ static int rwnx_cfg80211_dump_survey(struct wiphy *wiphy, struct net_device *net
  *	For monitor interfaces, it should return %NULL unless there's a single
  *	current monitoring channel.
  */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0))
 static int rwnx_cfg80211_get_channel(struct wiphy *wiphy,
                                                     struct wireless_dev *wdev,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
@@ -4611,32 +4569,6 @@ static int rwnx_cfg80211_get_channel(struct wiphy *wiphy,
 
     return 0;
 }
-#else
-struct ieee80211_channel *rwnx_cfg80211_get_channel(struct wiphy *wiphy)
-{
-    struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
-    struct ieee80211_channel *chan = NULL;
-    struct rwnx_vif *vif;
-    bool_l found = false;
-    //may TBD
-
-    list_for_each_entry(vif, &rwnx_hw->vifs, list)
-    {
-        if(vif->wdev.iftype == NL80211_IFTYPE_AP)
-        {
-            found = true;
-            break;
-        }
-    }
-
-    if(found && rwnx_hw->set_chan.center_freq) {
-        chan = kzalloc(sizeof(struct ieee80211_channel), GFP_KERNEL);
-        memcpy((u8 *)chan, (u8 *)&rwnx_hw->set_chan, sizeof(struct ieee80211_channel));
-    }
-
-    return chan;
-}
-#endif
 
 
 /**
@@ -4656,12 +4588,7 @@ static int rwnx_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0) */
 {
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0))
-    struct rwnx_vif *rwnx_vif = netdev_priv(dev);
-    struct wireless_dev *wdev = &rwnx_vif->wdev;
-#else
     struct rwnx_vif *rwnx_vif = container_of(wdev, struct rwnx_vif, wdev);
-#endif
     struct rwnx_sta *rwnx_sta = NULL;
     #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
     struct ieee80211_channel *channel = params->chan;
@@ -4727,11 +4654,7 @@ static int rwnx_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
     /* Check that a RoC is already pending */
     if (rwnx_hw->roc_elem) {
         /* Get VIF used for current ROC */
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0))
-        struct rwnx_vif *rwnx_roc_vif = netdev_priv(rwnx_hw->roc_elem->wdev->netdev);
-#else
         struct rwnx_vif *rwnx_roc_vif = container_of(rwnx_hw->roc_elem->wdev, struct rwnx_vif, wdev);//netdev_priv(rwnx_hw->roc_elem->wdev->netdev);
-#endif
 
         /* Check if RoC channel is the same than the required one */
         if ((rwnx_hw->roc_elem->chan->center_freq != channel->center_freq)
@@ -4749,7 +4672,7 @@ static int rwnx_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
         error = rwnx_cfg80211_remain_on_channel_(wiphy, wdev, channel,
                                                 30, &cookie, true);
-#elif (LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0))
+#elif (LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)) && (1)
         error = rwnx_cfg80211_remain_on_channel_(wiphy, wdev, channel, NL80211_CHAN_NO_HT,
                                                 30, &cookie, true);
 #else
@@ -6160,11 +6083,7 @@ static void rwnx_wdev_unregister(struct rwnx_hw *rwnx_hw)
 
     rtnl_lock();
     list_for_each_entry_safe(rwnx_vif, tmp, &rwnx_hw->vifs, list) {
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
         rwnx_cfg80211_del_iface(rwnx_hw->wiphy, &rwnx_vif->wdev);
-    #else
-        rwnx_cfg80211_del_iface(rwnx_hw->wiphy, rwnx_vif->ndev);
-    #endif
     }
     rtnl_unlock();
 }

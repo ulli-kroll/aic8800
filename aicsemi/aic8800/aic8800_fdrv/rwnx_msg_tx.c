@@ -2998,9 +2998,7 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
     //struct ieee80211_sta_vht_cap *vht_cap = &wiphy->bands[NL80211_BAND_2GHZ]->vht_cap;
 	//#endif
 	struct ieee80211_sta_ht_cap *ht_cap;
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
 	struct ieee80211_sta_vht_cap *vht_cap;
-    #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
     struct ieee80211_sta_he_cap const *he_cap;
@@ -3012,14 +3010,10 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
 
 	if (rwnx_hw->band_5g_support) {
 		ht_cap = &wiphy->bands[NL80211_BAND_5GHZ]->ht_cap;
-        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
 		vht_cap = &wiphy->bands[NL80211_BAND_5GHZ]->vht_cap;
-        #endif
 	} else {
 		ht_cap = &wiphy->bands[NL80211_BAND_2GHZ]->ht_cap;
-        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
 		vht_cap = &wiphy->bands[NL80211_BAND_2GHZ]->vht_cap;
-        #endif
 	}
 	ht_mcs = (uint8_t *)&ht_cap->mcs;
 
@@ -3033,9 +3027,7 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
 
     /* Set parameters for the ME_CONFIG_REQ message */
     req->ht_supp = ht_cap->ht_supported;
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
     req->vht_supp = vht_cap->vht_supported;
-    #endif
     req->ht_cap.ht_capa_info = cpu_to_le16(ht_cap->cap | IEEE80211_HT_CAP_LDPC_CODING);
     req->ht_cap.a_mpdu_param = ht_cap->ampdu_factor |
                                      (ht_cap->ampdu_density <<
@@ -3046,7 +3038,6 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
     req->ht_cap.tx_beamforming_capa = 0;
     req->ht_cap.asel_capa = 0;
 
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
     if(req->vht_supp) {
     	req->vht_cap.vht_capa_info = cpu_to_le32(vht_cap->cap);
     	req->vht_cap.rx_highest = cpu_to_le16(vht_cap->vht_mcs.rx_highest);
@@ -3054,7 +3045,6 @@ int rwnx_send_me_config_req(struct rwnx_hw *rwnx_hw)
     	req->vht_cap.tx_highest = cpu_to_le16(vht_cap->vht_mcs.tx_highest);
     	req->vht_cap.tx_mcs_map = cpu_to_le16(vht_cap->vht_mcs.tx_mcs_map);
     }
-    #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
     #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
@@ -3764,13 +3754,6 @@ int rwnx_send_apm_start_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif,
     req->center_freq1 = settings->chandef.center_freq1;
     req->center_freq2 = settings->chandef.center_freq2;
     req->ch_width = bw2chnl[settings->chandef.width];
-#endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)
-    req->chan.band = rwnx_hw->ap_chan.band;
-    req->chan.freq = rwnx_hw->ap_chan.prim20_freq;
-    req->center_freq1 = rwnx_hw->ap_chan.center1_freq;
-    req->center_freq2 = rwnx_hw->ap_chan.center2_freq;
-    req->chan.tx_power = rwnx_hw->ap_chan.tx_power;
 #endif
     req->bcn_int = settings->beacon_interval;
     if (settings->crypto.control_port)
