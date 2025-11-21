@@ -1749,11 +1749,6 @@ free_use:
  *  - If possible (i.e. credit available and not in PS) the pkt is pushed
  *    to fw
  */
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 11, 0))
-#define IEEE80211_RADIOTAP_MCS_HAVE_STBC	0x20
-#define IEEE80211_RADIOTAP_MCS_STBC_MASK	0x60
-#define IEEE80211_RADIOTAP_MCS_STBC_SHIFT	5
-#endif
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0))
 #define IEEE80211_RADIOTAP_CODING_LDPC_USER0			0x01
 #endif
