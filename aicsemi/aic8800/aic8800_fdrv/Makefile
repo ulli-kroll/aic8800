@@ -166,7 +166,6 @@ $(MODULE_NAME)-y := \
 	rwnx_tdls.o            \
 	regdb.o                \
 	md5.o                  \
-	aic_vendor.o           \
         aic_priv_cmd.o         \
 	aicwf_compat_8800dc.o  \
 	aicwf_compat_8800d80.o \
