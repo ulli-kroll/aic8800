@@ -8511,9 +8511,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
 #endif
 
     wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL |
-        #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 12, 0))
         WIPHY_FLAG_HAS_CHANNEL_SWITCH |
-        #endif
         WIPHY_FLAG_4ADDR_STATION |
         WIPHY_FLAG_4ADDR_AP;
 
@@ -8526,9 +8524,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
     wiphy->features |= NL80211_FEATURE_NEED_OBSS_SCAN |
         NL80211_FEATURE_SK_TX_STATUS |
         NL80211_FEATURE_VIF_TXPOWER |
-        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 12, 0)
         NL80211_FEATURE_ACTIVE_MONITOR |
-        #endif
         #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
         NL80211_FEATURE_AP_MODE_CHAN_WIDTH_CHANGE |
         #endif
