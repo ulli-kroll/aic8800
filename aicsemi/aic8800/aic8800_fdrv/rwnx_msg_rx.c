@@ -110,13 +110,8 @@ static inline int rwnx_rx_chan_switch_ind(struct rwnx_hw *rwnx_hw,
             /* If mgmt_roc is true, remain on channel has been started by ourself */
             if (!roc_elem->mgmt_roc) {
                 /* Inform the host that we have switch on the indicated off-channel */
-                #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-                cfg80211_ready_on_channel(roc_elem->wdev, (u64)(rwnx_hw->roc_cookie_cnt),
-                                        roc_elem->chan, NL80211_CHAN_HT20, roc_elem->duration, GFP_ATOMIC);
-                #else
                 cfg80211_ready_on_channel(roc_elem->wdev, (u64)(rwnx_hw->roc_cookie_cnt),
                                         roc_elem->chan, roc_elem->duration, GFP_ATOMIC);
-                #endif
             }
 
             /* Keep in mind that we have switched on the channel */
@@ -220,13 +215,8 @@ static inline int rwnx_rx_remain_on_channel_exp_ind(struct rwnx_hw *rwnx_hw,
     if (!roc_elem->mgmt_roc && roc_elem->on_chan) {
         /* Inform the host that off-channel period has expired */
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-	cfg80211_remain_on_channel_expired(roc_elem->wdev, (u64)(rwnx_hw->roc_cookie_cnt),
-                                           roc_elem->chan, NL80211_CHAN_HT20, GFP_ATOMIC);
-#else
         cfg80211_remain_on_channel_expired(roc_elem->wdev, (u64)(rwnx_hw->roc_cookie_cnt),
                                            roc_elem->chan, GFP_ATOMIC);
-#endif
     }
 
     /* De-init offchannel TX queue */
@@ -779,38 +769,6 @@ static inline int rwnx_rx_me_tx_credits_update_ind(struct rwnx_hw *rwnx_hw,
 /***************************************************************************
  * Messages from SM task
  **************************************************************************/
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-static inline void cfg80211_chandef_create(struct cfg80211_chan_def *chandef,
-                             struct ieee80211_channel *chan,
-                             enum nl80211_channel_type chan_type)
-{
-        if (WARN_ON(!chan))
-                return;
-        chandef->chan = chan;
-        chandef->center_freq2 = 0;
-        switch (chan_type) {
-        case NL80211_CHAN_NO_HT:
-                chandef->width = NL80211_CHAN_WIDTH_20_NOHT;
-                chandef->center_freq1 = chan->center_freq;
-                break;
-        case NL80211_CHAN_HT20:
-                chandef->width = NL80211_CHAN_WIDTH_20;
-                chandef->center_freq1 = chan->center_freq;
-                break;
-        case NL80211_CHAN_HT40PLUS:
-                chandef->width = NL80211_CHAN_WIDTH_40;
-                chandef->center_freq1 = chan->center_freq + 10;
-                break;
-        case NL80211_CHAN_HT40MINUS:
-                chandef->width = NL80211_CHAN_WIDTH_40;
-                chandef->center_freq1 = chan->center_freq - 10;
-                break;
-        default:
-                WARN_ON(1);
-        }
-}
-#endif
 
 static inline int rwnx_rx_sm_connect_ind(struct rwnx_hw *rwnx_hw,
                                          struct rwnx_cmd *cmd,

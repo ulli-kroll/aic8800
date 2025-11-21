@@ -832,38 +832,6 @@ int rwnx_send_bcn_change(struct rwnx_hw *rwnx_hw, u8 vif_idx, u32 bcn_addr,
     return rwnx_send_msg(rwnx_hw, req, 1, MM_BCN_CHANGE_CFM, NULL);
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-static inline void cfg80211_chandef_create(struct cfg80211_chan_def *chandef,
-                             struct ieee80211_channel *chan,
-                             enum nl80211_channel_type chan_type)
-{
-        if (WARN_ON(!chan))
-                return;
-        chandef->chan = chan;
-        chandef->center_freq2 = 0;
-        switch (chan_type) {
-        case NL80211_CHAN_NO_HT:
-                chandef->width = NL80211_CHAN_WIDTH_20_NOHT;
-                chandef->center_freq1 = chan->center_freq;
-                break;
-        case NL80211_CHAN_HT20:
-                chandef->width = NL80211_CHAN_WIDTH_20;
-                chandef->center_freq1 = chan->center_freq;
-                break;
-        case NL80211_CHAN_HT40PLUS:
-                chandef->width = NL80211_CHAN_WIDTH_40;
-                chandef->center_freq1 = chan->center_freq + 10;
-                break;
-        case NL80211_CHAN_HT40MINUS:
-                chandef->width = NL80211_CHAN_WIDTH_40;
-                chandef->center_freq1 = chan->center_freq - 10;
-                break;
-        default:
-                WARN_ON(1);
-        }
-}
-#endif
-
 int rwnx_send_roc(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif,
                   struct ieee80211_channel *chan, unsigned  int duration,
                   struct mm_remain_on_channel_cfm *roc_cfm)
@@ -3281,7 +3249,6 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
         req->ht_cap.asel_capa = ht_capa->antenna_selection_info;
     }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
     if (link_sta_params->vht_capa) {
 		const struct ieee80211_vht_cap *vht_capa = link_sta_params->vht_capa;
 
@@ -3292,7 +3259,6 @@ int rwnx_send_me_sta_add(struct rwnx_hw *rwnx_hw, struct station_parameters *par
         req->vht_cap.tx_highest = cpu_to_le16(vht_capa->supp_mcs.tx_highest);
         req->vht_cap.tx_mcs_map = cpu_to_le16(vht_capa->supp_mcs.tx_mcs_map);
     }
-#endif
 
 	AICWFDBG(LOGDEBUG,"rx map %x  rx high %x tx map %x tx high %x \n",req->vht_cap.rx_mcs_map,req->vht_cap.rx_highest,req->vht_cap.tx_mcs_map,req->vht_cap.tx_highest);
 
@@ -3585,10 +3551,8 @@ int rwnx_send_sm_connect_req(struct rwnx_hw *rwnx_hw,
         req->auth_type = WLAN_AUTH_SHARED_KEY;
     else if (sme->auth_type == NL80211_AUTHTYPE_FT)
         req->auth_type = WLAN_AUTH_FT;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
     else if (sme->auth_type == NL80211_AUTHTYPE_SAE)
         req->auth_type = WLAN_AUTH_SAE;
-#endif
     else
         goto invalid_param;
 
@@ -3737,10 +3701,8 @@ int rwnx_send_apm_start_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif,
     req->bcn_len = bcn->len;
     req->tim_oft = bcn->head_len;
     req->tim_len = bcn->tim_len;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
     req->chan.band = settings->chandef.chan->band;
     req->chan.freq = settings->chandef.chan->center_freq;
-#endif
 
 #ifdef CONFIG_RADAR_OR_IR_DETECT
 	req->chan.flags = get_chan_flags(settings->chandef.chan->flags);
@@ -3749,12 +3711,10 @@ int rwnx_send_apm_start_req(struct rwnx_hw *rwnx_hw, struct rwnx_vif *vif,
 #endif
 	printk("chan.flags %u \n",req->chan.flags);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
     req->chan.tx_power = chan_to_fw_pwr(settings->chandef.chan->max_power);
     req->center_freq1 = settings->chandef.center_freq1;
     req->center_freq2 = settings->chandef.center_freq2;
     req->ch_width = bw2chnl[settings->chandef.width];
-#endif
     req->bcn_int = settings->beacon_interval;
     if (settings->crypto.control_port)
         flags |= CONTROL_PORT_HOST;

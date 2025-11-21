@@ -743,15 +743,9 @@ static void rwnx_rx_mgmt(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
 #endif
         } else {
 
-    #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-            cfg80211_report_obss_beacon(rwnx_hw->wiphy, skb->data, skb->len,
-                                        hw_rxhdr->phy_info.phy_prim20_freq,
-                                        rxvect->rssi1, GFP_KERNEL);
-    #else
             cfg80211_report_obss_beacon(rwnx_hw->wiphy, skb->data, skb->len,
                                         hw_rxhdr->phy_info.phy_prim20_freq,
                                         rxvect->rssi1);
-    #endif
         }
     } else if ((ieee80211_is_deauth(mgmt->frame_control) ||
                 ieee80211_is_disassoc(mgmt->frame_control)) &&
