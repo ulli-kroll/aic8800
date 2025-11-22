@@ -1259,13 +1259,7 @@ int usb_bustx_thread(void *data)
 
 #ifdef CONFIG_TXRX_THREAD_PRIO
 	if (bustx_thread_prio > 0) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0))
         sched_set_fifo_low(current);
-#else
-        struct sched_param param;
-        param.sched_priority = (bustx_thread_prio < MAX_RT_PRIO)?bustx_thread_prio:(MAX_RT_PRIO-1);
-        sched_setscheduler(current, SCHED_FIFO, &param);
-#endif
 	}
 #endif
 	AICWFDBG(LOGINFO, "%s the policy of current thread is:%d\n", __func__, current->policy);
@@ -1325,13 +1319,7 @@ int usb_busrx_thread(void *data)
 
 #ifdef CONFIG_TXRX_THREAD_PRIO
 	if (busrx_thread_prio > 0) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0))
         sched_set_fifo_low(current);
-#else
-		struct sched_param param;
-		param.sched_priority = (busrx_thread_prio < MAX_RT_PRIO)?busrx_thread_prio:(MAX_RT_PRIO-1);
-		sched_setscheduler(current, SCHED_FIFO, &param);
-#endif
 	}
 #endif
 	AICWFDBG(LOGINFO, "%s the policy of current thread is:%d\n", __func__, current->policy);
@@ -1370,13 +1358,7 @@ int usb_msg_busrx_thread(void *data)
 
 #ifdef CONFIG_TXRX_THREAD_PRIO
 	if (busrx_thread_prio > 0) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0))
         sched_set_fifo_low(current);
-#else
-        struct sched_param param;
-        param.sched_priority = (busrx_thread_prio < MAX_RT_PRIO)?busrx_thread_prio:(MAX_RT_PRIO-1);
-        sched_setscheduler(current, SCHED_FIFO, &param);
-#endif
 	}
 #endif
 	AICWFDBG(LOGINFO, "%s the policy of current thread is:%d\n", __func__, current->policy);
