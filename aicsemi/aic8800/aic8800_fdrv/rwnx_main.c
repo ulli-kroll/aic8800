@@ -115,7 +115,6 @@ extern char country_code[];
     }                                                           \
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)
 #define RWNX_HE_CAPABILITIES                                    \
 {                                                               \
     .has_he = false,                                            \
@@ -148,8 +147,6 @@ extern char country_code[];
     },                                                          \
     .ppe_thres = {0x08, 0x1c, 0x07},                            \
 }
-#else
-#endif
 
 #define RATE(_bitrate, _hw_rate, _flags) {      \
     .bitrate    = (_bitrate),                   \

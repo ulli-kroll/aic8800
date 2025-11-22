@@ -1001,18 +1001,12 @@ static void rwnx_set_he_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
         rwnx_hw->mod_params->he_mcs_map = min_t(int, rwnx_hw->mod_params->mcs_map,
                                                 IEEE80211_HE_MCS_SUPPORT_0_9);
     }
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)
     he_cap->he_cap_elem.phy_cap_info[1] |= IEEE80211_HE_PHY_CAP1_HE_LTF_AND_GI_FOR_HE_PPDUS_0_8US
                                             | IEEE80211_HE_PHY_CAP1_MIDAMBLE_RX_TX_MAX_NSTS;
 
     he_cap->he_cap_elem.phy_cap_info[2] |= IEEE80211_HE_PHY_CAP2_MIDAMBLE_RX_TX_MAX_NSTS |
                                            IEEE80211_HE_PHY_CAP2_NDP_4x_LTF_AND_3_2US |
                                            IEEE80211_HE_PHY_CAP2_DOPPLER_RX;
-    #else
-    he_cap->he_cap_elem.phy_cap_info[1] |= IEEE80211_HE_PHY_CAP1_HE_LTF_AND_GI_FOR_HE_PPDUS_0_8US;
-    he_cap->he_cap_elem.phy_cap_info[2] |= IEEE80211_HE_PHY_CAP2_NDP_4x_LTF_AND_3_2US |
-                                           IEEE80211_HE_PHY_CAP2_DOPPLER_RX;
-    #endif
     if (rwnx_hw->mod_params->stbc_on)
         he_cap->he_cap_elem.phy_cap_info[2] |= IEEE80211_HE_PHY_CAP2_STBC_RX_UNDER_80MHZ;
 
@@ -1055,10 +1049,8 @@ static void rwnx_set_he_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 	#endif
     //he_cap->he_cap_elem.phy_cap_info[7] |= IEEE80211_HE_PHY_CAP7_HE_SU_MU_PPDU_4XLTF_AND_08_US_GI;
     he_cap->he_cap_elem.phy_cap_info[8] |= IEEE80211_HE_PHY_CAP8_20MHZ_IN_40MHZ_HE_PPDU_IN_2G;
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)
     he_cap->he_cap_elem.phy_cap_info[9] |= IEEE80211_HE_PHY_CAP9_RX_FULL_BW_SU_USING_MU_WITH_COMP_SIGB |
                                            IEEE80211_HE_PHY_CAP9_RX_FULL_BW_SU_USING_MU_WITH_NON_COMP_SIGB;
-    #endif
 	if (rwnx_hw->usbdev->chipid == PRODUCT_ID_AIC8801 || rwnx_hw->usbdev->chipid == PRODUCT_ID_AIC8800DC ||
         rwnx_hw->usbdev->chipid == PRODUCT_ID_AIC8800DW)
         mcs_map = min_t(int, rwnx_hw->mod_params->he_mcs_map, IEEE80211_HE_MCS_SUPPORT_0_9);
@@ -1129,17 +1121,11 @@ static void rwnx_set_he_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 	        rwnx_hw->mod_params->he_mcs_map = min_t(int, rwnx_hw->mod_params->mcs_map,
 	                                                IEEE80211_HE_MCS_SUPPORT_0_9);
 	    }
-	    #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)
 	    he_cap->he_cap_elem.phy_cap_info[1] |= IEEE80211_HE_PHY_CAP1_HE_LTF_AND_GI_FOR_HE_PPDUS_0_8US |
 	                                           IEEE80211_HE_PHY_CAP1_MIDAMBLE_RX_TX_MAX_NSTS;
 	    he_cap->he_cap_elem.phy_cap_info[2] |= IEEE80211_HE_PHY_CAP2_MIDAMBLE_RX_TX_MAX_NSTS |
 	                                           IEEE80211_HE_PHY_CAP2_NDP_4x_LTF_AND_3_2US |
 	                                           IEEE80211_HE_PHY_CAP2_DOPPLER_RX;
-	    #else
-	    he_cap->he_cap_elem.phy_cap_info[1] |= IEEE80211_HE_PHY_CAP1_HE_LTF_AND_GI_FOR_HE_PPDUS_0_8US;
-	    he_cap->he_cap_elem.phy_cap_info[2] |= IEEE80211_HE_PHY_CAP2_NDP_4x_LTF_AND_3_2US |
-	                                           IEEE80211_HE_PHY_CAP2_DOPPLER_RX;
-	    #endif
 	    if (rwnx_hw->mod_params->stbc_on)
 	        he_cap->he_cap_elem.phy_cap_info[2] |= IEEE80211_HE_PHY_CAP2_STBC_RX_UNDER_80MHZ;
 
@@ -1182,10 +1168,8 @@ static void rwnx_set_he_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 #endif
 	    //he_cap->he_cap_elem.phy_cap_info[7] |= IEEE80211_HE_PHY_CAP7_HE_SU_MU_PPDU_4XLTF_AND_08_US_GI;
 	    he_cap->he_cap_elem.phy_cap_info[8] |= IEEE80211_HE_PHY_CAP8_20MHZ_IN_40MHZ_HE_PPDU_IN_2G;
-	    #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)
 	    he_cap->he_cap_elem.phy_cap_info[9] |= IEEE80211_HE_PHY_CAP9_RX_FULL_BW_SU_USING_MU_WITH_COMP_SIGB |
 	                                           IEEE80211_HE_PHY_CAP9_RX_FULL_BW_SU_USING_MU_WITH_NON_COMP_SIGB;
-	    #endif
 		if (rwnx_hw->usbdev->chipid == PRODUCT_ID_AIC8801 || rwnx_hw->usbdev->chipid == PRODUCT_ID_AIC8800DC ||
 			rwnx_hw->usbdev->chipid == PRODUCT_ID_AIC8800DW)
 			mcs_map = min_t(int, rwnx_hw->mod_params->he_mcs_map, IEEE80211_HE_MCS_SUPPORT_0_9);
