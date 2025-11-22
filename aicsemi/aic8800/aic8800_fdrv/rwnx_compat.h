@@ -192,10 +192,6 @@ enum ieee80211_radiotap_he_mu_bits {
     ieee80211_amsdu_to_8023s(skb, list, addr, iftype, extra_headroom, false)
 #endif
 
-#if LINUX_VERSION_CODE  < KERNEL_VERSION(4, 7, 0)
-#define NUM_NL80211_BANDS IEEE80211_NUM_BANDS
-#endif
-
 #if (0) && !(defined CONFIG_VENDOR_RWNX)
 #define ieee80211_chandef_to_operating_class(chan_def, op_class) 0
 #endif
