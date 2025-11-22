@@ -1012,7 +1012,7 @@ static void rwnx_del_csa(struct rwnx_vif *vif)
     kfree(csa);
     vif->ap.csa = NULL;
 }
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
+
 static void rwnx_csa_finish(struct work_struct *ws)
 {
 
@@ -1057,11 +1057,7 @@ static void rwnx_csa_finish(struct work_struct *ws)
     }
 
     if (error) {
-        #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0))
         cfg80211_stop_iface(rwnx_hw->wiphy, &vif->wdev, GFP_KERNEL);
-        #else
-        cfg80211_disconnected(vif->ndev, 0, NULL, 0, 0, GFP_KERNEL);
-        #endif
     } else {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0))
         wiphy_lock(rwnx_hw->wiphy);
@@ -1096,7 +1092,6 @@ static void rwnx_csa_finish(struct work_struct *ws)
     }
     rwnx_del_csa(vif);
 }
-#endif
 
 /**
  * rwnx_external_auth_enable - Enable external authentication on a vif
@@ -3128,11 +3123,7 @@ static int rwnx_cfg80211_external_auth(struct wiphy *wiphy, struct net_device *d
  */
 static int rwnx_cfg80211_add_station(struct wiphy *wiphy,
 	struct net_device *dev,
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0))
-		u8 *mac,
-#else
 		const u8 *mac,
-#endif
 	struct station_parameters *params)
 {
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
@@ -3279,9 +3270,7 @@ static int rwnx_cfg80211_add_station(struct wiphy *wiphy,
  */
 static int rwnx_cfg80211_del_station_compat(struct wiphy *wiphy,
                                             struct net_device *dev,
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0))
-		u8 *mac
-#elif (LINUX_VERSION_CODE < KERNEL_VERSION(3, 19, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 19, 0))
 		const u8 *mac
 #else
 		struct station_del_parameters *params
@@ -3569,11 +3558,7 @@ void apm_probe_sta_work_process(struct work_struct *work)
  *	cfg80211_check_station_change() to validate the information.
  */
 static int rwnx_cfg80211_change_station(struct wiphy *wiphy, struct net_device *dev,
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0))
-	u8 *mac,
-#else
 	const u8 *mac,
-#endif
 	struct station_parameters *params)
 {
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
@@ -4663,7 +4648,6 @@ int rwnx_cfg80211_set_cqm_rssi_config(struct wiphy *wiphy,
     return rwnx_send_cfg_rssi_req(rwnx_hw, rwnx_vif->vif_index, rssi_thold, rssi_hyst);
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
 /**
  *
  * @channel_switch: initiate channel-switch procedure (with CSA). Driver is
@@ -4781,7 +4765,6 @@ int rwnx_cfg80211_channel_switch(struct wiphy *wiphy,
   end:
     return error;
 }
-#endif
 
 #if 0
 /*
@@ -4791,11 +4774,7 @@ int rwnx_cfg80211_channel_switch(struct wiphy *wiphy,
 static int
 rwnx_cfg80211_tdls_mgmt(struct wiphy *wiphy,
 	struct net_device *dev,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
 	const u8 *peer,
-#else
-	u8 *peer,
-#endif
 	u8 action_code,
 	u8 dialog_token,
 	u16 status_code,
@@ -4883,11 +4862,7 @@ rwnx_cfg80211_tdls_mgmt(struct wiphy *wiphy,
 static int
 rwnx_cfg80211_tdls_oper(struct wiphy *wiphy,
 	struct net_device *dev,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
 	const u8 *peer,
-#else
-	u8 *peer,
-#endif
 	enum nl80211_tdls_operation oper
 )
 {
@@ -5384,11 +5359,7 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
  */
 static int rwnx_cfg80211_get_station(struct wiphy *wiphy,
 	struct net_device *dev,
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0))
-	u8 *mac,
-#else
 	const u8 *mac,
-#endif
 	struct station_info *sinfo)
 {
     struct rwnx_vif *vif = netdev_priv(dev);
@@ -5503,13 +5474,8 @@ static int rwnx_cfg80211_dump_station(struct wiphy *wiphy, struct net_device *de
  * @add_mpath: add a fixed mesh path
  */
 static int rwnx_cfg80211_add_mpath(struct wiphy *wiphy, struct net_device *dev,
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0))
-	u8 *dst,
-	u8 *next_hop
-#else
 	const u8 *dst,
 	const u8 *next_hop
-#endif
 )
 {
     struct rwnx_vif *rwnx_vif = netdev_priv(dev);
@@ -5526,11 +5492,7 @@ static int rwnx_cfg80211_add_mpath(struct wiphy *wiphy, struct net_device *dev,
  * @del_mpath: delete a given mesh path
  */
 static int rwnx_cfg80211_del_mpath(struct wiphy *wiphy, struct net_device *dev,
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0))
-	u8 *dst
-#else
 	const u8 *dst
-#endif
 )
 {
     struct rwnx_vif *rwnx_vif = netdev_priv(dev);
@@ -5547,13 +5509,8 @@ static int rwnx_cfg80211_del_mpath(struct wiphy *wiphy, struct net_device *dev,
  * @change_mpath: change a given mesh path
  */
 static int rwnx_cfg80211_change_mpath(struct wiphy *wiphy, struct net_device *dev,
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0))
-		u8 *dst,
-		u8 *next_hop
-#else
 		const u8 *dst,
 		const u8 *next_hop
-#endif
 )
 {
     struct rwnx_vif *rwnx_vif = netdev_priv(dev);
@@ -5942,9 +5899,7 @@ static struct cfg80211_ops rwnx_cfg80211_ops = {
     .start_radar_detection = rwnx_cfg80211_start_radar_detection,
     .update_ft_ies = rwnx_cfg80211_update_ft_ies,
     .set_cqm_rssi_config = rwnx_cfg80211_set_cqm_rssi_config,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
     .channel_switch = rwnx_cfg80211_channel_switch,
-#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
     //.tdls_channel_switch = rwnx_cfg80211_tdls_channel_switch,
     //.tdls_cancel_channel_switch = rwnx_cfg80211_tdls_cancel_channel_switch,
@@ -8445,9 +8400,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
         WIPHY_FLAG_4ADDR_STATION |
         WIPHY_FLAG_4ADDR_AP;
 
-    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
     wiphy->max_num_csa_counters = BCN_MAX_CSA_CPT;
-    #endif
 
     wiphy->max_remain_on_channel_duration = rwnx_hw->mod_params->roc_dur_max;
 
@@ -8455,9 +8408,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
         NL80211_FEATURE_SK_TX_STATUS |
         NL80211_FEATURE_VIF_TXPOWER |
         NL80211_FEATURE_ACTIVE_MONITOR |
-        #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
         NL80211_FEATURE_AP_MODE_CHAN_WIDTH_CHANGE |
-        #endif
         0;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
