@@ -24,13 +24,7 @@
 #include <linux/version.h>
 
 /* Generic */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
-#define __bf_shf(x) (__builtin_ffsll(x) - 1)
-#define FIELD_PREP(_mask, _val) \
-    (((typeof(_mask))(_val) << __bf_shf(_mask)) & (_mask))
-#else
 #include <linux/bitfield.h>
-#endif
 
 /* CFG80211 */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
@@ -185,11 +179,6 @@ enum ieee80211_radiotap_he_mu_bits {
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
 #define cfg80211_cqm_rssi_notify(dev, event, level, gfp) \
     cfg80211_cqm_rssi_notify(dev, event, gfp)
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
-#define ieee80211_amsdu_to_8023s(skb, list, addr, iftype, extra_headroom, check_da, check_sa) \
-    ieee80211_amsdu_to_8023s(skb, list, addr, iftype, extra_headroom, false)
 #endif
 
 #if (0) && !(defined CONFIG_VENDOR_RWNX)
