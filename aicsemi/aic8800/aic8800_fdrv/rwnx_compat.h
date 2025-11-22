@@ -187,12 +187,6 @@ enum {
 };
 #endif
 
-/* MAC80211 */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 18, 0)
-#define rwnx_ops_mgd_prepare_tx(hw, vif, duration) \
-    rwnx_ops_mgd_prepare_tx(hw, vif)
-#endif
-
 #else
 #define RX_ENC_HT(s) s->encoding = RX_ENC_HT
 #define RX_ENC_HT_GF(s) { s->encoding = RX_ENC_HT;      \
