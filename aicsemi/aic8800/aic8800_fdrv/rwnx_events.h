@@ -228,10 +228,7 @@ TRACE_EVENT(
 #if defined(CONFIG_TRACEPOINTS) && defined(CREATE_TRACE_POINTS)
 
 #include <linux/trace_seq.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
 #include <linux/trace_events.h>
-#else
-#include <linux/ftrace_event.h>
 
 const char *
 ftrace_print_txq(struct trace_seq *p, int txq_idx) {
@@ -348,7 +345,6 @@ ftrace_print_amsdu(struct trace_seq *p, u16 nb_pkt) {
     trace_seq_putc(p, 0);
     return ret;
 }
-#endif /* defined(CONFIG_TRACEPOINTS) && defined(CREATE_TRACE_POINTS) */
 
 #undef __print_txq
 #define __print_txq(txq_idx) ftrace_print_txq(p, txq_idx)

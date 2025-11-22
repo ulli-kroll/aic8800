@@ -1,11 +1,7 @@
 #include <linux/kernel.h>
 #include <linux/version.h>
 #include <linux/platform_device.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
 #include <linux/pm_wakeirq.h>
-#else
-#include <linux/pm_wakeup.h>
-#endif
 #include "rwnx_defs.h"
 #include "rwnx_wakelock.h"
 
