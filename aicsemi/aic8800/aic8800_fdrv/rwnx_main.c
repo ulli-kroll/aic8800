@@ -3215,9 +3215,6 @@ static int rwnx_cfg80211_add_station(struct wiphy *wiphy,
                 memset(&sinfo, 0, sizeof(struct station_info));
                 sinfo.assoc_req_ies = NULL;
                 sinfo.assoc_req_ies_len = 0;
-                #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 0, 0)
-                sinfo.filled |= STATION_INFO_ASSOC_REQ_IES;
-                #endif
 		        cfg80211_new_sta(rwnx_vif->ndev, sta->mac_addr, &sinfo, GFP_KERNEL);
             }
 
@@ -5188,7 +5185,6 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
         *tx_phyrate = tx_phyrate_local;
         AICWFDBG(LOGINFO, "phyrate=%d\n", *tx_phyrate);
     }
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0)
 	switch (rate_info->bwTx) {
 	case PHY_CHNL_BW_20:
 		sinfo->txrate.bw = RATE_INFO_BW_20;
@@ -5210,7 +5206,6 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 #endif
 		break;
 	}
-#endif
 
 	//sinfo->txrate.nss = 1;
 	sinfo->filled |= (BIT(NL80211_STA_INFO_TX_BITRATE) | BIT(NL80211_STA_INFO_TX_FAILED));
@@ -5221,7 +5216,6 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 	sinfo->rx_packets = vif->net_stats.rx_packets;
 	sinfo->signal = (s8)cfm.rssi;
 
-	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0)
 	switch (rx_vect1->ch_bw) {
 	case PHY_CHNL_BW_20:
 		sinfo->rxrate.bw = RATE_INFO_BW_20;
@@ -5243,7 +5237,6 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 	#endif
 		break;
 	}
-	#endif
 
 	switch (rx_vect1->format_mod) {
 	case FORMATMOD_NON_HT:
@@ -5316,15 +5309,6 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
         AICWFDBG(LOGINFO, "rx_phyrate=%d\n", *rx_phyrate);
     }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 0, 0)
-	sinfo->filled |= (STATION_INFO_INACTIVE_TIME |
-					 STATION_INFO_RX_BYTES64 |
-					 STATION_INFO_TX_BYTES64 |
-					 STATION_INFO_RX_PACKETS |
-					 STATION_INFO_TX_PACKETS |
-					 STATION_INFO_SIGNAL |
-					 STATION_INFO_RX_BITRATE);
-#else
 	sinfo->filled |= (BIT(NL80211_STA_INFO_INACTIVE_TIME) |
 					 BIT(NL80211_STA_INFO_RX_BYTES64)    |
 					 BIT(NL80211_STA_INFO_TX_BYTES64)    |
@@ -5332,7 +5316,6 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 					 BIT(NL80211_STA_INFO_TX_PACKETS)    |
 					 BIT(NL80211_STA_INFO_SIGNAL)        |
 					 BIT(NL80211_STA_INFO_RX_BITRATE));
-#endif
 
 	return 0;
 }
@@ -5431,21 +5414,12 @@ static int rwnx_cfg80211_dump_station(struct wiphy *wiphy, struct net_device *de
     sinfo->peer_pm = peer_info_cfm.peer_ps_mode;
     sinfo->nonpeer_pm = peer_info_cfm.non_peer_ps_mode;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 0, 0)
-    sinfo->filled = (STATION_INFO_LLID |
-                     STATION_INFO_PLID |
-                     STATION_INFO_PLINK_STATE |
-                     STATION_INFO_LOCAL_PM |
-                     STATION_INFO_PEER_PM |
-                     STATION_INFO_NONPEER_PM);
-#else
     sinfo->filled = (BIT(NL80211_STA_INFO_LLID) |
                      BIT(NL80211_STA_INFO_PLID) |
                      BIT(NL80211_STA_INFO_PLINK_STATE) |
                      BIT(NL80211_STA_INFO_LOCAL_PM) |
                      BIT(NL80211_STA_INFO_PEER_PM) |
                      BIT(NL80211_STA_INFO_NONPEER_PM));
-#endif
 #endif
 
     if (sta){
