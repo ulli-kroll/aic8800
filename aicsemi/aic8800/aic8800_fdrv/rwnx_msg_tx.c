@@ -1296,11 +1296,7 @@ int rwnx_send_rf_calib_req(struct rwnx_hw *rwnx_hw, struct mm_set_rf_calib_cfm *
 				return -4;
 			}
 
-		#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 13, 16)
 			rdlen = kernel_read(fp, buffer, size, &fp->f_pos);
-		#else
-			rdlen = kernel_read(fp, fp->f_pos, buffer, size);
-		#endif
 			//rwnx_data_dump("cal_res.res_data",buffer,size);
 			
 			if (size != rdlen) 
