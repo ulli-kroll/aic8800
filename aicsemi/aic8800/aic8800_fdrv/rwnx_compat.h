@@ -160,21 +160,8 @@ enum ieee80211_radiotap_he_mu_bits {
 };
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
-#define rwnx_cfg80211_add_iface(wiphy, name, name_assign_type, type, params) \
-    rwnx_cfg80211_add_iface(wiphy, name, name_assign_type, type, u32 *flags, params)
-
-#define rwnx_cfg80211_change_iface(wiphy, dev, type, params) \
-    rwnx_cfg80211_change_iface(wiphy, dev, type, u32 *flags, params)
-
-#define CCFS0(vht) vht->center_freq_seg1_idx
-#define CCFS1(vht) vht->center_freq_seg2_idx
-
-#else
 #define CCFS0(vht) vht->center_freq_seg0_idx
 #define CCFS1(vht) vht->center_freq_seg1_idx
-
-#endif
 
 #if (0) && !(defined CONFIG_VENDOR_RWNX)
 #define ieee80211_chandef_to_operating_class(chan_def, op_class) 0
@@ -206,20 +193,6 @@ enum {
     rwnx_ops_mgd_prepare_tx(hw, vif)
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
-
-#define RX_ENC_HT(s) s->flag |= RX_FLAG_HT
-#define RX_ENC_HT_GF(s) s->flag |= (RX_FLAG_HT | RX_FLAG_HT_GF)
-#define RX_ENC_VHT(s) s->flag |= RX_FLAG_HT
-#define RX_ENC_HE(s) s->flag |= RX_FLAG_HT
-#define RX_ENC_FLAG_SHORT_GI(s) s->flag |= RX_FLAG_SHORT_GI
-#define RX_ENC_FLAG_SHORT_PRE(s) s->flag |= RX_FLAG_SHORTPRE
-#define RX_ENC_FLAG_LDPC(s) s->flag |= RX_FLAG_LDPC
-#define RX_BW_40MHZ(s) s->flag |= RX_FLAG_40MHZ
-#define RX_BW_80MHZ(s) s->vht_flag |= RX_VHT_FLAG_80MHZ
-#define RX_BW_160MHZ(s) s->vht_flag |= RX_VHT_FLAG_160MHZ
-#define RX_NSS(s) s->vht_nss
-
 #else
 #define RX_ENC_HT(s) s->encoding = RX_ENC_HT
 #define RX_ENC_HT_GF(s) { s->encoding = RX_ENC_HT;      \
@@ -237,8 +210,6 @@ enum {
 #define RX_BW_80MHZ(s) s->bw = RATE_INFO_BW_80
 #define RX_BW_160MHZ(s) s->bw = RATE_INFO_BW_160
 #define RX_NSS(s) s->nss
-
-#endif
 
 #ifndef CONFIG_VENDOR_RWNX_AMSDUS_TX
 #endif /* CONFIG_VENDOR_RWNX_AMSDUS_TX */

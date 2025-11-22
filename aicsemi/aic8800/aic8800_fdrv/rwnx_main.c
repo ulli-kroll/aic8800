@@ -1686,11 +1686,7 @@ static void rwnx_netdev_setup(struct net_device *dev)
     ether_setup(dev);
     dev->priv_flags &= ~IFF_TX_SKB_SHARING;
     dev->netdev_ops = &rwnx_netdev_ops;
-#if LINUX_VERSION_CODE <  KERNEL_VERSION(4, 12, 0)
-    dev->destructor = free_netdev;
-#else
     dev->needs_free_netdev = true;
-#endif
     dev->watchdog_timeo = RWNX_TX_LIFETIME_MS;
 
     dev->needed_headroom = sizeof(struct rwnx_txhdr) + RWNX_SWTXHDR_ALIGN_SZ - 14;
@@ -8376,9 +8372,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
     wiphy->extended_capabilities_mask = rwnx_hw->ext_capa;
     wiphy->extended_capabilities_len = ARRAY_SIZE(rwnx_hw->ext_capa);
 #ifdef CONFIG_SCHED_SCAN
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
     wiphy->max_sched_scan_reqs = 1;
-#endif
     wiphy->max_sched_scan_ssids = SCAN_SSID_MAX;//16;
     wiphy->max_match_sets = SCAN_SSID_MAX;//16;
     wiphy->max_sched_scan_ie_len = 2048;
