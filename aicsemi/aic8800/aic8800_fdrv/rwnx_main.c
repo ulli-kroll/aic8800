@@ -1203,17 +1203,10 @@ finish:
 	mod_timer(&rwnx_vif->steer_timer, jiffies + msecs_to_jiffies(STEER_UPFATE_TIME));
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-void aicwf_steering_timeout(ulong data)
-#else
 void aicwf_steering_timeout(struct timer_list *t)
-#endif
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-	struct rwnx_vif *rwnx_vif = (struct rwnx_vif *)data;
-#else
 	struct rwnx_vif *rwnx_vif = container_of(t, struct rwnx_vif, steer_timer);
-#endif
+
 
 	if (rwnx_vif->up == false) {
 		AICWFDBG(LOGERROR, "%s vif is down\n", __func__);
@@ -2979,11 +2972,7 @@ static int rwnx_cfg80211_disconnect(struct wiphy *wiphy, struct net_device *dev,
 
 static int rwnx_cfg80211_sched_scan_stop(struct wiphy *wiphy,
 					   struct net_device *ndev
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
 					   ,u64 reqid)
-#else
-                        )
-#endif
 {
 
 	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
@@ -3779,13 +3768,7 @@ static int rwnx_cfg80211_start_ap(struct wiphy *wiphy, struct net_device *dev,
 
 #ifdef CONFIG_BAND_STEERING
 	if (!error) {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-		init_timer(&rwnx_vif->steer_timer);
-		rwnx_vif->steer_timer.data = (ulong)rwnx_vif;
-		rwnx_vif->steer_timer.function = aicwf_steering_timeout;
-#else
 		timer_setup(&rwnx_vif->steer_timer, aicwf_steering_timeout, 0);
-#endif
 		aicwf_nl_hook(rwnx_vif, rwnx_vif->ap.band, rwnx_vif->rwnx_hw->iface_idx);
 
 		INIT_WORK(&rwnx_vif->steer_work, aicwf_steering_work);
@@ -8528,13 +8511,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
 		rwnx_hw->pwrloss_lvl = 0;
 		rwnx_hw->sta_rssi_idx = 0;
 		rwnx_hw->read_rssi_vif = vif;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
-		init_timer(&rwnx_hw->pwrloss_timer);
-		rwnx_hw->pwrloss_timer.data = (ulong) vif;
-		rwnx_hw->pwrloss_timer.function = aicwf_pwrloss_timer;
-#else
 		timer_setup(&rwnx_hw->pwrloss_timer, aicwf_pwrloss_timer, 0);
-#endif
 		INIT_WORK(&rwnx_hw->pwrloss_work, aicwf_pwrloss_worker);
 		mod_timer(&rwnx_hw->pwrloss_timer, jiffies + msecs_to_jiffies(RSSI_GET_INTERVAL));
 #endif
