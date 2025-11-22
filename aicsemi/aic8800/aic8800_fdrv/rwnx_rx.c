@@ -1057,11 +1057,7 @@ static void rwnx_rx_add_rtap_hdr(struct rwnx_hw* rwnx_hw,
             *pos |= IEEE80211_RADIOTAP_MCS_FMT_GF;
         if (fec_coding)
             *pos |= IEEE80211_RADIOTAP_MCS_FEC_LDPC;
-        #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
-        *pos++ |= stbc << 5;
-        #else
         *pos++ |= stbc << IEEE80211_RADIOTAP_MCS_STBC_SHIFT;
-        #endif
         *pos++ = rate_idx;
     }
 

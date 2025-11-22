@@ -670,12 +670,7 @@ static inline int rwnx_rx_scanu_result_ind(struct rwnx_hw *rwnx_hw,
     chan = ieee80211_get_channel(rwnx_hw->wiphy, ind->center_freq);
 
     if (chan != NULL) {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
-        struct timespec ts;
-        get_monotonic_boottime(&ts);
-        tsf = (u64)ts.tv_sec * 1000000 + div_u64(ts.tv_nsec, 1000);
-        mgmt->u.probe_resp.timestamp = ((u64)ts.tv_sec*1000000) + ts.tv_nsec/1000;
-#elif LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
         struct timespec ts;
         ts = ktime_to_timespec(ktime_get_boottime());
         tsf = (u64)ts.tv_sec * 1000000 + div_u64(ts.tv_nsec, 1000);
