@@ -2854,13 +2854,11 @@ static int rwnx_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 #endif
 	sme->key_idx, false, NULL, &key_params);
     }
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
     else if ((sme->auth_type == NL80211_AUTHTYPE_SAE) &&
              !(sme->flags & CONNECT_REQ_EXTERNAL_AUTH_SUPPORT)) {
         netdev_err(dev, "Doesn't support SAE without external authentication\n");
         return -EINVAL;
     }
-#endif
 
     if (rwnx_vif->wdev.iftype == NL80211_IFTYPE_P2P_CLIENT) {
         rwnx_hw->is_p2p_connected = 1;
@@ -3043,7 +3041,6 @@ static int rwnx_cfg80211_sched_scan_start(struct wiphy *wiphy,
 #endif //CONFIG_SCHED_SCAN
 
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
 /**
  * @external_auth: indicates result of offloaded authentication processing from
  *     user space
@@ -3062,7 +3059,6 @@ static int rwnx_cfg80211_external_auth(struct wiphy *wiphy, struct net_device *d
     return rwnx_send_sm_external_auth_required_rsp(rwnx_hw, rwnx_vif,
                                                    params->status);
 }
-#endif
 
 /**
  * @add_station: Add a new station.
@@ -3471,17 +3467,10 @@ void apm_probe_sta_work_process(struct work_struct *work)
 	   spin_unlock_bh(&rwnx_vif->rwnx_hw->cb_lock);
 
        printk("sta %pM found = %d\n", mac, found);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
        if(found)
                cfg80211_probe_status(rwnx_vif->ndev, mac, (u64)rwnx_vif->sta_probe.probe_id, 1, 0, false, GFP_ATOMIC);
        else
                cfg80211_probe_status(rwnx_vif->ndev, mac, (u64)rwnx_vif->sta_probe.probe_id, 0, 0, false, GFP_ATOMIC);
-#else
-       if(found)
-                cfg80211_probe_status(rwnx_vif->ndev, mac, (u64)rwnx_vif->sta_probe.probe_id, 1, GFP_ATOMIC);
-        else
-                cfg80211_probe_status(rwnx_vif->ndev, mac, (u64)rwnx_vif->sta_probe.probe_id, 0, GFP_ATOMIC);
-#endif
        rwnx_vif->sta_probe.probe_id ++;
 }
 
@@ -5802,9 +5791,7 @@ static struct cfg80211_ops rwnx_cfg80211_ops = {
     //.tdls_mgmt = rwnx_cfg80211_tdls_mgmt,
     //.tdls_oper = rwnx_cfg80211_tdls_oper,
     .change_bss = rwnx_cfg80211_change_bss,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
     .external_auth = rwnx_cfg80211_external_auth,
-#endif
 #ifdef CONFIG_SCHED_SCAN
     .sched_scan_start = rwnx_cfg80211_sched_scan_start,
     .sched_scan_stop = rwnx_cfg80211_sched_scan_stop,
@@ -8304,9 +8291,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODUCT_ID_AIC8801) ||
         NL80211_FEATURE_AP_MODE_CHAN_WIDTH_CHANGE |
         0;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
     wiphy->features |= NL80211_FEATURE_SAE;
-#endif
 
     if (rwnx_mod_params.tdls)
         /* TDLS support */
