@@ -149,37 +149,6 @@ extern char country_code[];
     .ppe_thres = {0x08, 0x1c, 0x07},                            \
 }
 #else
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
-#define RWNX_HE_CAPABILITIES                                    \
-{                                                               \
-    .has_he = false,                                            \
-    .he_cap_elem = {                                            \
-        .mac_cap_info[0] = 0,                                   \
-        .mac_cap_info[1] = 0,                                   \
-        .mac_cap_info[2] = 0,                                   \
-        .mac_cap_info[3] = 0,                                   \
-        .mac_cap_info[4] = 0,                                   \
-        .phy_cap_info[0] = 0,                                   \
-        .phy_cap_info[1] = 0,                                   \
-        .phy_cap_info[2] = 0,                                   \
-        .phy_cap_info[3] = 0,                                   \
-        .phy_cap_info[4] = 0,                                   \
-        .phy_cap_info[5] = 0,                                   \
-        .phy_cap_info[6] = 0,                                   \
-        .phy_cap_info[7] = 0,                                   \
-        .phy_cap_info[8] = 0,                                   \
-    },                                                          \
-    .he_mcs_nss_supp = {                                        \
-        .rx_mcs_80 = cpu_to_le16(0xfffa),                       \
-        .tx_mcs_80 = cpu_to_le16(0xfffa),                       \
-        .rx_mcs_160 = cpu_to_le16(0xffff),                      \
-        .tx_mcs_160 = cpu_to_le16(0xffff),                      \
-        .rx_mcs_80p80 = cpu_to_le16(0xffff),                    \
-        .tx_mcs_80p80 = cpu_to_le16(0xffff),                    \
-    },                                                          \
-    .ppe_thres = {0x08, 0x1c, 0x07},                            \
-}
-#endif
 #endif
 
 #define RATE(_bitrate, _hw_rate, _flags) {      \
@@ -332,12 +301,10 @@ static struct ieee80211_channel rwnx_5ghz_channels[] = {
 };
 //#endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
 struct ieee80211_sband_iftype_data rwnx_he_capa = {
     .types_mask = BIT(NL80211_IFTYPE_STATION)|BIT(NL80211_IFTYPE_AP),
     .he_cap = RWNX_HE_CAPABILITIES,
 };
-#endif
 
 static struct ieee80211_supported_band rwnx_band_2GHz = {
     .channels   = rwnx_2ghz_channels,
@@ -346,10 +313,8 @@ static struct ieee80211_supported_band rwnx_band_2GHz = {
     .n_bitrates = ARRAY_SIZE(rwnx_ratetable),
     .ht_cap     = RWNX_HT_CAPABILITIES,
     .vht_cap    = RWNX_VHT_CAPABILITIES,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
     .iftype_data = &rwnx_he_capa,
     .n_iftype_data = 1,
-#endif
 };
 
 //#ifdef USE_5G
@@ -360,10 +325,8 @@ static struct ieee80211_supported_band rwnx_band_5GHz = {
     .n_bitrates = ARRAY_SIZE(rwnx_ratetable) - 4,
     .ht_cap     = RWNX_HT_CAPABILITIES,
     .vht_cap    = RWNX_VHT_CAPABILITIES,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
     .iftype_data = &rwnx_he_capa,
     .n_iftype_data = 1,
-#endif
 };
 //#endif
 
@@ -5082,7 +5045,6 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
         //printk("phyrate: %d,%d,%d,%d\n", sinfo->txrate.nss - 1, rate_info->giAndPreTypeTx, rate_info->bwTx, sinfo->txrate.mcs);
         phymode_local = PHYMODE_AC;
 		break;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	case FORMATMOD_HE_MU:
 	case FORMATMOD_HE_SU:
 	case FORMATMOD_HE_ER:
@@ -5093,17 +5055,6 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
         phymode_local = PHYMODE_AX;
         //printk("phyrate: %d,%d,%d,%d\n", sinfo->txrate.nss - 1, rate_info->giAndPreTypeTx, rate_info->bwTx, sinfo->txrate.mcs);
 		break;
-#else
-	case FORMATMOD_HE_MU:
-	case FORMATMOD_HE_SU:
-	case FORMATMOD_HE_ER:
-		sinfo->txrate.flags = RATE_INFO_FLAGS_VHT_MCS;
-		sinfo->txrate.mcs = ((rate_info->mcsIndexTx & 0xF) > 9 ? 9 : (rate_info->mcsIndexTx & 0xF));
-        sinfo->txrate.nss = ((rate_info->mcsIndexTx >> 4) & 0x7) + 1;
-        tx_phyrate_local = he_mcs_map_to_rate[sinfo->txrate.nss - 1][rate_info->giAndPreTypeTx][rate_info->bwTx][sinfo->txrate.mcs];
-        phymode_local = PHYMODE_AX;
-		break;
-#endif
 	default:
 		return -EINVAL;
 	}
@@ -5128,11 +5079,7 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 		sinfo->txrate.bw = RATE_INFO_BW_160;
 		break;
 	default:
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 		sinfo->txrate.bw = RATE_INFO_BW_HE_RU;
-#else
-		sinfo->txrate.bw = RATE_INFO_BW_20;
-#endif
 		break;
 	}
 
@@ -5159,12 +5106,8 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
 		sinfo->rxrate.bw = RATE_INFO_BW_160;
 		break;
 	default:
-	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 		sinfo->rxrate.bw = RATE_INFO_BW_HE_RU;
-	#else
-		sinfo->rxrate.bw = RATE_INFO_BW_20;
-	#endif
-		break;
+	break;
 	}
 
 	switch (rx_vect1->format_mod) {
@@ -5205,7 +5148,6 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
         rx_phyrate_local = vht_mcs_map_to_rate[rx_vect1->vht.nss][rx_vect1->vht.short_gi][rx_vect1->ch_bw][sinfo->rxrate.mcs];
         //printk("rx:%d,%d,%d,%d\n", rx_vect1->vht.nss, rx_vect1->vht.short_gi, rx_vect1->ch_bw, sinfo->rxrate.mcs);
 		break;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	case FORMATMOD_HE_MU:
 		sinfo->rxrate.he_ru_alloc = rx_vect1->he.ru_size;
 	case FORMATMOD_HE_SU:
@@ -5219,16 +5161,6 @@ int rwnx_fill_station_info(struct rwnx_sta *sta, struct rwnx_vif *vif,
         sinfo->rxrate.nss = rx_vect1->he.nss + 1;
         rx_phyrate_local = he_mcs_map_to_rate[rx_vect1->he.nss][rx_vect1->he.gi_type][rx_vect1->ch_bw][sinfo->rxrate.mcs];
 		break;
-#else
-	//kernel not support he
-	case FORMATMOD_HE_MU:
-	case FORMATMOD_HE_SU:
-	case FORMATMOD_HE_ER:
-		sinfo->rxrate.flags = RATE_INFO_FLAGS_VHT_MCS;
-		sinfo->rxrate.mcs = (rx_vect1->he.mcs > 9 ? 9 : rx_vect1->he.mcs);
-        sinfo->rxrate.nss = rx_vect1->he.nss + 1;
-		break;
-#endif
 	default:
 		return -EINVAL;
 	}

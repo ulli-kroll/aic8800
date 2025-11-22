@@ -946,7 +946,6 @@ static void rwnx_set_ht_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 
 static void rwnx_set_he_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
 	//#ifdef USE_5G
     struct ieee80211_supported_band *band_5GHz = wiphy->bands[NL80211_BAND_5GHZ];
 	//#endif
@@ -1224,7 +1223,6 @@ static void rwnx_set_he_capa(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
 	    }
 	}
 //#endif
-#endif
 }
 
 static void rwnx_set_wiphy_params(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
