@@ -4606,9 +4606,7 @@ static
 int rwnx_cfg80211_start_radar_detection(struct wiphy *wiphy,
                                         struct net_device *dev,
                                         struct cfg80211_chan_def *chandef
-                                    #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
                                         , u32 cac_time_ms
-                                    #endif
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0))
                                         , int link_id
 #endif
@@ -4620,9 +4618,7 @@ int rwnx_cfg80211_start_radar_detection(struct wiphy *wiphy,
 
 	printk("%s\n", __func__);
 
-    #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
     rwnx_radar_start_cac(&rwnx_hw->radar, cac_time_ms, rwnx_vif);
-    #endif
     rwnx_send_apm_start_cac_req(rwnx_hw, rwnx_vif, chandef, &cfm);
 
     if (cfm.status == CO_OK) {
@@ -4803,18 +4799,13 @@ rwnx_cfg80211_tdls_mgmt(struct wiphy *wiphy,
 	u8 action_code,
 	u8 dialog_token,
 	u16 status_code,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0)
 	u32 peer_capability,
-#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0)
 	bool initiator,
 #endif
 	const u8 *buf,
 	size_t len)
 {
-    #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0)
-    u32 peer_capability = 0;
-    #endif
     #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
     bool initiator = false;
     #endif

@@ -1472,14 +1472,7 @@ int rwnx_start_mgmt_xmit(struct rwnx_vif *vif, struct rwnx_sta *sta,
     /* Copy the provided data */
     memcpy(data, buf, frame_len);
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
     robust = ieee80211_is_robust_mgmt_frame(skb);
-#else
-	if (skb->len < 25){
-		robust = false;
-	}
-	robust = ieee80211_is_robust_mgmt_frame((void *)skb->data);
-#endif
 
     #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0))
     /* Update CSA counter if present */
@@ -1645,13 +1638,7 @@ void rwnx_probersp_work(struct work_struct *work)
 	memcpy (mgmt->da, rsp->da, ETH_ALEN);
 	rsp->in_use = false;
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
 	robust = ieee80211_is_robust_mgmt_frame(skb);
-#else
-	if (skb->len < 25)
-		robust = false;
-	robust = ieee80211_is_robust_mgmt_frame((void *)skb->data);
-#endif
 
 	sta = rwnx_retrieve_sta(rwnx_hw, rwnx_vif, mgmt->da, mgmt->frame_control, true);
 	if (sta) {
@@ -1734,9 +1721,6 @@ free_use:
  *  - If possible (i.e. credit available and not in PS) the pkt is pushed
  *    to fw
  */
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0))
-#define IEEE80211_RADIOTAP_CODING_LDPC_USER0			0x01
-#endif
 
 netdev_tx_t rwnx_start_monitor_if_xmit(struct sk_buff *skb, struct net_device *dev)
 {
@@ -2001,11 +1985,7 @@ netdev_tx_t rwnx_start_monitor_if_xmit(struct sk_buff *skb, struct net_device *d
     /* Copy the provided data */
     memcpy(data, pframe, frame_len);
     robust = ieee80211_is_robust_mgmt_frame(
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0))
-		(void*)skb_mgmt
-#else
 		skb_mgmt
-#endif
 		);
     skb_push(skb_mgmt, headroom);
     /* Fill the TX Header */
