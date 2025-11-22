@@ -757,15 +757,11 @@ rwnx_tdls_send_mgmt_packet_data(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_v
 
     if (action_code == WLAN_PUB_ACTION_TDLS_DISCOVER_RES) {
         u64 cookie;
-        #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
         struct cfg80211_mgmt_tx_params params;
 
         params.len = skb->len;
         params.buf = skb->data;
         ret = rwnx_start_mgmt_xmit(rwnx_vif, NULL, &params, false, &cookie);
-        #else
-        ret = rwnx_start_mgmt_xmit(rwnx_vif, NULL, NULL, false, 0, skb->data, skb->len, false, false, &cookie);
-        #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0) */
 
         return ret;
     }
