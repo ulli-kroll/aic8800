@@ -1816,7 +1816,7 @@ void aicwf_p2p_alive_timeout(struct timer_list *t)
     struct rwnx_vif *rwnx_vif;
     struct rwnx_vif *rwnx_vif1, *tmp;
     u8_l p2p = 0;
-    rwnx_hw = from_timer(rwnx_hw, t, p2p_alive_timer);
+    rwnx_hw = timer_container_of(rwnx_hw, t, p2p_alive_timer);
     rwnx_vif = rwnx_hw->p2p_dev_vif;
 
 	//printk("%s enter %d \r\n", __func__, atomic_read(&rwnx_hw->p2p_alive_timer_count));

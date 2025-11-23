@@ -7,18 +7,11 @@
 
 struct wakeup_source *rwnx_wakeup_init(const char *name)
 {
-	struct wakeup_source *ws;
-	ws = wakeup_source_create(name);
-	wakeup_source_add(ws);
-	return ws;
+	return NULL;
 }
 
 void rwnx_wakeup_deinit(struct wakeup_source *ws)
 {
-	if (ws && ws->active)
-		__pm_relax(ws);
-	wakeup_source_remove(ws);
-	wakeup_source_destroy(ws);
 }
 
 struct wakeup_source *rwnx_wakeup_register(struct device *dev, const char *name)

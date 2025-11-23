@@ -1630,7 +1630,7 @@ void reord_timeout_handler (struct timer_list *t)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
 	struct reord_ctrl *preorder_ctrl = (struct reord_ctrl *)data;
 #else
-	struct reord_ctrl *preorder_ctrl = from_timer(preorder_ctrl, t, reord_timer);
+	struct reord_ctrl *preorder_ctrl = timer_container_of(preorder_ctrl, t, reord_timer);
 #endif
 
 	AICWFDBG(LOGTRACE, "%s Enter \r\n", __func__);
@@ -1948,7 +1948,7 @@ void rwnx_rxdata_process_amsdu(struct rwnx_hw *rwnx_hw, struct sk_buff *skb, u8 
 void defrag_timeout_cb(struct timer_list *t)
 {
 	struct defrag_ctrl_info *defrag_ctrl = NULL;
-	defrag_ctrl = from_timer(defrag_ctrl, t, defrag_timer);
+	defrag_ctrl = timer_container_of(defrag_ctrl, t, defrag_timer);
 
 	printk("%s:%p\r\n", __func__, defrag_ctrl);
 	spin_lock_bh(&defrag_ctrl->rwnx_hw->defrag_lock);
