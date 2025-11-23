@@ -3897,7 +3897,7 @@ void rwnx_cfg80211_mgmt_frame_register(struct wiphy *wiphy,
  *	have changed. The actual parameter values are available in
  *	struct wiphy. If returning an error, no value should be changed.
  */
-static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, u32 changed)
+static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, int radio_idx, u32 changed)
 {
     return 0;
 }
@@ -3912,7 +3912,7 @@ static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, u32 changed)
  */
 static int rwnx_cfg80211_set_tx_power(struct wiphy *wiphy,
  struct wireless_dev *wdev,
-                                      enum nl80211_tx_power_setting type, int mbm)
+                                      int radio_idx, enum nl80211_tx_power_setting type, int mbm)
 {
     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
     struct rwnx_vif *vif;
