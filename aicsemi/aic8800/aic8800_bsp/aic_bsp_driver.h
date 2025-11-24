@@ -236,12 +236,6 @@ enum dbg_msg_tag {
 	DBG_MAX,
 };
 
-#if !defined(CONFIG_M2D_OTA_LZMA_SUPPORT)
-#define FW_M2D_OTA_NAME                 "m2d_ota.bin"
-#else
-#define FW_M2D_OTA_NAME                 "m2d_ota_lzma.bin"
-#endif
-
 enum {
 	HOST_START_APP_AUTO = 1,
 	HOST_START_APP_CUSTOM,
@@ -485,17 +479,6 @@ enum chip_rev {
 	CHIP_REV_U04 = 7,
 };
 
-#define AIC_M2D_OTA_INFO_ADDR       0x88000020
-#define AIC_M2D_OTA_DATA_ADDR       0x88000040
-#if !defined(CONFIG_M2D_OTA_LZMA_SUPPORT)
-#define AIC_M2D_OTA_FLASH_ADDR      0x08004000
-#define AIC_M2D_OTA_CODE_START_ADDR (AIC_M2D_OTA_FLASH_ADDR + 0x0188)
-#define AIC_M2D_OTA_VER_ADDR        (AIC_M2D_OTA_FLASH_ADDR + 0x018C)
-#else
-#define AIC_M2D_OTA_FLASH_ADDR      0x08005000
-#define AIC_M2D_OTA_CODE_START_ADDR (AIC_M2D_OTA_FLASH_ADDR + 0x1188)
-#define AIC_M2D_OTA_VER_ADDR        (AIC_M2D_OTA_FLASH_ADDR + 0x0010)
-#endif
 ///aic bt tx pwr lvl :lsb->msb: first byte, min pwr lvl; second byte, max pwr lvl;
 ///pwr lvl:20(min), 30 , 40 , 50 , 60(max)
 #define AICBT_TXPWR_LVL            0x00006020
