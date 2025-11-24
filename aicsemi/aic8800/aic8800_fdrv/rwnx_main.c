@@ -860,12 +860,6 @@ static int rwnx_open(struct net_device *dev)
 		}
 	}
 
-#ifdef AICWF_LATENCY_MODE
-	if ((testmode == 0) && (RWNX_VIF_TYPE(rwnx_vif) == NL80211_IFTYPE_STATION || RWNX_VIF_TYPE(rwnx_vif) == NL80211_IFTYPE_P2P_CLIENT)) {
-		rwnx_send_me_set_lp_level(rwnx_hw, 1, 1);
-	}
-#endif
-
 #ifdef CONFIG_GPIO_WAKEUP
 //close lp mode
 //	rwnx_send_me_set_lp_level(g_rwnx_plat->sdiodev->rwnx_hw, 0);
