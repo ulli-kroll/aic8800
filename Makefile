@@ -4,8 +4,6 @@ EXTRA_CFLAGS += -Wno-implicit-fallthrough
 #EXTRA_CFLAGS += -Wno-maybe-uninitialized
 #EXTRA_CFLAGS += -Wno-unused-variable
 
-RWNX_VERS_NUM := 6.4.3.0
-
 CONFIG_COUNTRY_CODE = "00"
 
 CONFIG_AIC8800_WLAN_SUPPORT = m
