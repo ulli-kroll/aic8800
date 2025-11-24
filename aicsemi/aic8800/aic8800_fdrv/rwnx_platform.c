@@ -2316,11 +2316,7 @@ static int rwnx_check_fw_compatibility(struct rwnx_hw *rwnx_hw)
 {
 	struct ipc_shared_env_tag *shared = rwnx_hw->ipc_env->shared;
 	struct wiphy *wiphy = rwnx_hw->wiphy;
-	#ifdef CONFIG_RWNX_OLD_IPC
-	int ipc_shared_version = 10;
-	#else //CONFIG_RWNX_OLD_IPC
 	int ipc_shared_version = 11;
-	#endif //CONFIG_RWNX_OLD_IPC
 	int res = 0;
 
 	if (shared->comp_info.ipc_shared_version != ipc_shared_version) {

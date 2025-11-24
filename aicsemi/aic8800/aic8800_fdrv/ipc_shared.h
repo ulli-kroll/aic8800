@@ -608,9 +608,6 @@ extern struct ipc_shared_env_tag ipc_shared_env;
 // IRQs from app to emb
 /// Interrupts bits used for the TX descriptors of the AC queues
 #ifdef CONFIG_RWNX_MUMIMO_TX
-#ifdef CONFIG_RWNX_OLD_IPC
-#error "MU-MIMO cannot be compiled for old IPC"
-#endif
 /// Interrupts bits used
 #if CONFIG_USER_MAX > 3
 #define IPC_IRQ_A2E_USER_MSK       0xF
@@ -671,9 +668,6 @@ extern struct ipc_shared_env_tag ipc_shared_env;
 #define IPC_IRQ_E2A_TXCFM_POS   7
 
 #ifdef CONFIG_RWNX_MUMIMO_TX
-#ifdef CONFIG_RWNX_OLD_IPC
-#error "MU-MIMO cannot be compiled for old IPC"
-#endif
 /// Interrupts bits used
 #if CONFIG_USER_MAX > 3
 #define IPC_IRQ_E2A_USER_MSK       0xF

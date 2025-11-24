@@ -35,9 +35,6 @@ endif
 # DEBUG OPTIONS
 CONFIG_RWNX_UM_HELPER_DFLT ?= "/dini/dini_bin/rwnx_umh.sh"
 
-# IPC version
-CONFIG_RWNX_OLD_IPC ?= n
-
 # Support of P2P DebugFS for enabling/disabling NoA and OppPS
 CONFIG_RWNX_P2P_DEBUGFS := n
 #
@@ -195,7 +192,6 @@ ccflags-y += -DNX_TX_MAX_RATES=4
 ccflags-y += -DNX_CHAN_CTXT_CNT=3
 
 # FW ARCH:
-ccflags-$(CONFIG_RWNX_OLD_IPC) += -DCONFIG_RWNX_OLD_IPC
 ccflags-$(CONFIG_START_FROM_BOOTROM) += -DCONFIG_START_FROM_BOOTROM
 ccflags-$(CONFIG_PMIC_SETTING) += -DCONFIG_PMIC_SETTING
 ccflags-$(CONFIG_VRF_DCDC_MODE) += -DCONFIG_VRF_DCDC_MODE
