@@ -3166,9 +3166,6 @@ int rwnx_platform_on(struct rwnx_hw *rwnx_hw, void *config)
 	if (rwnx_plat->enabled)
 		return 0;
 
-	#ifndef CONFIG_ROM_PATCH_EN
-	#endif
-
 #if 0
 		ret = rwnx_plat_patch_load(rwnx_hw);
 		if (ret) {
