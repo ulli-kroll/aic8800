@@ -29,11 +29,6 @@
 #include "aic_bsp_export.h"
 extern uint8_t scanning;
 
-#ifdef CONFIG_SDIO_ADMA
-unsigned char sdio_tx_buf_fill[512];
-unsigned char sdio_tx_buf_dummy[SDIO_TX_SLIST_MAX][8];
-#endif
-
 #ifdef CONFIG_GPIO_WAKEUP
 extern int rwnx_send_me_set_lp_level(struct rwnx_hw *rwnx_hw, u8 lp_level, u8 disable_filter);
 
@@ -1195,230 +1190,6 @@ int aicwf_sdio_txpkt(struct aic_sdio_dev *sdiodev, struct sk_buff *pkt)
 	return ret;
 }
 
-#ifdef CONFIG_SDIO_ADMA
-int aicwf_sdio_txscatterpkt(struct aicwf_tx_priv *tx_priv)
-{
-	int ret = 0;
-	u8 *frame;
-	u32 len = 0;
-	struct aicwf_bus *bus_if = dev_get_drvdata(tx_priv->sdiodev->dev);
-	struct aic_sdio_dev *sdiodev = tx_priv->sdiodev;
-	int nents = tx_priv->aggr_segcnt;
-	int i=0;
-
-	if (bus_if->state == BUS_DOWN_ST) {
-		sdio_dbg("tx bus is down!\n");
-		return -EINVAL;
-	}
-
-	//AICWFDBG(LOGTRACE,"%s aggr_segcnt %d len %d \n",__func__,tx_priv->aggr_segcnt, tx_priv->len);
-	sdio_claim_host(sdiodev->func);
-	ret = sdio_write_sg(sdiodev->func, sdiodev->sdio_reg.wr_fifo_addr, &(tx_priv->sg_list[0]), tx_priv->aggr_segcnt, tx_priv->len);//&(tx_priv->sg_list[0])
-	//sdio_writesb(sdiodev->func, sdiodev->sdio_reg.wr_fifo_addr, tx_priv->sg_list[0].buf, tx_priv->sg_list[0].len);
-	/*for(i=0;i<1;i++){
-		sdio_writesb(sdiodev->func, sdiodev->sdio_reg.wr_fifo_addr, tx_priv->sg_list[i].buf, tx_priv->sg_list[i].len);
-	}*/
-	sdio_release_host(sdiodev->func);
-
-	return ret;
-
-}
-
-void aicwf_adma_add(struct aicwf_tx_priv *tx_priv, struct sk_buff *pkt)
-{
-	u8 adj_len = 0;
-	u8 *sdio_header = NULL;
-    u32 sdio_len = 0;
-    u32 curr_len = 0;
-    unsigned int align_len = 0;
-	u8 *start_ptr = NULL;
-
-	adj_len = ALIGN4_ADJ_LEN((uint32_t)pkt->data);
-	start_ptr = skb_push(pkt,adj_len);	//skb_push(pkt,adj_len)
-	//ASSERT((adj_len==0)||(adj_len==2));        // mgmt-pkt or data-pkt
-    //ASSERT((((uint32_t)start_ptr)&3) == 0);    // start_ptr addr word align
-	if(!((adj_len==0)||(adj_len==2)))
-		AICWFDBG(LOGTRACE,"adj_len false %u \n",adj_len);
-
-	if((((uint32_t)start_ptr)&3) != 0)
-		AICWFDBG(LOGTRACE,"start_ptr %x \n",(((uint32_t)start_ptr)&3));
-
-	//AICWFDBG(LOGTRACE,"start adj_len %d aggrcnt %d segcnt %d len %d \n",adj_len,atomic_read(&tx_priv->aggr_count),tx_priv->aggr_segcnt,tx_priv->len);
-
-	if (adj_len==0) {
-		sdio_len = pkt->len + SDIO_MGMT_FAKE_LEN;
-		if (sdio_len & (TX_ALIGNMENT - 1)) {
-            align_len = TX_ALIGNMENT - (sdio_len & (TX_ALIGNMENT - 1));
-            //#ifdef CONFIG_SDIO_ADMA_ADJ
-            //memset(pkt->data + sdio_len,0,align_len);
-            //#endif
-			//skb_put(pkt,align_len);
-            sdio_len += align_len;
-        }
-
-		//AICWFDBG(LOGTRACE,"pkt_len %d  \n",pkt->len);
-		start_ptr = skb_push(pkt, (SDIO_HEADER_LEN+SDIO_MGMT_FAKE_LEN));
-		//AICWFDBG(LOGTRACE,"push_pkt_len %d  \n",pkt->len);
-		sdio_header = start_ptr;
-
-		sdio_header[0] =((sdio_len) & 0xff);
-        sdio_header[1] =(((sdio_len) >> 8)&0x0f);
-        sdio_header[2] = 0x01; //data
-        if (tx_priv->sdiodev->chipid == PRODUCT_ID_AIC8800D80)
-            sdio_header[3] = crc8_ponl_107(&sdio_header[0], 3); // crc8
-        else
-            sdio_header[3] = 0; //reserved
-
-        // fill 4 byte 0x00, need to fasync with data-pkt.
-        sdio_header[4] = 0;
-        sdio_header[5] = 0;
-        sdio_header[6] = 0;
-        sdio_header[7] = 0;
-
-		curr_len = sdio_len + SDIO_HEADER_LEN;
-
-		tx_priv->sg_list[tx_priv->aggr_segcnt].buf = start_ptr;
-		tx_priv->sg_list[tx_priv->aggr_segcnt].len = curr_len;
-		tx_priv->free_buf[tx_priv->aggr_segcnt] = pkt;
-
-		//AICWFDBG(LOGTRACE,"curr_len %d \n",curr_len);
-		//rwnx_data_dump("adj0",pkt->data,((pkt->len>32) ? 32 : pkt->len));
-
-		tx_priv->aggr_segcnt++;
-		atomic_inc(&tx_priv->aggr_count);
-		tx_priv->len += curr_len;
-	}else if (adj_len==1) {
-		sdio_len = pkt->len + 3;
-		if (sdio_len & (TX_ALIGNMENT - 1)) {
-            align_len = TX_ALIGNMENT - (sdio_len & (TX_ALIGNMENT - 1));
-            //#ifdef CONFIG_SDIO_ADMA_ADJ
-            //memset(pkt->data + sdio_len,0,align_len);
-            //#endif
-            //skb_put(pkt,align_len);
-            sdio_len += align_len;
-        }
-
-		sdio_tx_buf_dummy[tx_priv->aggr_segcnt][0] = ((sdio_len) & 0xff);
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][1] = (((sdio_len) >> 8)&0x0f);
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][2] = 0x01; // data
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][3] = 0;
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][4] = 0;
-		sdio_tx_buf_dummy[tx_priv->aggr_segcnt][5] = 0;
-		sdio_tx_buf_dummy[tx_priv->aggr_segcnt][6] = 0;
-
-		tx_priv->sg_list[tx_priv->aggr_segcnt].buf = sdio_tx_buf_dummy[tx_priv->aggr_segcnt];
-        tx_priv->sg_list[tx_priv->aggr_segcnt].len = SDIO_HEADER_LEN + 3;
-		tx_priv->free_buf[tx_priv->aggr_segcnt] =NULL;
-
-		tx_priv->aggr_segcnt++;
-
-		sdio_header = start_ptr;
-        sdio_header[0] = 0;
-
-		curr_len = sdio_len - 3;
-
-		tx_priv->sg_list[tx_priv->aggr_segcnt].buf = start_ptr;
-        tx_priv->sg_list[tx_priv->aggr_segcnt].len = curr_len;
-		tx_priv->free_buf[tx_priv->aggr_segcnt] = pkt;
-
-		//AICWFDBG(LOGTRACE,"curr_len %d \n",curr_len);
-		//rwnx_data_dump("adj1",start_ptr,((curr_len>32) ? 32 : curr_len));
-
-		tx_priv->aggr_segcnt++;
-		atomic_inc(&tx_priv->aggr_count);
-
-		tx_priv->len += curr_len + SDIO_HEADER_LEN + 3;
-
-	}else if (adj_len==2) { // adj_len==2
-		sdio_len = pkt->len + SDIO_DATA_FAKE_LEN;//adj_len +
-		if (sdio_len & (TX_ALIGNMENT - 1)) {
-            align_len = TX_ALIGNMENT - (sdio_len & (TX_ALIGNMENT - 1));
-            //#ifdef CONFIG_SDIO_ADMA_ADJ
-            //memset(pkt->data + sdio_len,0,align_len);
-            //#endif
-            //skb_put(pkt,align_len);
-            sdio_len += align_len;
-        }
-
-		sdio_tx_buf_dummy[tx_priv->aggr_segcnt][0] = ((sdio_len) & 0xff);
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][1] = (((sdio_len) >> 8)&0x0f);
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][2] = 0x01; // data
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][3] = 0;
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][4] = 0;
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][5] = 0;
-
-		tx_priv->sg_list[tx_priv->aggr_segcnt].buf = sdio_tx_buf_dummy[tx_priv->aggr_segcnt];
-        tx_priv->sg_list[tx_priv->aggr_segcnt].len = SDIO_HEADER_LEN + SDIO_DATA_FAKE_LEN;
-		tx_priv->free_buf[tx_priv->aggr_segcnt] =NULL;
-
-        tx_priv->aggr_segcnt++;
-
-		sdio_header = start_ptr;
-        sdio_header[0] = 0;
-        sdio_header[1] = 0;
-
-		curr_len = sdio_len - SDIO_DATA_FAKE_LEN;
-
-        tx_priv->sg_list[tx_priv->aggr_segcnt].buf = start_ptr;
-        tx_priv->sg_list[tx_priv->aggr_segcnt].len = curr_len;
-		tx_priv->free_buf[tx_priv->aggr_segcnt] = pkt;
-
-		//AICWFDBG(LOGTRACE,"curr_len %d \n",curr_len);
-		//rwnx_data_dump("adj2",start_ptr,((curr_len>32) ? 32 : curr_len));
-
-		tx_priv->aggr_segcnt++;
-		atomic_inc(&tx_priv->aggr_count);
-
-		tx_priv->len += curr_len + SDIO_HEADER_LEN + SDIO_DATA_FAKE_LEN;
-	}else if (adj_len==3) {
-		sdio_len = pkt->len + 1;
-		if (sdio_len & (TX_ALIGNMENT - 1)) {
-            align_len = TX_ALIGNMENT - (sdio_len & (TX_ALIGNMENT - 1));
-            //#ifdef CONFIG_SDIO_ADMA_ADJ
-            //memset(pkt->data + sdio_len,0,align_len);
-            //#endif
-            //skb_put(pkt,align_len);
-            sdio_len += align_len;
-        }
-
-		sdio_tx_buf_dummy[tx_priv->aggr_segcnt][0] = ((sdio_len) & 0xff);
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][1] = (((sdio_len) >> 8)&0x0f);
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][2] = 0x01; // data
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][3] = 0;
-        sdio_tx_buf_dummy[tx_priv->aggr_segcnt][4] = 0;
-
-		tx_priv->sg_list[tx_priv->aggr_segcnt].buf = sdio_tx_buf_dummy[tx_priv->aggr_segcnt];
-        tx_priv->sg_list[tx_priv->aggr_segcnt].len = SDIO_HEADER_LEN + 1;
-		tx_priv->free_buf[tx_priv->aggr_segcnt] =NULL;
-
-		tx_priv->aggr_segcnt++;
-
-		sdio_header = start_ptr;
-        sdio_header[0] = 0;
-        sdio_header[1] = 0;
-		sdio_header[2] = 0;
-
-		curr_len = sdio_len - 1;
-
-		tx_priv->sg_list[tx_priv->aggr_segcnt].buf = start_ptr;
-        tx_priv->sg_list[tx_priv->aggr_segcnt].len = curr_len;
-		tx_priv->free_buf[tx_priv->aggr_segcnt] = pkt;
-
-		//AICWFDBG(LOGTRACE,"curr_len %d \n",curr_len);
-		//rwnx_data_dump("adj3",start_ptr,((curr_len>32) ? 32 : curr_len));
-
-		tx_priv->aggr_segcnt++;
-		atomic_inc(&tx_priv->aggr_count);
-
-		tx_priv->len += curr_len + SDIO_HEADER_LEN + 1;
-	}
-
-	//AICWFDBG(LOGTRACE,"end aggrcnt %d segcnt %d len %d \n",atomic_read(&tx_priv->aggr_count),tx_priv->aggr_segcnt,tx_priv->len);
-
-}
-
-#endif
-
 static int aicwf_sdio_intr_get_len_bytemode(struct aic_sdio_dev *sdiodev, u8 *byte_len)
 {
 	int ret = 0;
@@ -1794,22 +1565,12 @@ int aicwf_sdio_send(struct aicwf_tx_priv *tx_priv, u8 txnow)
 	unsigned long flags;
 #endif
 
-#ifdef CONFIG_SDIO_ADMA
-	aggr_len = tx_priv->len;
-#else
 	aggr_len = (tx_priv->tail - tx_priv->head);
-#endif
 
 	if (((atomic_read(&tx_priv->aggr_count) == 0) && (aggr_len != 0))
 		|| ((atomic_read(&tx_priv->aggr_count) != 0) && (aggr_len == 0))) {
 		if (aggr_len > 0){
-#ifdef CONFIG_SDIO_ADMA
-			printk("len %d  seg_cnt %d aggr_cnt %d avail_cnt %d  \n",aggr_len,tx_priv->aggr_segcnt,atomic_read(&tx_priv->aggr_count),tx_priv->fw_avail_bufcnt );
-#endif
             aicwf_sdio_aggrbuf_reset(tx_priv);
-#ifdef CONFIG_SDIO_ADMA
-			printk("set len %d  seg_cnt %d aggr_cnt %d avail_cnt %d \n",aggr_len,tx_priv->aggr_segcnt,atomic_read(&tx_priv->aggr_count),tx_priv->fw_avail_bufcnt );
-#endif
         }
 
 		return 0;
@@ -1845,10 +1606,9 @@ int aicwf_sdio_send(struct aicwf_tx_priv *tx_priv, u8 txnow)
 		spin_unlock_irqrestore(&sdiodev->tx_flow_lock, flags);
 #endif
 
-#ifndef CONFIG_SDIO_ADMA
 		if (tx_priv == NULL || tx_priv->tail == NULL || pkt == NULL)
 			txrx_err("null error\n");
-#endif
+
 		if (aicwf_sdio_aggr(tx_priv, pkt)) {
 			aicwf_sdio_aggrbuf_reset(tx_priv);
 			sdio_err("add aggr pkts failed!\n");
@@ -1871,68 +1631,6 @@ int aicwf_sdio_send(struct aicwf_tx_priv *tx_priv, u8 txnow)
 
 int aicwf_sdio_aggr(struct aicwf_tx_priv *tx_priv, struct sk_buff *pkt)
 {
-#ifdef CONFIG_SDIO_ADMA
-	u8 adj_len = 0;
-	struct rwnx_txhdr *txhdr = (struct rwnx_txhdr *)pkt->data;
-	u8 *sdio_header = NULL;
-	u32 sdio_len = 0;
-	u32 curr_len = 0;
-	int align_len = 0;
-	int headroom;
-	u32 pkt_len = 0;
-	struct txdesc_api tmp_txdesc;
-	struct sk_buff *tmp_skb;
-
-	//AICWFDBG(LOGTRACE,"%s \n",__func__);
-	//pkt (txhdr + data),aggr only need txhdr->sw_hdr->desc and data
-	memcpy(&tmp_txdesc, (u8 *)(long)&txhdr->sw_hdr->desc, sizeof(struct txdesc_api));
-
-	if(txhdr->sw_hdr->need_cfm){
-		tmp_skb = skb_copy(pkt,GFP_ATOMIC);//save pkt when cfm get,then release,send skb is copy
-		if(!tmp_skb){
-			AICWFDBG(LOGERROR,"skb copy fail");
-			return -ENOMEM;
-		}
-		//AICWFDBG(LOGTRACE,"tmp_len %d pkt_len %d \n",tmp_skb->len,pkt->len);
-
-		skb_pull(tmp_skb, txhdr->sw_hdr->headroom);
-
-		//AICWFDBG(LOGTRACE,"pull_tmp_len %d  \n",tmp_skb->len);
-
-		skb_push(tmp_skb,sizeof(struct txdesc_api));//skb header is enough
-
-		//AICWFDBG(LOGTRACE,"push_tmp_len %d  \n",tmp_skb->len);
-
-		memcpy(tmp_skb->data, (u8 *)(long)&tmp_txdesc,sizeof(struct txdesc_api));
-		AICWFDBG(LOGTRACE,"need cfm len %d \n",tmp_skb->len);
-
-		//printk("cfm alloc %p \n",tmp_skb);
-		//printk("delay free %p \n",pkt);
-		aicwf_adma_add(tx_priv, tmp_skb);
-		tx_priv->copyd[tx_priv->aggr_segcnt -1] = true;
-	}else{
-		headroom = txhdr->sw_hdr->headroom;
-		kmem_cache_free(txhdr->sw_hdr->rwnx_vif->rwnx_hw->sw_txhdr_cache, txhdr->sw_hdr);
-		skb_pull(pkt, headroom);
-
-		//AICWFDBG(LOGTRACE,"pull_pkt_len %d  \n",pkt->len);
-
-		skb_push(pkt,sizeof(struct txdesc_api));//skb header is enough
-
-		//AICWFDBG(LOGTRACE,"push_pkt_len %d  \n",pkt->len);
-
-		memcpy(pkt->data, (u8 *)(long)&tmp_txdesc,sizeof(struct txdesc_api));
-
-		//rwnx_data_dump("data",pkt->data,((pkt->len>64) ? 64 : pkt->len));
-
-		//printk("alloc %p \n",pkt);
-
-		aicwf_adma_add(tx_priv, pkt);
-		tx_priv->copyd[tx_priv->aggr_segcnt -1] = false;
-	}
-
-#else
-
 	struct rwnx_txhdr *txhdr = (struct rwnx_txhdr *)pkt->data;
 	u8 *start_ptr = tx_priv->tail;
 	u8 sdio_header[4];
@@ -1982,45 +1680,11 @@ int aicwf_sdio_aggr(struct aicwf_tx_priv *tx_priv, struct sk_buff *pkt)
 	}
 
 	atomic_inc(&tx_priv->aggr_count);
-#endif /* CONFIG_SDIO_ADMA */
-
 	return 0;
 }
 
 void aicwf_sdio_aggr_send(struct aicwf_tx_priv *tx_priv)
 {
-#ifdef CONFIG_SDIO_ADMA
-	int ret = 0;
-	int i=0;
-	int nents = tx_priv->aggr_segcnt;
-	//struct sk_buff *scatter_buf;
-
-	if(tx_priv->len & (TXPKT_BLOCKSIZE-1))
-	{
-		uint16_t alen = TXPKT_BLOCKSIZE-(tx_priv->len & (TXPKT_BLOCKSIZE-1));
-
-		memset(sdio_tx_buf_fill, 0,32);
-		tx_priv->sg_list[tx_priv->aggr_segcnt].buf = sdio_tx_buf_fill;
-		tx_priv->sg_list[tx_priv->aggr_segcnt].len = alen;
-		tx_priv->free_buf[tx_priv->aggr_segcnt] = NULL;
-		tx_priv->aggr_segcnt += 1;
-		tx_priv->len += alen;
-	}
-
-	//AICWFDBG(LOGTRACE,"nents %d \n",tx_priv->aggr_segcnt);
-	/*for(i=0;i<tx_priv->aggr_segcnt;i++){
-		if(tx_priv->sg_list[i].buf != NULL){
-			rwnx_data_dump("send",tx_priv->sg_list[i].buf,((tx_priv->sg_list[i].len>64) ? 64 : tx_priv->sg_list[i].len));
-		}
-	}*/
-
-	ret = aicwf_sdio_txscatterpkt(tx_priv);
-	if (ret < 0) {
-		sdio_err("fail to send scatter pkt %d !\n",ret);
-	}
-
-#else
-
 	struct sk_buff *tx_buf = tx_priv->aggr_buf;
 	int ret = 0;
 	int curr_len = 0;
@@ -2037,43 +1701,17 @@ void aicwf_sdio_aggr_send(struct aicwf_tx_priv *tx_priv)
 	if (ret < 0) {
 		sdio_err("fail to send aggr pkt!\n");
 	}
-#endif/* CONFIG_SDIO_ADMA */
 
 	aicwf_sdio_aggrbuf_reset(tx_priv);
 }
 
 void aicwf_sdio_aggrbuf_reset(struct aicwf_tx_priv *tx_priv)
 {
-#ifdef CONFIG_SDIO_ADMA
-	struct sk_buff *scatter_buf;
-	int i = 0;
-	int nents = tx_priv->aggr_segcnt;
-
-	for(i=0;i<nents;i++){
-		scatter_buf = (struct sk_buff *)tx_priv->free_buf[i];
-		if(scatter_buf != NULL){
-			//printk("free %p \n",scatter_buf);
-			if(tx_priv->copyd[i]){
-				kfree_skb(scatter_buf);
-				tx_priv->copyd[i] = false;
-			}
-			else
-				consume_skb(scatter_buf);
-		}
-	}
-
-	tx_priv->len = 0;
-	tx_priv->aggr_segcnt = 0;
-	atomic_set(&tx_priv->aggr_count, 0);
-	AICWFDBG(LOGTRACE,"reset len %d seg_cnt %d aggr_cnt %d \n",tx_priv->len,tx_priv->aggr_segcnt,atomic_read(&tx_priv->aggr_count));
-#else
-
 	struct sk_buff *aggr_buf = tx_priv->aggr_buf;
 
 	tx_priv->tail = tx_priv->head;
 	aggr_buf->len = 0;
 	atomic_set(&tx_priv->aggr_count, 0);
-#endif/* CONFIG_SDIO_ADMA */
 }
 
 extern void set_irq_handler(void *fn);
