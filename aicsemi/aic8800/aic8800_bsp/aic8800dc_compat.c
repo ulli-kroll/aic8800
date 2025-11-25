@@ -2082,8 +2082,6 @@ void system_config_8800dc(struct aic_sdio_dev *rwnx_hw)
 
 }
 
-extern int adap_test;
-
 void aicwf_patch_config_8800dc(struct aic_sdio_dev *rwnx_hw)
 {
     int ret = 0;
@@ -2166,19 +2164,6 @@ void aicwf_patch_config_8800dc(struct aic_sdio_dev *rwnx_hw)
 			    AICWFDBG(LOGERROR, "wifisetting %x write fail\n", patch_tbl_wifisetting_8800dc_base[cnt][0]);
 			}
 		}
-
-//adap test
-		if(adap_test){
-            AICWFDBG(LOGINFO, "%s for adaptivity test \r\n", __func__);
-			adap_patch_num = sizeof(adaptivity_patch_tbl_8800dc)/sizeof(u32)/2;
-			for(cnt = 0; cnt < adap_patch_num; cnt++)
-			{
-				if((ret = rwnx_send_dbg_mem_write_req(rwnx_hw, wifisetting_cfg_addr + adaptivity_patch_tbl_8800dc[cnt][0], adaptivity_patch_tbl_8800dc[cnt][1]))) {
-					AICWFDBG(LOGERROR, "%x write fail\n", wifisetting_cfg_addr + adaptivity_patch_tbl_8800dc[cnt][0]);
-				}
-			}
-		}
-//adap test
 
         if (ldpc_cfg_size > 512) {// > 0.5KB data
             for (i = 0; i < (ldpc_cfg_size - 512); i += 512) {//each time write 0.5KB

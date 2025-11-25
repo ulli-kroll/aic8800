@@ -381,9 +381,7 @@ static struct attribute_group aicbsp_attribute_group = {
 };
 
 int testmode = AICBSP_CPMODE_DEFAULT;
-int adap_test = 0;
 module_param(testmode, int, 0660);
-module_param(adap_test, int, 0660);
 
 
 static int __init aicbsp_init(void)

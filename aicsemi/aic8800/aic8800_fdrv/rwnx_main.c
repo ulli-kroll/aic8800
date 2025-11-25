@@ -5341,7 +5341,7 @@ int rwnx_cfg80211_init(struct rwnx_plat *rwnx_plat, void **platform_data)
 #endif
 
 #ifdef CONFIG_FOR_IPCAM
-	if(!testmode && !adap_test) {
+	if(!testmode && !0) {
 		aic_ipc_setting(vif);
 	}
 #endif

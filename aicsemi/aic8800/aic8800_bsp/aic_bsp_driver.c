@@ -1559,13 +1559,8 @@ static int aicwifi_patch_config(struct aic_sdio_dev *sdiodev)
 		return ret;
 	}
 
-	if(adap_test){
-		printk("%s for adaptivity test \r\n", __func__);
-		adap_patch_num = sizeof(adaptivity_patch_tbl)/4;
-		ret = rwnx_send_dbg_mem_write_req(sdiodev, patch_num_reg, patch_num + adap_patch_num);
-	}else{
 		ret = rwnx_send_dbg_mem_write_req(sdiodev, patch_num_reg, patch_num);
-	}
+
 	if (ret) {
 		printk("0x%x write fail\n", patch_num_reg);
 		return ret;
@@ -1586,19 +1581,6 @@ static int aicwifi_patch_config(struct aic_sdio_dev *sdiodev)
 	}
 
 	tmp_cnt = cnt;
-
-	if(adap_test){
-		for(cnt = 0; cnt < adap_patch_num/2; cnt+=1)
-		{
-			if((ret = rwnx_send_dbg_mem_write_req(sdiodev, start_addr+8*(cnt+tmp_cnt), adaptivity_patch_tbl[cnt][0]+config_base))) {
-				printk("%x write fail\n", start_addr+8*cnt);
-			}
-
-			if((ret = rwnx_send_dbg_mem_write_req(sdiodev, start_addr+8*(cnt+tmp_cnt)+4, adaptivity_patch_tbl[cnt][1]))) {
-				printk("%x write fail\n", start_addr+8*cnt+4);
-			}
-		}
-	}
 
 	return 0;
 }

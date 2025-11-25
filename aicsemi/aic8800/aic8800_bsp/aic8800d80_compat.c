@@ -2,7 +2,6 @@
 #include "aic_bsp_driver.h"
 
 extern struct aicbsp_info_t aicbsp_info;
-extern int adap_test;
 
 typedef u32 (*array2_tbl_t)[2];
 
@@ -143,11 +142,6 @@ int aicwifi_patch_config_8800d80(struct aic_sdio_dev *sdiodev)
 	//adap test
 	int adap_patch_cnt = 0;
 
-	if (adap_test) {
-        printk("%s for adaptivity test \r\n", __func__);
-		adap_patch_cnt = sizeof(adaptivity_patch_tbl_8800d80)/sizeof(u32)/2;
-	}
-
 	aic_patch_addr = rd_patch_addr + 8;
 
 	ret = rwnx_send_dbg_mem_read_req(sdiodev, rd_patch_addr, &rd_patch_addr_cfm);
@@ -220,23 +214,6 @@ int aicwifi_patch_config_8800d80(struct aic_sdio_dev *sdiodev)
 		if (ret) {
 			printk("%x write fail\n", start_addr+8*cnt+4);
 			return ret;
-		}
-	}
-
-	if (adap_test){
-		int tmp_cnt = patch_cnt + adap_patch_cnt;
-		for (cnt = patch_cnt; cnt < tmp_cnt; cnt++) {
-			int tbl_idx = cnt - patch_cnt;
-			ret = rwnx_send_dbg_mem_write_req(sdiodev, start_addr+8*cnt, adaptivity_patch_tbl_8800d80[tbl_idx][0]+config_base);
-			if(ret) {
-				printk("%x write fail\n", start_addr+8*cnt);
-				return ret;
-			}
-			ret = rwnx_send_dbg_mem_write_req(sdiodev, start_addr+8*cnt+4, adaptivity_patch_tbl_8800d80[tbl_idx][1]);
-			if(ret) {
-				printk("%x write fail\n", start_addr+8*cnt+4);
-				return ret;
-			}
 		}
 	}
 
