@@ -3167,11 +3167,6 @@ int rwnx_platform_on(struct rwnx_hw *rwnx_hw, void *config)
 		return 0;
 
 	#ifndef CONFIG_ROM_PATCH_EN
-	#ifdef CONFIG_DOWNLOAD_FW
-	ret = rwnx_plat_fmac_load(rwnx_hw, (char*)config);
-	if (ret)
-		return ret;
-	#endif /* !CONFIG_ROM_PATCH_EN */
 	#endif
 
 #if 0
