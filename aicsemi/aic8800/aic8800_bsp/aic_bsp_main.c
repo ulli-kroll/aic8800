@@ -152,8 +152,6 @@ const struct aicbsp_firmware fw_8800d80_u02[] = {
 		.bt_table      = "fw_patch_table_8800d80_u02.bin",
 	#if defined CONFIG_SDIO_BT
 		.wl_fw         = "fmacfwbt_8800d80_u02.bin",
-	#elif defined CONFIG_FOR_IPCAM
-		.wl_fw		   = "fmacfw_8800d80_u02_ipc.bin",
 	#else
 		.wl_fw         = "fmacfw_8800d80_u02.bin",
 	#endif
@@ -178,8 +176,6 @@ const struct aicbsp_firmware fw_8800d80_h_u02[] = {
 		.bt_table      = "fw_patch_table_8800d80_u02.bin",
 	#if defined CONFIG_SDIO_BT
 		.wl_fw         = "fmacfwbt_8800d80_h_u02.bin",
-	#elif defined CONFIG_FOR_IPCAM
-		.wl_fw         = "fmacfw_8800d80_h_u02_ipc.bin",
 	#else
 		.wl_fw         = "fmacfw_8800d80_h_u02.bin",
 	#endif

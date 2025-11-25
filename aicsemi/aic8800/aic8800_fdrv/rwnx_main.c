@@ -4930,22 +4930,6 @@ int rwnx_get_custom_mac_addr(u8_l *mac_addr_efuse){
 }
 #endif
 
-#ifdef CONFIG_FOR_IPCAM
-void aic_ipc_setting(struct rwnx_vif *rwnx_vif){
-    struct rwnx_hw *rwnx_hw = rwnx_vif->rwnx_hw;
-	uint32_t hw_edca = 1;
-	uint32_t hw_cca = 3;
-	int32_t param[14];
-	int32_t cca[5]= {0x10, 0, 0, 0, 0};
-
-	param[0] = 0xFA522; param[1] = 0xFA522; param[2] = 0xFA522; param[3] = 0xFA522;
-	param[4] = rwnx_vif->vif_index;
-	param[5] = 0x1e; param[6] = 0; param[7] = 0; param[8] =0;param[9] = 0x2;param[10] = 0x2;param[11] = 0x7;param[12] = 0;param[13] = 1;
-	rwnx_send_vendor_hwconfig_req(rwnx_hw, hw_edca, param, NULL);
-	rwnx_send_vendor_hwconfig_req(rwnx_hw, hw_cca, cca, NULL);
-}
-#endif
-
 extern void *aicwf_prealloc_txq_alloc(size_t size);
 #ifdef CONFIG_POWER_LIMIT
 extern char default_ccode[];
@@ -5338,12 +5322,6 @@ int rwnx_cfg80211_init(struct rwnx_plat *rwnx_plat, void **platform_data)
 	rwnx_hw->is_p2p_alive = 0;
 	rwnx_hw->is_p2p_connected = 0;
 	atomic_set(&rwnx_hw->p2p_alive_timer_count, 0);
-#endif
-
-#ifdef CONFIG_FOR_IPCAM
-	if(!testmode && !0) {
-		aic_ipc_setting(vif);
-	}
 #endif
 
 	return 0;
