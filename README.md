@@ -2,6 +2,13 @@
 
 Aicsemi aic8800 Wi-Fi driver
 
+Orignal IP is from Riviera Networks Inc.
+
+IP is used in
+
+  * AICSEMI aic8800, for USB and SDIO devices
+  * Siflower for platform device i.e used in GL Inet SFT1200
+
 Original Code dumps from various sources
 
 * original/Luckfox/unmodified
